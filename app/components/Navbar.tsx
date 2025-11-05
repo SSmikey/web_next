@@ -40,6 +40,14 @@ export default function Navbar() {
               Contact
             </Link>
           </li>
+          <li className={styles.navItem}>
+            <Link
+              href="/survey"
+              className={`${styles.navLink} ${isActive("/survey") ? styles.active : ""}`}
+            >
+              แบบสอบถาม
+            </Link>
+          </li>
         </ul>
       </div>
     </nav>
