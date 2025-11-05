@@ -1,10 +1,22 @@
 .navbar {
-  background-color: #333;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  backdrop-filter: blur(10px);
   padding: 0;
   position: sticky;
   top: 0;
   width: 100%;
   z-index: 1000;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  animation: navbarGlow 8s ease-in-out infinite;
+}
+
+@keyframes navbarGlow {
+  0%, 100% {
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  }
+  50% {
+    box-shadow: 0 4px 30px rgba(102, 126, 234, 0.3);
+  }
 }
 
 .navContainer {
@@ -14,14 +26,41 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 60px;
+  height: 70px;
 }
 
 .navLogo {
   color: white;
-  font-size: 1.5rem;
-  font-weight: bold;
+  font-size: 1.8rem;
+  font-weight: 700;
   text-decoration: none;
+  letter-spacing: -0.5px;
+  position: relative;
+  animation: logoFloat 3s ease-in-out infinite;
+}
+
+@keyframes logoFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+.navLogo::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: white;
+  transition: width 0.3s ease;
+}
+
+.navLogo:hover::after {
+  width: 100%;
 }
 
 .navMenu {
@@ -29,21 +68,44 @@
   list-style: none;
   margin: 0;
   padding: 0;
+  gap: 10px;
 }
 
 .navItem {
-  margin-left: 20px;
+  position: relative;
 }
 
 .navLink {
   color: white;
   text-decoration: none;
   font-size: 1rem;
-  transition: color 0.3s ease;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 25px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.navLink::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  transition: left 0.3s ease;
+  z-index: -1;
+}
+
+.navLink:hover::before {
+  left: 0;
 }
 
 .navLink:hover {
-  color: #f0f0f0;
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
 @media (max-width: 768px) {
@@ -55,9 +117,16 @@
   
   .navMenu {
     margin-top: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
   }
   
   .navItem {
-    margin: 0 10px;
+    margin: 5px;
+  }
+  
+  .navLink {
+    font-size: 0.9rem;
+    padding: 6px 12px;
   }
 }

@@ -2,75 +2,156 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 40px 20px;
-  min-height: calc(100vh - 60px);
+  min-height: calc(100vh - 70px);
 }
 
 .content {
-  background-color: #fff;
-  padding: 40px;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  padding: 60px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 .title {
-  font-size: 2.5rem;
+  font-size: 3rem;
   color: #333;
-  margin-bottom: 30px;
+  margin-bottom: 40px;
   text-align: center;
-  border-bottom: 2px solid #f0f0f0;
-  padding-bottom: 15px;
+  font-weight: 700;
+  position: relative;
+}
+
+.title::after {
+  content: '';
+  position: absolute;
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 2px;
 }
 
 .contactInfo {
-  margin-bottom: 40px;
+  margin-bottom: 60px;
 }
 
 .infoSection {
-  margin-bottom: 30px;
+  margin-bottom: 40px;
+  animation: fadeInUp 0.8s ease-out;
+  animation-fill-mode: both;
+}
+
+.contactInfo .infoSection:nth-child(1) {
+  animation-delay: 0.2s;
+}
+
+.formSection {
+  animation: fadeInUp 0.8s ease-out;
+  animation-delay: 0.4s;
+  animation-fill-mode: both;
 }
 
 .subtitle {
-  font-size: 1.8rem;
-  color: #444;
-  margin-bottom: 15px;
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 20px;
+  font-weight: 600;
+  position: relative;
+  padding-left: 20px;
+}
+
+.subtitle::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 4px;
 }
 
 .text {
   font-size: 1.1rem;
-  line-height: 1.6;
-  color: #666;
-  margin-bottom: 15px;
+  line-height: 1.7;
+  color: #555;
+  margin-bottom: 20px;
+  font-weight: 400;
+  animation: fadeIn 1s ease-out;
+  animation-fill-mode: both;
 }
 
 .contactDetails {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-  margin-top: 30px;
+  gap: 30px;
+  margin-top: 40px;
 }
 
 .contactItem {
-  background-color: #f9f9f9;
-  padding: 20px;
-  border-radius: 6px;
-  border-left: 4px solid #4CAF50;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  padding: 30px;
+  border-radius: 16px;
+  position: relative;
+  border-left: 4px solid;
+  border-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%) 1;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: fadeInUp 0.8s ease-out;
+  animation-fill-mode: both;
+}
+
+.contactItem:nth-child(1) {
+  animation-delay: 0.2s;
+}
+
+.contactItem:nth-child(2) {
+  animation-delay: 0.4s;
+}
+
+.contactItem:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+.contactItem:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
 }
 
 .itemTitle {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   color: #333;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
+  font-weight: 600;
 }
 
 .itemText {
-  font-size: 1rem;
-  line-height: 1.5;
-  color: #666;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #555;
   margin: 0;
 }
 
 .formSection {
-  margin-top: 40px;
+  margin-top: 60px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
 .contactForm {
@@ -79,48 +160,69 @@
 }
 
 .formGroup {
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 }
 
 .label {
   display: block;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 600;
   color: #333;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .input, .textarea {
   width: 100%;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  padding: 14px 18px;
+  border: 2px solid #e9ecef;
+  border-radius: 10px;
   font-size: 1rem;
-  transition: border-color 0.3s;
+  transition: all 0.3s ease;
+  background-color: #ffffff;
 }
 
 .input:focus, .textarea:focus {
   outline: none;
-  border-color: #4CAF50;
-  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  transform: translateY(-2px);
 }
 
 .button {
   display: block;
   width: 100%;
-  padding: 12px 20px;
-  background-color: #4CAF50;
+  padding: 16px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
-  border-radius: 4px;
-  font-size: 1rem;
-  font-weight: 500;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s;
+}
+
+.button:hover::before {
+  left: 100%;
 }
 
 .button:hover {
-  background-color: #45a049;
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
 }
 
 @media (max-width: 768px) {
@@ -129,15 +231,15 @@
   }
   
   .content {
-    padding: 20px;
+    padding: 30px 20px;
   }
   
   .title {
-    font-size: 2rem;
+    font-size: 2.2rem;
   }
   
   .subtitle {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
   }
   
   .text {
@@ -147,17 +249,31 @@
   .contactDetails {
     grid-template-columns: 1fr;
   }
+  
+  .formSection {
+    padding: 30px 20px;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (prefers-color-scheme: dark) {
   .content {
-    background-color: #1a1a1a;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
     color: #f0f0f0;
   }
   
   .title {
     color: #f0f0f0;
-    border-bottom-color: #333;
   }
   
   .subtitle {
@@ -169,7 +285,7 @@
   }
   
   .contactItem {
-    background-color: #2a2a2a;
+    background: linear-gradient(135deg, #2a2a2a 0%, #333333 100%);
   }
   
   .itemTitle {
@@ -178,6 +294,10 @@
   
   .itemText {
     color: #ccc;
+  }
+  
+  .formSection {
+    background: linear-gradient(135deg, #2a2a2a 0%, #333333 100%);
   }
   
   .label {
