@@ -8,6 +8,28 @@
   z-index: 1000;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   animation: navbarGlow 8s ease-in-out infinite;
+  position: relative;
+  overflow: hidden;
+}
+
+.navbar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
 }
 
 @keyframes navbarGlow {
@@ -22,11 +44,13 @@
 .navContainer {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 40px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   height: 70px;
+  position: relative;
+  z-index: 10;
 }
 
 .navLogo {
@@ -82,51 +106,43 @@
   font-weight: 500;
   padding: 8px 16px;
   border-radius: 25px;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.navLink::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.2);
-  transition: left 0.3s ease;
-  z-index: -1;
-}
-
-.navLink:hover::before {
-  left: 0;
+  transition: background-color 0.2s ease;
 }
 
 .navLink:hover {
-  transform: translateY(-2px) scale(1.05);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.active {
+  background: rgba(255, 255, 255, 0.25) !important;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  font-weight: 600;
 }
 
 @media (max-width: 768px) {
   .navContainer {
-    flex-direction: column;
-    height: auto;
-    padding: 15px 20px;
+    flex-direction: row;
+    height: 70px;
+    padding: 0 20px;
   }
-  
+
   .navMenu {
-    margin-top: 15px;
-    flex-wrap: wrap;
-    justify-content: center;
+    margin-top: 0;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    gap: 5px;
   }
-  
+
   .navItem {
-    margin: 5px;
+    margin: 0;
   }
-  
+
   .navLink {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     padding: 6px 12px;
+  }
+
+  .navLogo {
+    font-size: 1.5rem;
   }
 }
