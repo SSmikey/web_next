@@ -6,6 +6,11 @@ declare module "react" {
   interface FormEvent<T = Element> {
     target: EventTarget & T;
   }
+  
+  interface ChangeEvent<T = Element> {
+    target: EventTarget & T;
+    value: string;
+  }
 }
 
 declare global {
