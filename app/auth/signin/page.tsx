@@ -100,12 +100,6 @@ export default function SignIn() {
             {loading ? "Signing in..." : "Sign In"}
           </button>
         </form>
-        
-        <div className={styles.authDemo}>
-          <p><strong>Demo credentials:</strong></p>
-          <p>Email: user@example.com</p>
-          <p>Password: password</p>
-        </div>
       </div>
     </div>
   );
