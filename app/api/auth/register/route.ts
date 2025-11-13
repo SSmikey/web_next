@@ -31,12 +31,13 @@ export async function POST(request: NextRequest) {
       name,
       email,
       password, // In production, this should be hashed
+      role: "user", // Default role for new registrations
     };
 
     users.push(newUser);
 
     return NextResponse.json(
-      { message: "User created successfully", user: { id: newUser.id, name, email } },
+      { message: "User created successfully", user: { id: newUser.id, name, email, role: newUser.role } },
       { status: 201 }
     );
   } catch (error) {

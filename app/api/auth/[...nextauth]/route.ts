@@ -13,11 +13,20 @@ const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         // Here you would typically connect to your database
         // For now, we'll use a simple mock authentication
-        if (credentials?.email === "user@example.com" && credentials?.password === "password") {
+        if (credentials?.email === "admin@example.com" && credentials?.password === "admin123") {
           return {
             id: "1",
+            name: "Admin User",
+            email: "admin@example.com",
+            role: "admin",
+          }
+        }
+        if (credentials?.email === "user@example.com" && credentials?.password === "password") {
+          return {
+            id: "2",
             name: "Demo User",
             email: "user@example.com",
+            role: "user",
           }
         }
         return null
@@ -34,12 +43,14 @@ const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id
+        token.role = user.role
       }
       return token
     },
     async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.id
+        session.user.role = token.role
       }
       return session
     },
