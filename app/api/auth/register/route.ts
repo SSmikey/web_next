@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-
-// In a real application, you would save this to a database
-// For demo purposes, we'll just simulate a successful registration
-const users: any[] = [];
+import connectToDatabase from "@/lib/mongodb";
+import User from "@/models/User";
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,8 +14,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    await connectToDatabase();
+
     // Check if user already exists
-    const existingUser = users.find((user) => user.email === email);
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
       return NextResponse.json(
         { message: "User with this email already exists" },
@@ -25,19 +25,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // In a real app, you would hash the password before saving
-    const newUser = {
-      id: Date.now().toString(),
+    // In a real app, you should hash the password before saving
+    // For now, we'll save it as plain text
+    // TODO: Implement proper password hashing with bcrypt
+    const newUser = new User({
       name,
       email,
       password, // In production, this should be hashed
       role: "user", // Default role for new registrations
-    };
+    });
 
-    users.push(newUser);
+    await newUser.save();
 
     return NextResponse.json(
-      { message: "User created successfully", user: { id: newUser.id, name, email, role: newUser.role } },
+      {
+        message: "User created successfully",
+        user: {
+          id: newUser._id.toString(),
+          name: newUser.name,
+          email: newUser.email,
+          role: newUser.role
+        }
+      },
       { status: 201 }
     );
   } catch (error) {

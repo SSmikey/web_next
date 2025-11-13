@@ -1,6 +1,8 @@
 import NextAuth from "next-auth"
 import { NextAuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
+import connectToDatabase from "@/lib/mongodb"
+import User from "@/models/User"
 
 const authOptions: NextAuthOptions = {
   providers: [
@@ -11,25 +13,37 @@ const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        // Here you would typically connect to your database
-        // For now, we'll use a simple mock authentication
-        if (credentials?.email === "admin@example.com" && credentials?.password === "admin123") {
-          return {
-            id: "1",
-            name: "Admin User",
-            email: "admin@example.com",
-            role: "admin",
-          }
+        if (!credentials?.email || !credentials?.password) {
+          return null
         }
-        if (credentials?.email === "user@example.com" && credentials?.password === "password") {
-          return {
-            id: "2",
-            name: "Demo User",
-            email: "user@example.com",
-            role: "user",
+
+        try {
+          await connectToDatabase()
+          
+          // Find user by email
+          const user = await User.findOne({ email: credentials.email })
+          
+          if (!user) {
+            return null
           }
+
+          // In production, you should compare hashed passwords
+          // For now, we'll do simple string comparison
+          // TODO: Implement proper password hashing with bcrypt
+          if (user.password !== credentials.password) {
+            return null
+          }
+
+          return {
+            id: user._id.toString(),
+            name: user.name,
+            email: user.email,
+            role: user.role,
+          }
+        } catch (error) {
+          console.error("Authentication error:", error)
+          return null
         }
-        return null
       }
     })
   ],
