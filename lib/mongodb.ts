@@ -15,10 +15,16 @@ async function connectToDatabase() {
   }
 
   try {
-    connection = await mongoose.connect(MONGODB_URI);
+    connection = await mongoose.connect(MONGODB_URI, {
+      tls: true,
+      tlsAllowInvalidCertificates: true,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    });
     return connection;
   } catch (error) {
     connection = null;
+    console.error('MongoDB connection error:', error);
     throw error;
   }
 }
