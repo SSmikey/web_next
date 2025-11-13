@@ -2,12 +2,18 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSession, signOut } from "next-auth/react";
 import styles from "./Navbar.module.css";
 
 export default function Navbar() {
   const pathname = usePathname();
+  const { data: session, status } = useSession();
 
   const isActive = (href: string) => pathname === href;
+
+  const handleSignOut = () => {
+    signOut({ callbackUrl: "/" });
+  };
 
   return (
     <nav className={styles.navbar}>
@@ -49,6 +55,38 @@ export default function Navbar() {
             </Link>
           </li>
         </ul>
+        <div className={styles.authMenu}>
+          {status === "loading" ? (
+            <div className={styles.loadingSpinner}>Loading...</div>
+          ) : session ? (
+            <div className={styles.userMenu}>
+              <span className={styles.userName}>
+                {session.user?.name || session.user?.email}
+              </span>
+              <button
+                onClick={handleSignOut}
+                className={styles.signOutButton}
+              >
+                Sign Out
+              </button>
+            </div>
+          ) : (
+            <div className={styles.authButtons}>
+              <Link
+                href="/auth/signin"
+                className={`${styles.authButton} ${styles.signInButton}`}
+              >
+                Sign In
+              </Link>
+              <Link
+                href="/auth/signup"
+                className={`${styles.authButton} ${styles.signUpButton}`}
+              >
+                Sign Up
+              </Link>
+            </div>
+          )}
+        </div>
       </div>
     </nav>
   );

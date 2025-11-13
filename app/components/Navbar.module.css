@@ -119,6 +119,88 @@
   font-weight: 600;
 }
 
+.authMenu {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.authButtons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.authButton {
+  color: white;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 20px;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.signInButton {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.signInButton:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.signUpButton {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.signUpButton:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.userMenu {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.userName {
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 500;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.signOutButton {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 5px 12px;
+  border-radius: 18px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.signOutButton:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.loadingSpinner {
+  color: white;
+  font-size: 0.9rem;
+  font-style: italic;
+  opacity: 0.8;
+}
+
 @media (max-width: 768px) {
   .navContainer {
     flex-direction: row;
@@ -144,5 +226,36 @@
 
   .navLogo {
     font-size: 1.5rem;
+  }
+
+  .authMenu {
+    gap: 8px;
+  }
+
+  .authButtons {
+    gap: 6px;
+  }
+
+  .authButton {
+    font-size: 0.8rem;
+    padding: 5px 10px;
+  }
+
+  .userMenu {
+    gap: 8px;
+  }
+
+  .userName {
+    font-size: 0.8rem;
+    max-width: 100px;
+  }
+
+  .signOutButton {
+    font-size: 0.75rem;
+    padding: 4px 8px;
+  }
+
+  .loadingSpinner {
+    font-size: 0.8rem;
   }
 }
