@@ -10,7 +10,8 @@ export default function About() {
           <p className={styles.text}>
             Welcome to MyWebsite! We started this journey with a simple mission: to create 
             amazing web experiences that make a difference. Founded in 2023, our team has grown 
-            from a small group of passionate developers to a full-service digital agency.
+            from a small group of passionate developers to a full-service digital agency. ชอบเธอ
+            
           </p>
         </div>
         
