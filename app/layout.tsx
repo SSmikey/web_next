@@ -1,17 +1,20 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Noto_Sans_Thai } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/Navbar";
 import SessionProviderWrapper from "./components/SessionProviderWrapper";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
   subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const noto_sans_thai = Noto_Sans_Thai({
+  subsets: ["latin", "thai"],
+  variable: "--font-noto-sans-thai",
+  display: "swap",
+  weight: ["400", "500", "700"],
 });
 
 export const metadata: Metadata = {
@@ -25,8 +28,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html lang="th" className={`${inter.variable} ${noto_sans_thai.variable}`}>
+      <body>
         <SessionProviderWrapper>
           <Navbar />
           {children}

@@ -16,7 +16,7 @@ export default function Navbar() {
     <nav className={styles.navbar}>
       <div className={styles.navContainer}>
         <Link href="/" className={styles.navLogo}>
-          ✨ MyWebsite
+          ✨ SPVV CLOTHING
         </Link>
         <ul className={styles.navMenu}>
           <li className={styles.navItem}>

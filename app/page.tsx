@@ -4,9 +4,9 @@ export default function Home() {
   return (
     <div className={styles.container}>
       <div className={styles.hero}>
-        <h1 className={styles.title}>Welcome to MyWebsite</h1>
+        <h1 className={styles.title}>WELCOME TO MYWEBSITE</h1>
         <p className={styles.subtitle}>
-          Creating amazing digital experiences that make a difference
+          CREATING AMAZING DIGITAL EXPERIENCES THAT MAKE A DIFFERENCE
         </p>
         <div className={styles.buttons}>
           <a href="/about" className={styles.primaryButton}>Learn More</a>
