@@ -25,13 +25,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // In a real app, you should hash the password before saving
-    // For now, we'll save it as plain text
-    // TODO: Implement proper password hashing with bcrypt
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return NextResponse.json(
+        { message: "Invalid email format" },
+        { status: 400 }
+      );
+    }
+
+    // Validate password length
+    if (password.length < 6) {
+      return NextResponse.json(
+        { message: "Password must be at least 6 characters long" },
+        { status: 400 }
+      );
+    }
+
+    // Create new user (password will be hashed automatically via User model pre-save hook)
     const newUser = new User({
       name,
       email,
-      password, // In production, this should be hashed
+      password,
       role: "user", // Default role for new registrations
     });
 

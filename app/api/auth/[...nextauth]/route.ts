@@ -19,18 +19,17 @@ const authOptions: NextAuthOptions = {
 
         try {
           await connectToDatabase()
-          
+
           // Find user by email
           const user = await User.findOne({ email: credentials.email })
-          
+
           if (!user) {
             return null
           }
 
-          // In production, you should compare hashed passwords
-          // For now, we'll do simple string comparison
-          // TODO: Implement proper password hashing with bcrypt
-          if (user.password !== credentials.password) {
+          // Compare hashed passwords
+          const isPasswordValid = await user.comparePassword(credentials.password)
+          if (!isPasswordValid) {
             return null
           }
 

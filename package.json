@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@types/mongoose": "^5.11.97",
+    "bcryptjs": "^3.0.3",
     "dotenv": "^17.2.3",
     "mongoose": "^8.19.3",
     "next": "16.0.1",

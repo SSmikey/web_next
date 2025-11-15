@@ -54,11 +54,11 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create admin user
+    // Create admin user (password will be hashed automatically via User model pre-save hook)
     const adminUser = new User({
       name,
       email,
-      password, // In production, this should be hashed
+      password,
       role: "admin",
     })
 
