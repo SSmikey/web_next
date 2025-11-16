@@ -2,16 +2,17 @@
   display: flex;
   justify-content: center;
   background: var(--bg-primary);
-  padding: 20px;
+  padding: 40px 20px;
+  min-height: 100vh;
 }
 
 .card {
   display: grid;
   grid-template-columns: 1fr 1fr;
   background: var(--bg-card);
-  border-radius: 18px;
-  box-shadow: var(--shadow);
-  max-width: 1200px;
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  max-width: 1400px;
   width: 100%;
   overflow: hidden;
 }
@@ -20,8 +21,8 @@
 .left {
   position: relative;
   background: var(--bg-secondary);
-  padding: 20px;
-  min-height: 650px; /* เพิ่มความสูงเพื่อไม่ให้โดนบีบ */
+  padding: 40px;
+  min-height: 600px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -126,12 +127,16 @@
 
 /* Responsive */
 @media (max-width: 1024px) {
+  .container {
+    padding: 30px 15px;
+  }
   .left {
     min-height: 550px;
+    padding: 35px;
   }
   .imageWrapper { min-height: 400px; }
   .right {
-    padding: 30px;
+    padding: 35px;
   }
 }
 
