@@ -3,7 +3,7 @@
 import { useState } from 'react';
 
 const SIZES = ['SSS', 'SS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', '6XL', '7XL', '8XL'] as const;
-const PRICE_PER_SHIRT = 350;
+const PRICE_PER_SHIRT = 219;
 
 type Size = typeof SIZES[number];
 
@@ -14,13 +14,13 @@ const SHIRT_DESIGNS = [
   { id: 3, name: 'เสื้อรุ่นสปอร์ต', image: '/spvv3.jpg', description: 'เสื้อกีฬา ระบายอากาศดี', color: '#f093fb' },
   { id: 4, name: 'เสื้อรุ่นเบสิค', image: '/spvv4.jpg', description: 'เสื้อยืดแขนสั้น สีพื้น', color: '#4facfe' },
   { id: 5, name: 'เสื้อรุ่นลายการ์ตูน', image: '/spvv5.jpg', description: 'เสื้อลายน่ารัก สำหรับเด็ก', color: '#43e97b' },
-  { id: 6, name: 'เสื้อรุ่นวินเทจ', image: '/spvv.jpg', description: 'เสื้อสไตล์ย้อนยุค', color: '#fa709a' },
-  { id: 7, name: 'เสื้อรุ่นโมเดิร์น', image: '/spvvb1.jpg', description: 'เสื้อดีไซน์ทันสมัย', color: '#30cfd0' },
-  { id: 8, name: 'เสื้อรุ่นเอเชีย', image: '/spvvb2.jpg', description: 'เสื้อลายไทยประยุกต์', color: '#a8edea' },
-  { id: 9, name: 'เสื้อรุ่นยูนิเซ็กซ์', image: '/spvvb3.jpg', description: 'เสื้อใส่ได้ทุกเพศ', color: '#fbc2eb' },
-  { id: 10, name: 'เสื้อรุ่นลำลอง', image: '/spvvb4.jpg', description: 'เสื้อสบายๆ ใส่เที่ยว', color: '#a1c4fd' },
-  { id: 11, name: 'เสื้อรุ่นออฟฟิศ', image: '/spvvb5.jpg', description: 'เสื้อเข้าออฟฟิศได้', color: '#d299c2' },
-  { id: 12, name: 'เสื้อรุ่นพิเศษ', image: '/4spvv.jpg', description: 'เสื้อรุ่นลิมิเต็ด', color: '#ffecd2' },
+  { id: 6, name: 'เสื้อรุ่นวินเทจ', image: '/spvvb1.jpg', description: 'เสื้อสไตล์ย้อนยุค', color: '#fa709a' },
+  { id: 7, name: 'เสื้อรุ่นโมเดิร์น', image: '/spvvb2.jpg', description: 'เสื้อดีไซน์ทันสมัย', color: '#30cfd0' },
+  { id: 8, name: 'เสื้อรุ่นเอเชีย', image: '/spvvb3.jpg', description: 'เสื้อลายไทยประยุกต์', color: '#a8edea' },
+  { id: 9, name: 'เสื้อรุ่นยูนิเซ็กซ์', image: '/spvvb4.jpg', description: 'เสื้อใส่ได้ทุกเพศ', color: '#fbc2eb' },
+  { id: 10, name: 'เสื้อรุ่นลำลอง', image: '/spvvb5.jpg', description: 'เสื้อสบายๆ ใส่เที่ยว', color: '#a1c4fd' },
+  { id: 11, name: 'เสื้อรุ่นออฟฟิศ', image: '/spvvm1.png', description: 'เสื้อเข้าออฟฟิศได้', color: '#d299c2' },
+  { id: 12, name: 'เสื้อรุ่นพิเศษ', image: '/spvvm2.png', description: 'เสื้อรุ่นลิมิเต็ด', color: '#ffecd2' },
 ];
 
 export default function ContactPage() {
@@ -499,7 +499,7 @@ export default function ContactPage() {
               borderRadius: '8px'
             }}>
               <span style={{ color: '#666', fontWeight: 500 }}>ราคาต่อตัว:</span>
-              <span style={{ color: '#333', fontWeight: 700 }}>350 บาท</span>
+              <span style={{ color: '#333', fontWeight: 700 }}>219 บาท</span>
             </div>
             <div style={{
               borderTop: '3px solid #667eea',
