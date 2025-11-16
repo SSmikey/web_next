@@ -45,16 +45,97 @@
   position: relative;
   width: 100%;
   height: 100%;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border-radius: 0;
-  padding: 40px;
-  animation: floatImage 6s ease-in-out infinite;
+  background: transparent;
+  padding: 20px;
 }
 
-@keyframes floatImage {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-20px); }
+.slideshowContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* Navigation Arrows */
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.9);
+  color: #667eea;
+  border: none;
+  font-size: 3rem;
+  font-weight: bold;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.arrow:hover {
+  background: white;
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.arrow:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.arrowLeft {
+  left: 20px;
+}
+
+.arrowRight {
+  right: 20px;
+}
+
+/* Dots Indicator */
+.dotsContainer {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 10px 20px;
+  border-radius: 25px;
+  backdrop-filter: blur(10px);
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0;
+}
+
+.dot:hover {
+  background: rgba(255, 255, 255, 0.8);
+  transform: scale(1.2);
+}
+
+.dotActive {
+  background: white;
+  width: 30px;
+  border-radius: 10px;
+  border-color: white;
 }
 
 /* Form Section (Right) */
@@ -290,6 +371,20 @@
   .card {
     padding: 32px 24px;
   }
+
+  .arrow {
+    width: 40px;
+    height: 40px;
+    font-size: 2rem;
+  }
+
+  .arrowLeft {
+    left: 10px;
+  }
+
+  .arrowRight {
+    right: 10px;
+  }
 }
 
 @media (max-width: 768px) {
@@ -325,6 +420,29 @@
   .imageWrapper {
     height: 100%;
     padding: 20px;
+  }
+
+  .arrow {
+    width: 35px;
+    height: 35px;
+    font-size: 1.8rem;
+  }
+
+  .arrowLeft {
+    left: 5px;
+  }
+
+  .arrowRight {
+    right: 5px;
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+  }
+
+  .dotActive {
+    width: 24px;
   }
 }
 
@@ -382,5 +500,22 @@
     background: #667eea;
     color: white;
     border-color: #667eea;
+  }
+
+  .arrow {
+    background: rgba(42, 42, 42, 0.9);
+    color: #8b9dc3;
+  }
+
+  .arrow:hover {
+    background: #2a2a2a;
+  }
+
+  .dot {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  .dotActive {
+    background: rgba(255, 255, 255, 0.9);
   }
 }

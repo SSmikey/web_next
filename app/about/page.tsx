@@ -1,14 +1,33 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import styles from "./page.module.css";
 
+const images = [
+  "/images/V1.png",
+  "/images/V2.png",
+  "/images/V3.png",
+  "/images/V4.png",
+  "/images/V5.png",
+  "/images/Premium.png"
+];
+
 export default function AboutOrderForm() {
   const router = useRouter();
   const formRef = useRef<HTMLFormElement | null>(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Auto slideshow every 3 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -25,19 +44,63 @@ export default function AboutOrderForm() {
     router.push("/contact");
   };
 
+  const goToPrevious = () => {
+    setCurrentImageIndex((prevIndex) => 
+      prevIndex === 0 ? images.length - 1 : prevIndex - 1
+    );
+  };
+
+  const goToNext = () => {
+    setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+  };
+
+  const goToSlide = (index: number) => {
+    setCurrentImageIndex(index);
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.splitLayout}>
-        {/* Left Section - Image */}
+        {/* Left Section - Image Slideshow */}
         <div className={styles.imageSection}>
           <div className={styles.imageWrapper}>
-            <Image
-              src="/images/V1.png"
-              alt="Product Preview"
-              fill
-              style={{ objectFit: "contain" }}
-              priority
-            />
+            <div className={styles.slideshowContainer}>
+              <Image
+                src={images[currentImageIndex]}
+                alt={`Product ${currentImageIndex + 1}`}
+                fill
+                style={{ objectFit: "contain" }}
+                priority
+              />
+            </div>
+
+            {/* Navigation Arrows */}
+            <button 
+              className={`${styles.arrow} ${styles.arrowLeft}`}
+              onClick={goToPrevious}
+              aria-label="Previous image"
+            >
+              ‹
+            </button>
+            <button 
+              className={`${styles.arrow} ${styles.arrowRight}`}
+              onClick={goToNext}
+              aria-label="Next image"
+            >
+              ›
+            </button>
+
+            {/* Dots Indicator */}
+            <div className={styles.dotsContainer}>
+              {images.map((_, index) => (
+                <button
+                  key={index}
+                  className={`${styles.dot} ${index === currentImageIndex ? styles.dotActive : ''}`}
+                  onClick={() => goToSlide(index)}
+                  aria-label={`Go to slide ${index + 1}`}
+                />
+              ))}
+            </div>
           </div>
         </div>
 
