@@ -131,10 +131,8 @@ export default function ContactPage() {
   };
 
   const handleReset = () => {
-    setSelectedShirt(1);
-    setSelectedSize(null);
-    setQuantity(1);
-    setError(false);
+    // รีเฟรชหน้าเดียว ไม่กระทบหน้าอื่น
+    window.location.reload();
   };
 
   const handleConfirm = () => {
