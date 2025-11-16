@@ -3,6 +3,7 @@ import { Inter, Noto_Sans_Thai } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/Navbar";
 import SessionProviderWrapper from "./components/SessionProviderWrapper";
+import ThemeProvider from "./components/ThemeProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -28,12 +29,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="th" className={`${inter.variable} ${noto_sans_thai.variable}`}>
+    <html lang="th" className={`${inter.variable} ${noto_sans_thai.variable}`} suppressHydrationWarning>
       <body>
-        <SessionProviderWrapper>
-          <Navbar />
-          {children}
-        </SessionProviderWrapper>
+        <ThemeProvider>
+          <SessionProviderWrapper>
+            <Navbar />
+            {children}
+          </SessionProviderWrapper>
+        </ThemeProvider>
       </body>
     </html>
   );
