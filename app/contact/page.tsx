@@ -3,13 +3,13 @@
 import { useState } from 'react';
 
 const SIZES = ['SSS', 'SS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', '6XL', '7XL', '8XL'] as const;
-const PRICE_PER_SHIRT = 350;
+const PRICE_PER_SHIRT = 219;
 
 type Size = typeof SIZES[number];
 
 // 12 แบบเสื้อ พร้อมรูปภาพ
 const SHIRT_DESIGNS = [
-  { id: 1, name: 'เสื้อรุ่นคลาสสิค', image: '/images/spvv1.jpg', description: 'เสื้อคอปก สีดำเหลือง', color: '#667eea' },
+  { id: 1, name: 'เสื้อรุ่นคลาสสิค', public: '/public/spvv1.jpg', description: 'เสื้อคอปก สีดำเหลือง', color: '#667eea' },
   { id: 2, name: 'เสื้อรุ่นพรีเมียม', image: '/images/spvv2.jpg', description: 'เสื้อคอปก สีน้ำเงินเหลือง', color: '#764ba2' },
   { id: 3, name: 'เสื้อรุ่นสปอร์ต', image: '/images/spvv3.jpg', description: 'เสื้อกีฬา ระบายอากาศดี', color: '#f093fb' },
   { id: 4, name: 'เสื้อรุ่นเบสิค', image: '/images/spvv4.jpg', description: 'เสื้อคอปก สีพื้น', color: '#4facfe' },
@@ -102,7 +102,7 @@ export default function ContactPage() {
             🎽 เลือกแบบเสื้อ ขนาด และจำนวน
           </h1>
           <p style={{ fontSize: '16px', opacity: 0.95 }}>
-            ศรีสะเกษการกุศล - ร่วมบริจาคเพื่อน้อง | 12 แบบ 15 ไซส์
+            SPVV-SHIRT | 12 แบบ 15 ไซส์
           </p>
         </div>
 
@@ -500,7 +500,7 @@ export default function ContactPage() {
               borderRadius: '8px'
             }}>
               <span style={{ color: '#666', fontWeight: 500 }}>ราคาต่อตัว:</span>
-              <span style={{ color: '#333', fontWeight: 700 }}>350 บาท</span>
+              <span style={{ color: '#333', fontWeight: 700 }}>219 บาท</span>
             </div>
             <div style={{
               borderTop: '3px solid #667eea',
