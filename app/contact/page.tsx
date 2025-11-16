@@ -25,7 +25,7 @@ const SHIRT_DESIGNS = [
   { id: 12, name: 'Premuim', image: '/spvvm2.png', description: 'รสหมู', color: '#ffffffff' },
 ];
 
-
+// รูปภาพสำหรับ slideshow
 const images = [
   "/images/V1.png",
   "/images/V2.png",
@@ -41,6 +41,7 @@ export default function ContactPage() {
   const [quantity, setQuantity] = useState(1);
   const [error, setError] = useState(false);
 
+  // Slideshow states
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [previousImageIndex, setPreviousImageIndex] = useState(0);
   const [direction, setDirection] = useState<'left' | 'right'>('right');
@@ -49,6 +50,7 @@ export default function ContactPage() {
   const currentShirt = SHIRT_DESIGNS.find(s => s.id === selectedShirt)!;
   const totalPrice = quantity * PRICE_PER_SHIRT;
 
+  // Slideshow functions
   const goToPrevious = () => {
     if (isAnimating) return;
     
@@ -113,9 +115,7 @@ export default function ContactPage() {
     }
   };
 
-  // ========================================
-  // 📝 Form Functions (เดิม - ไม่เปลี่ยน)
-  // ========================================
+  // Form Functions
   const increaseQuantity = () => setQuantity(prev => prev + 1);
   const decreaseQuantity = () => setQuantity(prev => Math.max(1, prev - 1));
 
@@ -180,7 +180,7 @@ export default function ContactPage() {
                     src={imageSrc}
                     alt={`Product ${index + 1}`}
                     fill
-                    style={{ objectFit: "contain" }}
+                    style={{ objectFit: "contain", objectPosition: "top" }}
                     priority={index === 0}
                   />
                 </div>
@@ -273,7 +273,7 @@ export default function ContactPage() {
                 <div className={styles.previewName}>{currentShirt.name}</div>
                 <div className={styles.previewDescription}>{currentShirt.description}</div>
                 <div className={styles.previewBadge}>
-                  รหัส: #{currentShirt.id.toString().padStart(2, '0')}
+                  {currentShirt.name} - {currentShirt.description}
                 </div>
               </div>
             </div>
@@ -328,7 +328,7 @@ export default function ContactPage() {
                 
                 <div className={styles.summaryRow}>
                   <span className={styles.summaryLabel}>แบบเสื้อที่เลือก:</span>
-                  <span className={styles.summaryValue}>{currentShirt.name}</span>
+                  <span className={styles.summaryValue}>{currentShirt.name} - {currentShirt.description}</span>
                 </div>
                 
                 <div className={styles.summaryRow}>
