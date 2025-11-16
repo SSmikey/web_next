@@ -29,9 +29,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 30px;
+  padding: 40px;
   position: relative;
   overflow: hidden;
+  border-radius: 24px 0 0 24px;
 }
 
 .imageSection::before {
@@ -79,42 +80,42 @@
   left: 0;
   width: 100%;
   height: 100%;
-  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1), 
-              opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.8s cubic-bezier(0.45, 0, 0.15, 1), 
+              opacity 0.8s cubic-bezier(0.45, 0, 0.15, 1);
 }
 
 /* Slide ที่กำลังแสดง */
 .slideActive {
   opacity: 1;
-  transform: translateX(0);
+  transform: translateX(0) scale(1);
   z-index: 2;
 }
 
 /* Slide ที่จะออกไปทางซ้าย */
 .slideExitLeft {
   opacity: 0;
-  transform: translateX(-100%);
+  transform: translateX(-100%) scale(0.95);
   z-index: 1;
 }
 
 /* Slide ที่จะออกไปทางขวา */
 .slideExitRight {
   opacity: 0;
-  transform: translateX(100%);
+  transform: translateX(100%) scale(0.95);
   z-index: 1;
 }
 
 /* Slide ที่ซ่อนอยู่ทางซ้าย (พร้อมเข้า) */
 .slideHiddenLeft {
   opacity: 0;
-  transform: translateX(-100%);
+  transform: translateX(-100%) scale(0.95);
   z-index: 0;
 }
 
 /* Slide ที่ซ่อนอยู่ทางขวา (พร้อมเข้า) */
 .slideHiddenRight {
   opacity: 0;
-  transform: translateX(100%);
+  transform: translateX(100%) scale(0.95);
   z-index: 0;
 }
 
@@ -206,19 +207,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 60px 40px;
+  padding: 40px;
   overflow-y: auto;
+  border-radius: 0 24px 24px 0;
 }
 
 .card {
-  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
-  padding: 48px;
-  border-radius: 20px;
-  box-shadow: 0 15px 40px rgba(102, 126, 234, 0.08);
-  border: 1px solid rgba(102,126,234,0.08);
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
+  border: none;
   width: 100%;
   max-width: 600px;
-  animation: fadeInRight 0.8s ease-out;
 }
 
 @keyframes fadeInRight {
@@ -412,13 +413,19 @@
 
 /* Responsive Design */
 @media (max-width: 1024px) {
+  .container {
+    padding: 20px;
+  }
+
   .splitLayout {
     grid-template-columns: 1fr;
+    border-radius: 20px;
   }
 
   .imageSection {
-    min-height: 50vh;
-    padding: 40px 20px;
+    min-height: 400px;
+    padding: 30px 20px;
+    border-radius: 20px 20px 0 0;
   }
 
   .imageWrapper {
@@ -427,11 +434,12 @@
   }
 
   .formSection {
-    padding: 40px 20px;
+    padding: 30px 20px;
+    border-radius: 0 0 20px 20px;
   }
 
   .card {
-    padding: 32px 24px;
+    padding: 0;
   }
 
   .arrow {
@@ -450,13 +458,21 @@
 }
 
 @media (max-width: 768px) {
+  .container {
+    padding: 15px;
+  }
+
+  .splitLayout {
+    border-radius: 16px;
+  }
+
   .row {
     flex-direction: column;
     gap: 0;
   }
 
   .card {
-    padding: 24px 20px;
+    padding: 0;
   }
 
   .title {
@@ -475,13 +491,18 @@
   }
 
   .imageSection {
-    min-height: 40vh;
-    padding: 30px 20px;
+    min-height: 350px;
+    padding: 20px;
+    border-radius: 16px 16px 0 0;
   }
 
   .imageWrapper {
     height: 100%;
     padding: 10px;
+  }
+
+  .formSection {
+    border-radius: 0 0 16px 16px;
   }
 
   .arrow {

@@ -42,7 +42,7 @@ export default function AboutOrderForm() {
       
       setTimeout(() => {
         setIsAnimating(false);
-      }, 700);
+      }, 800); // ✅ เพิ่มเวลาให้ตรงกับ CSS (0.8s)
     }, 5000);
 
     return () => clearInterval(interval);
@@ -125,15 +125,22 @@ export default function AboutOrderForm() {
     
     // รูปก่อนหน้า (กำลัง exit)
     if (isAnimating && imageIndex === previousImageIndex) {
+      // ถ้ากดปุ่มขวา (หรือ auto) -> รูปเก่าเลื่อนออกไปทางซ้าย
       if (direction === 'right') {
         return `${styles.slideItem} ${styles.slideExitLeft}`;
-      } else {
+      } 
+      // ถ้ากดปุ่มซ้าย -> รูปเก่าเลื่อนออกไปทางขวา
+      else {
         return `${styles.slideItem} ${styles.slideExitRight}`;
       }
     }
     
-    // รูปอื่นๆ ซ่อนไว้
-    return `${styles.slideItem} ${styles.slideHiddenRight}`;
+    // รูปอื่นๆ ซ่อนไว้ (ซ่อนทางขวา เพื่อพร้อมเข้ามา)
+    if (direction === 'right') {
+      return `${styles.slideItem} ${styles.slideHiddenRight}`;
+    } else {
+      return `${styles.slideItem} ${styles.slideHiddenLeft}`;
+    }
   };
 
   return (
