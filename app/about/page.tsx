@@ -204,9 +204,13 @@ export default function AboutOrderForm() {
         {/* Right Section - Form */}
         <div className={styles.formSection}>
           <div className={styles.card}>
-            {/* Header Section */}
-            <h1 className={styles.title}>ข้อมูลผู้สั่งซื้อ</h1>
-            <p className={styles.lead}>กรุณากรอกข้อมูลผู้สั่งซื้อให้ครบถ้วน</p>
+            {/* ========================================
+                ✨ เพิ่ม Header Section แบบ Centered
+                ======================================== */}
+            <div className={styles.header}>
+              <h1 className={styles.title}>ข้อมูลผู้สั่งซื้อ</h1>
+              <p className={styles.subtitle}>กรุณากรอกข้อมูลผู้สั่งซื้อให้ครบถ้วน</p>
+            </div>
 
             {/* Form Section */}
             <form
@@ -219,7 +223,7 @@ export default function AboutOrderForm() {
               <div className={styles.row}>
                 <div className={styles.formGroup}>
                   <label className={styles.label} htmlFor="firstName">
-                    ชื่อจริง <span className={styles.required}>*</span>
+                    ชื่อ <span className={styles.required}>*</span>
                   </label>
                   <input
                     id="firstName"
