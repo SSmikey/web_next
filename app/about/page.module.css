@@ -464,6 +464,7 @@
 
   .splitLayout {
     border-radius: 16px;
+    min-height: auto;
   }
 
   .row {
@@ -479,15 +480,36 @@
     font-size: 2rem;
   }
 
+  .lead {
+    font-size: 0.95rem;
+  }
+
+  .label {
+    font-size: 0.9rem;
+  }
+
+  .input,
+  .textarea {
+    padding: 12px 14px;
+    font-size: 0.95rem;
+  }
+
+  .radioLabel {
+    padding: 12px 16px;
+    font-size: 0.95rem;
+  }
+
   .primaryButton,
   .secondaryButton {
     width: 100%;
     padding: 14px 24px;
+    font-size: 0.95rem;
   }
 
   .actions {
     flex-direction: column;
     gap: 12px;
+    margin-top: 24px;
   }
 
   .imageSection {
@@ -502,6 +524,7 @@
   }
 
   .formSection {
+    padding: 25px 20px;
     border-radius: 0 0 16px 16px;
   }
 
@@ -526,6 +549,221 @@
 
   .dotActive {
     width: 24px;
+  }
+
+  .dotsContainer {
+    bottom: 15px;
+    padding: 8px 15px;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 10px;
+  }
+
+  .splitLayout {
+    border-radius: 12px;
+  }
+
+  .imageSection {
+    min-height: 280px;
+    padding: 15px;
+    border-radius: 12px 12px 0 0;
+  }
+
+  .formSection {
+    padding: 20px 15px;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .title {
+    font-size: 1.6rem;
+    margin-bottom: 8px;
+  }
+
+  .lead {
+    font-size: 0.85rem;
+    margin-bottom: 24px;
+  }
+
+  .label {
+    font-size: 0.85rem;
+    margin-bottom: 8px;
+  }
+
+  .input,
+  .textarea {
+    padding: 10px 12px;
+    font-size: 0.9rem;
+  }
+
+  .textarea {
+    min-height: 80px;
+  }
+
+  .radioLabel {
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    gap: 10px;
+  }
+
+  .radioLabel input[type="radio"] {
+    width: 18px;
+    height: 18px;
+  }
+
+  .formGroup {
+    margin-bottom: 15px;
+  }
+
+  .fieldset {
+    margin: 18px 0;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    padding: 12px 20px;
+    font-size: 0.9rem;
+  }
+
+  .arrow {
+    width: 32px;
+    height: 32px;
+    font-size: 1.5rem;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+  }
+
+  .dotActive {
+    width: 20px;
+  }
+
+  .dotsContainer {
+    bottom: 12px;
+    padding: 6px 12px;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 8px;
+    min-height: auto;
+  }
+
+  .splitLayout {
+    border-radius: 10px;
+  }
+
+  .imageSection {
+    min-height: 240px;
+    padding: 12px;
+    border-radius: 10px 10px 0 0;
+  }
+
+  .formSection {
+    padding: 15px;
+    border-radius: 0 0 10px 10px;
+  }
+
+  .imageWrapper {
+    padding: 5px;
+  }
+
+  .title {
+    font-size: 1.3rem;
+    margin-bottom: 6px;
+  }
+
+  .lead {
+    font-size: 0.8rem;
+    margin-bottom: 18px;
+  }
+
+  .label {
+    font-size: 0.8rem;
+    margin-bottom: 6px;
+  }
+
+  .input,
+  .textarea {
+    padding: 8px 10px;
+    font-size: 0.85rem;
+  }
+
+  .textarea {
+    min-height: 70px;
+  }
+
+  .radioLabel {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
+
+  .radioLabel input[type="radio"] {
+    width: 16px;
+    height: 16px;
+  }
+
+  .formGroup {
+    margin-bottom: 12px;
+  }
+
+  .row {
+    margin-bottom: 15px;
+  }
+
+  .fieldset {
+    margin: 15px 0;
+  }
+
+  .radioGroup {
+    gap: 10px;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    padding: 10px 18px;
+    font-size: 0.85rem;
+  }
+
+  .actions {
+    margin-top: 18px;
+    gap: 10px;
+  }
+
+  .arrow {
+    width: 28px;
+    height: 28px;
+    font-size: 1.2rem;
+  }
+
+  .arrowLeft {
+    left: 3px;
+  }
+
+  .arrowRight {
+    right: 3px;
+  }
+
+  .dot {
+    width: 7px;
+    height: 7px;
+  }
+
+  .dotActive {
+    width: 18px;
+  }
+
+  .dotsContainer {
+    bottom: 10px;
+    padding: 5px 10px;
+    gap: 6px;
   }
 }
 

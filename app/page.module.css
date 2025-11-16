@@ -125,15 +125,126 @@
 }
 
 /* Responsive */
+@media (max-width: 1024px) {
+  .left {
+    min-height: 550px;
+  }
+  .imageWrapper { min-height: 400px; }
+  .right {
+    padding: 30px;
+  }
+}
+
 @media (max-width: 900px) {
   .card {
     grid-template-columns: 1fr;
   }
+  .left {
+    min-height: 450px;
+  }
   .imageWrapper { min-height: 350px; }
+  .right {
+    padding: 25px;
+  }
+  .arrow {
+    width: 40px;
+    height: 40px;
+    font-size: 1.8rem;
+  }
+  .productTitle { font-size: 2rem; }
+  .price { font-size: 1.4rem; }
+  .sizeTable th, .sizeTable td {
+    padding: 6px;
+    font-size: 0.85rem;
+  }
 }
 
-@media (max-width: 600px) {
-  .right { padding: 20px; }
+@media (max-width: 768px) {
+  .left {
+    min-height: 350px;
+    padding: 15px;
+  }
+  .imageWrapper { min-height: 280px; }
+  .right {
+    padding: 20px;
+    gap: 12px;
+  }
+  .arrow {
+    width: 35px;
+    height: 35px;
+    font-size: 1.5rem;
+  }
   .productTitle { font-size: 1.7rem; }
-  .imageWrapper { min-height: 260px; }
+  .price { font-size: 1.2rem; }
+  .sizeTable th, .sizeTable td {
+    padding: 5px;
+    font-size: 0.75rem;
+  }
+  .statsSection {
+    gap: 10px;
+  }
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 15px;
+  }
+  .left {
+    min-height: 300px;
+    padding: 10px;
+  }
+  .imageWrapper { min-height: 240px; }
+  .right {
+    padding: 15px;
+    gap: 10px;
+  }
+  .arrow {
+    width: 32px;
+    height: 32px;
+    font-size: 1.3rem;
+  }
+  .productTitle { font-size: 1.5rem; }
+  .price { font-size: 1.1rem; }
+  .sizeTable th, .sizeTable td {
+    padding: 4px;
+    font-size: 0.7rem;
+  }
+  .statCard {
+    padding: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 10px;
+  }
+  .left {
+    min-height: 240px;
+    padding: 8px;
+  }
+  .imageWrapper { min-height: 200px; }
+  .right {
+    padding: 12px;
+    gap: 8px;
+  }
+  .arrow {
+    width: 28px;
+    height: 28px;
+    font-size: 1.2rem;
+    left: 5px;
+    right: 5px;
+  }
+  .productTitle { font-size: 1.3rem; }
+  .price { font-size: 1rem; }
+  .sizeTable th, .sizeTable td {
+    padding: 3px;
+    font-size: 0.65rem;
+  }
+  .description p {
+    font-size: 0.85rem;
+  }
+  .statCard {
+    padding: 10px;
+    font-size: 0.8rem;
+  }
 }

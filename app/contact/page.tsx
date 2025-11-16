@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import styles from './page.module.css';
 
 const SIZES = ['SSS', 'SS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', '6XL', '7XL', '8XL'] as const;
 const PRICE_PER_SHIRT = 219;
@@ -134,17 +135,7 @@ export default function ContactPage() {
             }}>
               <span>👕</span> เลือกแบบเสื้อ (12 แบบ)
             </div>
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
-              gap: '15px',
-              maxHeight: '500px',
-              overflowY: 'auto',
-              padding: '15px',
-              background: '#f8f9fa',
-              borderRadius: '15px',
-              border: '2px solid #e0e0e0'
-            }}>
+            <div className={styles.shirtGrid} style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))' }}>
               {SHIRT_DESIGNS.map((shirt) => (
                 <div
                   key={shirt.id}
@@ -318,11 +309,7 @@ export default function ContactPage() {
             }}>
               <span>📏</span> เลือกขนาดเสื้อ (15 ไซส์)
             </div>
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(75px, 1fr))',
-              gap: '12px'
-            }}>
+            <div className={styles.sizeGrid} style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(75px, 1fr))' }}>
               {SIZES.map((size) => (
                 <button
                   key={size}
@@ -365,16 +352,7 @@ export default function ContactPage() {
             }}>
               <span>🔢</span> จำนวนเสื้อ
             </div>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '25px',
-              background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-              padding: '30px',
-              borderRadius: '15px',
-              border: '2px solid #e0e0e0'
-            }}>
+            <div className={styles.quantityControl}>
               <button
                 onClick={decreaseQuantity}
                 disabled={quantity <= 1}
@@ -429,14 +407,7 @@ export default function ContactPage() {
           </div>
 
           {/* Summary Box */}
-          <div style={{
-            background: 'linear-gradient(135deg, #667eea10 0%, #764ba210 100%)',
-            padding: '30px',
-            borderRadius: '15px',
-            marginBottom: '25px',
-            border: '3px solid #667eea',
-            boxShadow: '0 5px 15px rgba(102, 126, 234, 0.2)'
-          }}>
+          <div className={styles.summaryBox}>
             <div style={{
               fontSize: '20px',
               fontWeight: 700,
@@ -527,7 +498,7 @@ export default function ContactPage() {
           </div>
 
           {/* Action Buttons */}
-          <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
+          <div className={styles.actionButtons}>
             <button
               onClick={handleReset}
               style={{

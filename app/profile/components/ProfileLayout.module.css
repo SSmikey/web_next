@@ -137,28 +137,37 @@
 
 /* Mobile responsive styles */
 @media (max-width: 1024px) {
+  .profileLayout {
+    min-height: calc(100vh - 60px);
+  }
+
   .container {
     grid-template-columns: 1fr;
     gap: 1.5rem;
-    padding: 0 1rem;
+    padding: 0 1.5rem;
   }
 
   .sidebar {
     position: static;
     order: -1;
+    height: auto;
   }
 
   .sidebarNav {
-    padding: 0.75rem 0;
+    padding: 1rem 0;
   }
 
   .navLink {
-    padding: 0.625rem 1.25rem;
-    font-size: 0.9rem;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.95rem;
   }
 
   .sidebarHeader {
     padding: 1.25rem 1.5rem;
+  }
+
+  .sidebarHeader h2 {
+    font-size: 1.2rem;
   }
 
   .sidebarFooter {
@@ -166,9 +175,61 @@
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .profileLayout {
     padding-top: 1rem;
+    min-height: calc(100vh - 55px);
+  }
+
+  .container {
+    gap: 1.2rem;
+    padding: 0 1rem;
+  }
+
+  .sidebar {
+    border-radius: 10px;
+  }
+
+  .sidebarHeader {
+    padding: 1.2rem 1.4rem;
+  }
+
+  .sidebarHeader h2 {
+    font-size: 1.15rem;
+  }
+
+  .navLink {
+    padding: 0.65rem 1.2rem;
+    font-size: 0.9rem;
+    gap: 11px;
+  }
+
+  .sidebarNav {
+    padding: 0.8rem 0;
+  }
+
+  .sidebarFooter {
+    padding: 1.2rem 1.4rem;
+  }
+
+  .userAvatar {
+    width: 38px;
+    height: 38px;
+    font-size: 0.85rem;
+  }
+
+  .userName {
+    font-size: 0.88rem;
+  }
+
+  .userRole {
+    font-size: 0.78rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .profileLayout {
+    padding-top: 0.8rem;
   }
 
   .container {
@@ -185,12 +246,12 @@
   }
 
   .sidebarHeader h2 {
-    font-size: 1.1rem;
+    font-size: 1rem;
   }
 
   .navLink {
     padding: 0.5rem 1rem;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     gap: 10px;
   }
 
@@ -199,21 +260,95 @@
     height: 18px;
   }
 
+  .sidebarNav {
+    padding: 0.5rem 0;
+  }
+
   .sidebarFooter {
     padding: 1rem 1.25rem;
   }
 
+  .userInfo {
+    gap: 10px;
+  }
+
   .userAvatar {
-    width: 36px;
-    height: 36px;
-    font-size: 0.8rem;
+    width: 34px;
+    height: 34px;
+    font-size: 0.75rem;
   }
 
   .userName {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
   }
 
   .userRole {
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .profileLayout {
+    padding-top: 0.5rem;
+    min-height: auto;
+  }
+
+  .container {
+    gap: 0.8rem;
+    padding: 0 0.5rem;
+    max-width: 100%;
+  }
+
+  .sidebar {
+    border-radius: 6px;
+  }
+
+  .sidebarHeader {
+    padding: 0.8rem 1rem;
+  }
+
+  .sidebarHeader h2 {
+    font-size: 0.9rem;
+  }
+
+  .navLink {
+    padding: 0.4rem 0.8rem;
     font-size: 0.75rem;
+    gap: 8px;
+  }
+
+  .navLink svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .sidebarNav {
+    padding: 0.4rem 0;
+  }
+
+  .sidebarFooter {
+    padding: 0.8rem 1rem;
+  }
+
+  .userInfo {
+    gap: 8px;
+  }
+
+  .userAvatar {
+    width: 30px;
+    height: 30px;
+    font-size: 0.7rem;
+  }
+
+  .userName {
+    font-size: 0.75rem;
+  }
+
+  .userRole {
+    font-size: 0.65rem;
+  }
+
+  .mainContent {
+    min-height: auto;
   }
 }

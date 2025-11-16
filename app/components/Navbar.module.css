@@ -183,61 +183,156 @@
   opacity: 0.8;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .navContainer {
-    flex-direction: row;
-    height: 70px;
-    padding: 0 20px;
-  }
-
-  .navMenu {
-    margin-top: 0;
-    flex-wrap: nowrap;
-    justify-content: flex-end;
-    gap: 5px;
-  }
-
-  .navItem {
-    margin: 0;
-  }
-
-  .navLink {
-    font-size: 0.85rem;
-    padding: 6px 12px;
+    padding: 0 30px;
   }
 
   .navLogo {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
   }
 
-  .authMenu {
+  .navMenu {
     gap: 8px;
   }
 
-  .authButtons {
-    gap: 6px;
+  .navLink {
+    font-size: 0.9rem;
+    padding: 6px 12px;
   }
 
   .authButton {
-    font-size: 0.8rem;
-    padding: 5px 10px;
-  }
-
-  .userMenu {
-    gap: 8px;
+    font-size: 0.85rem;
+    padding: 5px 12px;
   }
 
   .userName {
+    max-width: 120px;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .navContainer {
+    height: 60px;
+    padding: 0 15px;
+  }
+
+  .navMenu {
+    gap: 5px;
+  }
+
+  .navLink {
     font-size: 0.8rem;
-    max-width: 100px;
+    padding: 5px 10px;
+    white-space: nowrap;
+  }
+
+  .navLogo {
+    font-size: 1.3rem;
+  }
+
+  .authMenu {
+    gap: 6px;
+  }
+
+  .authButtons {
+    gap: 4px;
+  }
+
+  .authButton {
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    white-space: nowrap;
+  }
+
+  .userMenu {
+    gap: 6px;
+  }
+
+  .userName {
+    font-size: 0.75rem;
+    max-width: 80px;
   }
 
   .signOutButton {
-    font-size: 0.75rem;
-    padding: 4px 8px;
+    font-size: 0.7rem;
+    padding: 3px 6px;
   }
 
   .loadingSpinner {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .navContainer {
+    height: 55px;
+    padding: 0 12px;
+  }
+
+  .navMenu {
+    gap: 3px;
+  }
+
+  .navLink {
+    font-size: 0.7rem;
+    padding: 4px 8px;
+  }
+
+  .navLogo {
+    font-size: 1.1rem;
+  }
+
+  .authButtons {
+    gap: 3px;
+  }
+
+  .authButton {
+    font-size: 0.65rem;
+    padding: 3px 6px;
+  }
+
+  .userName {
+    display: none;
+  }
+
+  .userMenu {
+    gap: 4px;
+  }
+
+  .signOutButton {
+    font-size: 0.65rem;
+    padding: 2px 5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .navContainer {
+    height: 50px;
+    padding: 0 10px;
+  }
+
+  .navLogo {
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  .navMenu {
+    gap: 0;
+  }
+
+  .navLink {
+    font-size: 0.65rem;
+    padding: 3px 5px;
+  }
+
+  .authButtons {
+    gap: 2px;
+  }
+
+  .authButton {
+    font-size: 0.6rem;
+    padding: 2px 5px;
   }
 }
