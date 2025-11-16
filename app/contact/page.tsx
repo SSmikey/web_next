@@ -35,9 +35,9 @@ const images = [
 ];
 
 export default function ContactPage() {
-  const [selectedShirt, setSelectedShirt] = useState<number>(1);
+  const [selectedShirt, setSelectedShirt] = useState<number>(0);
   const [selectedSize, setSelectedSize] = useState<Size | null>(null);
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(0);
   const [error, setError] = useState(false);
 
   // Slideshow states
@@ -46,10 +46,10 @@ export default function ContactPage() {
   const [direction, setDirection] = useState<'left' | 'right'>('right');
   const [isAnimating, setIsAnimating] = useState(false);
 
-  const currentShirt = SHIRT_DESIGNS.find(s => s.id === selectedShirt)!;
+  const currentShirt = SHIRT_DESIGNS.find(s => s.id === selectedShirt) || SHIRT_DESIGNS[0];
   
   // คำนวณค่าส่ง: 1 ตัว = 50 บาท, ตัวที่ 2+ = +10 บาท/ตัว
-  const shippingCost = quantity === 1 ? 50 : 50 + (quantity - 1) * 10;
+  const shippingCost = quantity === 0 ? 0 : quantity === 1 ? 50 : 50 + (quantity - 1) * 10;
   
   // คำนวณราคาเสื้อทั้งหมด
   const subtotal = quantity * currentShirt.price;
@@ -124,7 +124,7 @@ export default function ContactPage() {
 
   // Form Functions
   const increaseQuantity = () => setQuantity(prev => prev + 1);
-  const decreaseQuantity = () => setQuantity(prev => Math.max(1, prev - 1));
+  const decreaseQuantity = () => setQuantity(prev => Math.max(0, prev - 1));
 
   const handleSizeSelect = (size: Size) => {
     setSelectedSize(size);
@@ -138,14 +138,14 @@ export default function ContactPage() {
   };
 
   const handleReset = () => {
-    setSelectedShirt(1);
+    setSelectedShirt(0);
     setSelectedSize(null);
-    setQuantity(1);
+    setQuantity(0);
     setError(false);
   };
 
   const handleConfirm = () => {
-    if (!selectedSize) {
+    if (!selectedSize || selectedShirt === 0 || quantity === 0) {
       setError(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
@@ -234,7 +234,7 @@ export default function ContactPage() {
             {/* Error Message */}
             {error && (
               <div className={styles.errorMessage}>
-                ⚠️ กรุณาเลือกขนาดเสื้อก่อนยืนยันการสั่งซื้อ
+                ⚠️ กรุณาเลือกแบบเสื้อ ขนาด และจำนวนก่อนยืนยันการสั่งซื้อ
               </div>
             )}
 
@@ -248,6 +248,7 @@ export default function ContactPage() {
                 onChange={(e) => handleShirtSelect(Number(e.target.value))}
                 className={styles.shirtDropdown}
               >
+                <option value={0} disabled>-- เลือกแบบเสื้อ --</option>
                 {SHIRT_DESIGNS.map((shirt) => (
                   <option key={shirt.id} value={shirt.id}>
                     {shirt.name} - {shirt.description}
@@ -256,34 +257,36 @@ export default function ContactPage() {
               </select>
 
               {/* Selected Shirt Preview */}
-              <div className={styles.selectedShirtPreview}>
-                <div className={styles.previewTitle}>🎯 แบบเสื้อที่เลือก</div>
-                <div 
-                  className={styles.previewImageContainer}
-                  style={{
-                    background: `linear-gradient(135deg, ${currentShirt.color}30 0%, ${currentShirt.color}60 100%)`
-                  }}
-                >
-                  <img 
-                    src={currentShirt.image}
-                    alt={currentShirt.name}
-                    className={styles.previewImage}
-                    onError={(e) => {
-                      const target = e.currentTarget;
-                      target.style.display = 'none';
-                      const parent = target.parentElement;
-                      if (parent) {
-                        parent.innerHTML = '<div style="font-size: 80px">👕</div>';
-                      }
+              {selectedShirt !== 0 && (
+                <div className={styles.selectedShirtPreview}>
+                  <div className={styles.previewTitle}>🎯 แบบเสื้อที่เลือก</div>
+                  <div 
+                    className={styles.previewImageContainer}
+                    style={{
+                      background: `linear-gradient(135deg, ${currentShirt.color}30 0%, ${currentShirt.color}60 100%)`
                     }}
-                  />
+                  >
+                    <img 
+                      src={currentShirt.image}
+                      alt={currentShirt.name}
+                      className={styles.previewImage}
+                      onError={(e) => {
+                        const target = e.currentTarget;
+                        target.style.display = 'none';
+                        const parent = target.parentElement;
+                        if (parent) {
+                          parent.innerHTML = '<div style="font-size: 80px">👕</div>';
+                        }
+                      }}
+                    />
+                  </div>
+                  <div className={styles.previewName}>{currentShirt.name}</div>
+                  <div className={styles.previewDescription}>{currentShirt.description}</div>
+                  <div className={styles.previewBadge}>
+                    {currentShirt.name} - {currentShirt.description}
+                  </div>
                 </div>
-                <div className={styles.previewName}>{currentShirt.name}</div>
-                <div className={styles.previewDescription}>{currentShirt.description}</div>
-                <div className={styles.previewBadge}>
-                  {currentShirt.name} - {currentShirt.description}
-                </div>
-              </div>
+              )}
             </div>
 
             {/* Size Selection */}
@@ -314,7 +317,7 @@ export default function ContactPage() {
               <div className={styles.quantityControl}>
                 <button
                   onClick={decreaseQuantity}
-                  disabled={quantity <= 1}
+                  disabled={quantity <= 0}
                   className={styles.quantityButton}
                 >
                   −
@@ -336,7 +339,9 @@ export default function ContactPage() {
                 
                 <div className={styles.summaryRow}>
                   <span className={styles.summaryLabel}>แบบเสื้อที่เลือก:</span>
-                  <span className={styles.summaryValue}>{currentShirt.name} - {currentShirt.description}</span>
+                  <span className={selectedShirt !== 0 ? styles.summaryValue : styles.summaryValueUnselected}>
+                    {selectedShirt !== 0 ? `${currentShirt.name} - ${currentShirt.description}` : 'ยังไม่ได้เลือก'}
+                  </span>
                 </div>
                 
                 <div className={styles.summaryRow}>
@@ -348,12 +353,16 @@ export default function ContactPage() {
                 
                 <div className={styles.summaryRow}>
                   <span className={styles.summaryLabel}>จำนวน:</span>
-                  <span className={styles.summaryValue}>{quantity} ตัว</span>
+                  <span className={quantity > 0 ? styles.summaryValue : styles.summaryValueUnselected}>
+                    {quantity > 0 ? `${quantity} ตัว` : 'ยังไม่ได้เลือก'}
+                  </span>
                 </div>
                 
                 <div className={styles.summaryRow}>
                   <span className={styles.summaryLabel}>ราคาต่อตัว:</span>
-                  <span className={styles.summaryValue}>{currentShirt.price} บาท</span>
+                  <span className={selectedShirt !== 0 ? styles.summaryValue : styles.summaryValueUnselected}>
+                    {selectedShirt !== 0 ? `${currentShirt.price} บาท` : '-'}
+                  </span>
                 </div>
                 
                 <div className={styles.summaryRow}>
