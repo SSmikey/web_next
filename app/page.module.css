@@ -105,16 +105,32 @@
   animation: fadeInUp 1.2s ease-out;
 }
 
+/* จัดการขนาปุ่ม และ ฟ้อน */
 .primaryButton, .secondaryButton {
-  padding: 14px 32px;
+  padding: 14px 230px;
   border-radius: 50px;
-  font-size: 1rem;
+  font-size: 1.5rem;
   font-weight: 600;
   text-decoration: none;
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
 }
+
+.description {
+  line-height: 1.7;
+}
+
+.description p {
+  margin-bottom: 16px;
+}
+
+.description hr {
+  border: none;
+  border-top: 1px solid #dcdcdc;
+  margin: 20px 0;
+}
+
 
 .primaryButton::before, .secondaryButton::before {
   content: '';
@@ -131,9 +147,10 @@
   left: 100%;
 }
 
-.primaryButton {
-  background-color: white;
-  color: #667eea;
+/* สั่งซื้อเสื้อ */
+.primaryButton {   
+  background-color: #667eea;
+  color: #ffffff;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   animation: pulse 2s infinite;
 }
@@ -380,10 +397,10 @@
 }
 
 .description {
-  background: #f0f9ff;
-  padding: 25px;
-  border-radius: 12px;
-  border-left: 4px solid #0ea5e9;
+  background: transparent;
+  padding: 0;
+  border: none;
+  border-radius: 0;
   margin-bottom: 30px;
 }
 
@@ -399,9 +416,9 @@
 }
 
 .statsHeader {
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 800;
-  color: #333;
+  color: #121212;
   margin-bottom: 20px;
   text-align: center;
 }
@@ -414,30 +431,31 @@
 }
 
 .statCard {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 30px;
-  border-radius: 16px;
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 14px;
   text-align: center;
-  color: white;
-  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
-  transition: all 0.3s ease;
+  border: 2px solid #dce3ff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  transition: all 0.25s ease;
 }
 
 .statCard:hover {
   transform: translateY(-5px);
-  box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
 }
 
 .statCard h4 {
-  font-size: 2.2rem;
+  font-size: 2rem;
   font-weight: 800;
-  margin: 0 0 10px 0;
+  color: #1e293b;
+  margin-bottom: 8px;
 }
 
 .statCard p {
-  font-size: 1rem;
+  color: #475569;
   margin: 0;
-  opacity: 0.95;
+  font-size: 0.95rem;
 }
 
 .shirtTypes {
@@ -448,45 +466,44 @@
 }
 
 .shirtTypeCard {
-  background: linear-gradient(135deg, #fff3cd 0%, #ffe69c 100%);
   padding: 25px;
   border-radius: 12px;
-  border: 2px solid #ffc107;
-  transition: all 0.3s ease;
+  border: 2px solid #cfd8ff;
+  background: #f5f7ff;
+  transition: all 0.25s ease;
 }
 
 .shirtTypeCard:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(255, 193, 7, 0.3);
+  transform: translateY(-4px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
 }
 
 .shirtTypeCard h4 {
-  font-size: 1.3rem;
+  margin-bottom: 12px;
   font-weight: 800;
-  color: #856404;
-  margin: 0 0 15px 0;
-}
-
-.shirtTypeCard p {
-  font-size: 0.95rem;
-  color: #856404;
-  margin: 8px 0;
-  font-weight: 600;
-}
-
-.sizeDetail {
-  background: #ede9fe;
-  padding: 20px;
-  border-radius: 12px;
-  text-align: center;
-  border: 2px solid #a78bfa;
-}
-
-.sizeDetail p {
   font-size: 1.2rem;
-  font-weight: 700;
-  color: #5b21b6;
-  margin: 0;
+}
+
+/* อันแรก = น้ำเงิน */
+.shirtTypeCard:nth-child(1) {
+  background: #6366f1;
+  border-color: #6366f1;
+  color: white;
+}
+
+.shirtTypeCard:nth-child(1) p {
+  color: #eef2ff;
+}
+
+/* อันที่สอง = เทา */
+.shirtTypeCard:nth-child(2) {
+  background: #e2e8f0;
+  border-color: #cbd5e1;
+  color: #334155;
+}
+
+.shirtTypeCard:nth-child(2) p {
+  color: #475569;
 }
 
 /* ======================== */
@@ -560,7 +577,7 @@
   }
   
   .primaryButton, .secondaryButton {
-    width: 200px;
+    width: 240px;
   }
 
   .productLayout {

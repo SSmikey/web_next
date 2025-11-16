@@ -7,31 +7,18 @@ import styles from "./page.module.css";
 export default function Home() {
   return (
     <div className={styles.container}>
-      
       {/* Hero Section */}
       <div className={styles.hero}>
         <h1 className={styles.title}>SPVV CLOTHING</h1>
         <p className={styles.subtitle}>WELCOME TO MY WEBSITE</p>
-
-        <div className={styles.buttons}>
-          <Link href="/contact" className={styles.primaryButton}>
-            สั่งซื้อเสื้อ
-          </Link>
-          <Link href="/about" className={styles.secondaryButton}>
-            ดูสถิติการขาย
-          </Link>
-        </div>
       </div>
 
       {/* Product Section */}
       <div className={styles.productLayout}>
-
         {/* Left Column */}
         <div className={styles.leftColumn}>
-
           {/* Product Image (Hover Switch) */}
           <div className={styles.productImageBox}>
-            
             <div className={styles.imageHoverBox}>
               <Image
                 src="/spwv.jpg"
@@ -49,8 +36,6 @@ export default function Home() {
                 className={`${styles.hoverImage} ${styles.backImage}`}
               />
             </div>
-
-            <p>รูปภาพสินค้า(ไม่รู้จะเอาอะไรใส่ดี)</p>
           </div>
 
           {/* Size Table */}
@@ -77,15 +62,33 @@ export default function Home() {
               <tbody>
                 <tr>
                   <td>รอบอก(นิ้ว)</td>
-                  <td>34</td><td>36</td><td>38</td><td>40</td><td>42</td>
-                  <td>44</td><td>46</td><td>48</td><td>50</td><td>52</td>
-                  <td>54</td><td>56</td>
+                  <td>34</td>
+                  <td>36</td>
+                  <td>38</td>
+                  <td>40</td>
+                  <td>42</td>
+                  <td>44</td>
+                  <td>46</td>
+                  <td>48</td>
+                  <td>50</td>
+                  <td>52</td>
+                  <td>54</td>
+                  <td>56</td>
                 </tr>
                 <tr>
                   <td>ความยาว(นิ้ว)</td>
-                  <td>24</td><td>25</td><td>26</td><td>27</td><td>28</td>
-                  <td>29</td><td>30</td><td>31</td><td>32</td><td>33</td>
-                  <td>34</td><td>35</td>
+                  <td>24</td>
+                  <td>25</td>
+                  <td>26</td>
+                  <td>27</td>
+                  <td>28</td>
+                  <td>29</td>
+                  <td>30</td>
+                  <td>31</td>
+                  <td>32</td>
+                  <td>33</td>
+                  <td>34</td>
+                  <td>35</td>
                 </tr>
               </tbody>
             </table>
@@ -120,9 +123,8 @@ export default function Home() {
         {/* Right Column */}
         <div className={styles.rightColumn}>
           <div className={styles.productInfo}>
-            
             <h2 className={styles.productTitle}>SPVV CLOTHING</h2>
-          
+
             <div className={styles.subtitle} style={{ color: "#000" }}>
               <p>2,250 ฿ THB</p>
             </div>
@@ -131,20 +133,27 @@ export default function Home() {
               className={styles.buttons}
               style={{ justifyContent: "flex-start", marginBottom: "30px" }}
             >
-              <Link href="/contact" className={styles.primaryButton}>
+              <Link href="/about" className={styles.primaryButton}>
                 สั่งซื้อเสื้อ
               </Link>
             </div>
 
             <div className={styles.description}>
+              <hr />
+
               <p>
-                SPVV CLOTHING เป็นเว็บไซต์จำหน่ายเสื้อคุณภาพดีที่ออกแบบมาให้เหมาะกับทุกโอกาส...
+                SPVV CLOTHING เป็นเว็บไซต์จำหน่ายเสื้อคุณภาพดีที่ออกแบบมาให้เหมาะกับทุกโอกาส 
+                ไม่ว่าจะเป็นใส่เที่ยวหรือ ไปงานกิจกรรมต่างๆ เป็นเสื้อโปโลเกรดพรีเมี่ยม ปัจจุบันเรามี 5 แบบหลัก 
+                พร้อมแบบพิเศษ ขาวดำอีก 5 แบบ และยังมีแบบพิเศษอีกให้สะสม
               </p>
+
               <p>
-                ปัจจุบันเรามี 5 แบบหลัก พร้อมแบบพิเศษ ขาวดำอีก 5 แบบ...
+                ค่าจัดส่ง: ตัวแรก 50 บาท ตัวต่อไปเพิ่ม 10 บาทต่อชิ้น
               </p>
-              <p>ค่าจัดส่ง: ตัวแรก 50 บาท ตัวต่อไปเพิ่ม 10 บาทต่อชิ้น</p>
-              <p>SHIPPING: 50 THB FOR THE FIRST ITEM 10 THB FOR EACH ADDITIONAL ITEM</p>
+
+              <p>SHIPPING 50 THB FOR THE FIRST ITEM 10 THB FOR EACH ADDITIONAL ITEM</p>
+
+              <hr />
             </div>
 
             <h3 className={styles.statsHeader}>สถิติการขายเสื้อ</h3>
@@ -178,7 +187,6 @@ export default function Home() {
             <div className={styles.sizeDetail}>
               <p>จำนวนเสื้อแต่ละไซส์ (รวมทั้งสิ้น)</p>
             </div>
-
           </div>
         </div>
       </div>
