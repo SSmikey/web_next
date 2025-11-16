@@ -20,11 +20,11 @@ export default function AboutOrderForm() {
   const formRef = useRef<HTMLFormElement | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  // Auto slideshow every 3 seconds
+  // Auto slideshow every 5 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, 3000);
+    }, 5000);
 
     return () => clearInterval(interval);
   }, []);
@@ -63,6 +63,15 @@ export default function AboutOrderForm() {
       <div className={styles.splitLayout}>
         {/* Left Section - Image Slideshow */}
         <div className={styles.imageSection}>
+          {/* Navigation Arrow Left - Outside */}
+          <button 
+            className={`${styles.arrow} ${styles.arrowLeft}`}
+            onClick={goToPrevious}
+            aria-label="Previous image"
+          >
+            ‹
+          </button>
+
           <div className={styles.imageWrapper}>
             <div className={styles.slideshowContainer}>
               <Image
@@ -73,22 +82,6 @@ export default function AboutOrderForm() {
                 priority
               />
             </div>
-
-            {/* Navigation Arrows */}
-            <button 
-              className={`${styles.arrow} ${styles.arrowLeft}`}
-              onClick={goToPrevious}
-              aria-label="Previous image"
-            >
-              ‹
-            </button>
-            <button 
-              className={`${styles.arrow} ${styles.arrowRight}`}
-              onClick={goToNext}
-              aria-label="Next image"
-            >
-              ›
-            </button>
 
             {/* Dots Indicator */}
             <div className={styles.dotsContainer}>
@@ -102,6 +95,15 @@ export default function AboutOrderForm() {
               ))}
             </div>
           </div>
+
+          {/* Navigation Arrow Right - Outside */}
+          <button 
+            className={`${styles.arrow} ${styles.arrowRight}`}
+            onClick={goToNext}
+            aria-label="Next image"
+          >
+            ›
+          </button>
         </div>
 
         {/* Right Section - Form */}
