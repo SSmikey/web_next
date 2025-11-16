@@ -5,24 +5,23 @@ import Image from 'next/image';
 import styles from './page.module.css';
 
 const SIZES = ['SSS', 'SS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', '6XL', '7XL', '8XL'] as const;
-const PRICE_PER_SHIRT = 219;
 
 type Size = typeof SIZES[number];
 
-// 12 แบบเสื้อ
+// 12 แบบเสื้อ (แยกราคา V-series = 219, Premium = 259)
 const SHIRT_DESIGNS = [
-  { id: 1, name: 'V1', image: '/spvv1.jpg', description: '01 แบบสี', color: '#ffffffff' },
-  { id: 2, name: 'V2', image: '/spvv2.jpg', description: '01 แบบสี', color: '#ffffffff' },
-  { id: 3, name: 'V3', image: '/spvv3.jpg', description: '01 แบบสี', color: '#ffffffff' },
-  { id: 4, name: 'V4', image: '/spvv4.jpg', description: '01 แบบสี', color: '#ffffffff' },
-  { id: 5, name: 'V5', image: '/spvv5.jpg', description: '01 แบบสี', color: '#ffffffff' },
-  { id: 6, name: 'V1', image: '/spvvb1.jpg', description: '02 แบบไว้ทุกข์', color: '#ffffffff' },
-  { id: 7, name: 'V2', image: '/spvvb2.jpg', description: '02 แบบไว้ทุกข์', color: '#ffffffff' },
-  { id: 8, name: 'V3', image: '/spvvb3.jpg', description: '02 แบบไว้ทุกข์', color: '#ffffffff' },
-  { id: 9, name: 'V4', image: '/spvvb4.jpg', description: '02 แบบไว้ทุกข์', color: '#ffffffff' },
-  { id: 10, name: 'V5', image: '/spvvb5.jpg', description: '02 แบบไว้ทุกข์', color: '#ffffffff' },
-  { id: 11, name: 'premuim', image: '/spvvm1.png', description: 'รสไก่', color: '#ffffffff' },
-  { id: 12, name: 'Premuim', image: '/spvvm2.png', description: 'รสหมู', color: '#ffffffff' },
+  { id: 1, name: 'V1', image: '/spvv1.jpg', description: '01 แบบสี', color: '#ffffffff', price: 219 },
+  { id: 2, name: 'V2', image: '/spvv2.jpg', description: '01 แบบสี', color: '#ffffffff', price: 219 },
+  { id: 3, name: 'V3', image: '/spvv3.jpg', description: '01 แบบสี', color: '#ffffffff', price: 219 },
+  { id: 4, name: 'V4', image: '/spvv4.jpg', description: '01 แบบสี', color: '#ffffffff', price: 219 },
+  { id: 5, name: 'V5', image: '/spvv5.jpg', description: '01 แบบสี', color: '#ffffffff', price: 219 },
+  { id: 6, name: 'V1', image: '/spvvb1.jpg', description: '02 แบบไว้ทุกข์', color: '#ffffffff', price: 219 },
+  { id: 7, name: 'V2', image: '/spvvb2.jpg', description: '02 แบบไว้ทุกข์', color: '#ffffffff', price: 219 },
+  { id: 8, name: 'V3', image: '/spvvb3.jpg', description: '02 แบบไว้ทุกข์', color: '#ffffffff', price: 219 },
+  { id: 9, name: 'V4', image: '/spvvb4.jpg', description: '02 แบบไว้ทุกข์', color: '#ffffffff', price: 219 },
+  { id: 10, name: 'V5', image: '/spvvb5.jpg', description: '02 แบบไว้ทุกข์', color: '#ffffffff', price: 219 },
+  { id: 11, name: 'premuim', image: '/spvvm1.png', description: 'รสไก่', color: '#ffffffff', price: 259 },
+  { id: 12, name: 'Premuim', image: '/spvvm2.png', description: 'รสหมู', color: '#ffffffff', price: 259 },
 ];
 
 // รูปภาพสำหรับ slideshow
@@ -48,7 +47,15 @@ export default function ContactPage() {
   const [isAnimating, setIsAnimating] = useState(false);
 
   const currentShirt = SHIRT_DESIGNS.find(s => s.id === selectedShirt)!;
-  const totalPrice = quantity * PRICE_PER_SHIRT;
+  
+  // คำนวณค่าส่ง: 1 ตัว = 50 บาท, ตัวที่ 2+ = +10 บาท/ตัว
+  const shippingCost = quantity === 1 ? 50 : 50 + (quantity - 1) * 10;
+  
+  // คำนวณราคาเสื้อทั้งหมด
+  const subtotal = quantity * currentShirt.price;
+  
+  // ยอดรวมทั้งหมด
+  const totalPrice = subtotal + shippingCost;
 
   // Slideshow functions
   const goToPrevious = () => {
@@ -131,8 +138,10 @@ export default function ContactPage() {
   };
 
   const handleReset = () => {
-    // รีเฟรชหน้าเดียว ไม่กระทบหน้าอื่น
-    window.location.reload();
+    setSelectedShirt(1);
+    setSelectedSize(null);
+    setQuantity(1);
+    setError(false);
   };
 
   const handleConfirm = () => {
@@ -148,8 +157,9 @@ export default function ContactPage() {
       `รายละเอียด: ${currentShirt.description}\n` +
       `ขนาด: ${selectedSize}\n` +
       `จำนวน: ${quantity} ตัว\n` +
-      `ยอดรวม: ${totalPrice.toLocaleString()} บาท\n\n` +
-      `ขอบคุณที่ร่วมบริจาคเพื่อการกุศล`
+      `ราคาเสื้อ: ${subtotal.toLocaleString()} บาท\n` +
+      `ค่าจัดส่ง: ${shippingCost.toLocaleString()} บาท\n` +
+      `ยอดรวม: ${totalPrice.toLocaleString()} บาท`
     );
   };
 
@@ -343,7 +353,17 @@ export default function ContactPage() {
                 
                 <div className={styles.summaryRow}>
                   <span className={styles.summaryLabel}>ราคาต่อตัว:</span>
-                  <span className={styles.summaryValue}>219 บาท</span>
+                  <span className={styles.summaryValue}>{currentShirt.price} บาท</span>
+                </div>
+                
+                <div className={styles.summaryRow}>
+                  <span className={styles.summaryLabel}>ราคาเสื้อทั้งหมด:</span>
+                  <span className={styles.summaryValue}>{subtotal.toLocaleString()} บาท</span>
+                </div>
+                
+                <div className={styles.summaryRow}>
+                  <span className={styles.summaryLabel}>ค่าจัดส่ง:</span>
+                  <span className={styles.summaryValue}>{shippingCost} บาท</span>
                 </div>
                 
                 <div className={styles.summaryTotal}>
