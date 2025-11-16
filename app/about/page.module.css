@@ -203,7 +203,8 @@
 
 /* Form Section (Right) */
 .formSection {
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -213,11 +214,12 @@
 }
 
 .card {
-  background: transparent;
-  padding: 0;
-  border-radius: 0;
-  box-shadow: none;
-  border: none;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(5px);
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   width: 100%;
   max-width: 600px;
 }
@@ -242,6 +244,7 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  text-align: center;
 }
 
 .lead {
@@ -249,6 +252,7 @@
   margin-bottom: 32px;
   font-size: 1.05rem;
   font-weight: 400;
+  text-align: center;
 }
 
 .form {
@@ -285,21 +289,22 @@
 .textarea {
   width: 100%;
   padding: 14px 16px;
-  border: 2px solid #e6e9ef;
+  border: 1px solid rgba(102, 126, 234, 0.2);
   border-radius: 12px;
   font-size: 1rem;
   color: #111827;
   transition: all 0.3s ease;
   font-family: inherit;
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.9);
 }
 
 .input:focus,
 .textarea:focus {
   outline: none;
   border-color: #667eea;
-  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-  transform: translateY(-2px);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+  transform: translateY(-1px);
+  background: white;
 }
 
 .input:hover,
@@ -333,17 +338,18 @@
   font-size: 1rem;
   color: #333;
   padding: 14px 18px;
-  border: 2px solid #e6e9ef;
+  border: 1px solid rgba(102, 126, 234, 0.2);
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.9);
 }
 
 .radioLabel:hover {
   border-color: #667eea;
-  background: rgba(102, 126, 234, 0.02);
-  transform: translateX(4px);
+  background: white;
+  transform: translateX(2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
 }
 
 .radioLabel input[type="radio"] {
@@ -436,10 +442,12 @@
   .formSection {
     padding: 30px 20px;
     border-radius: 0 0 20px 20px;
+    background: transparent;
   }
 
   .card {
-    padding: 0;
+    padding: 30px;
+    max-width: 100%;
   }
 
   .arrow {
@@ -473,15 +481,18 @@
   }
 
   .card {
-    padding: 0;
+    padding: 25px;
+    max-width: 100%;
   }
 
   .title {
     font-size: 2rem;
+    text-align: center;
   }
 
   .lead {
     font-size: 0.95rem;
+    text-align: center;
   }
 
   .label {
@@ -526,6 +537,7 @@
   .formSection {
     padding: 25px 20px;
     border-radius: 0 0 16px 16px;
+    background: transparent;
   }
 
   .arrow {
@@ -576,16 +588,19 @@
   .formSection {
     padding: 20px 15px;
     border-radius: 0 0 12px 12px;
+    background: transparent;
   }
 
   .title {
     font-size: 1.6rem;
     margin-bottom: 8px;
+    text-align: center;
   }
 
   .lead {
     font-size: 0.85rem;
     margin-bottom: 24px;
+    text-align: center;
   }
 
   .label {
@@ -669,6 +684,17 @@
   .formSection {
     padding: 15px;
     border-radius: 0 0 10px 10px;
+    background: transparent;
+  }
+
+  .card {
+    padding: 15px;
+    max-width: 100%;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(5px);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
   }
 
   .imageWrapper {
@@ -678,11 +704,13 @@
   .title {
     font-size: 1.3rem;
     margin-bottom: 6px;
+    text-align: center;
   }
 
   .lead {
     font-size: 0.8rem;
     margin-bottom: 18px;
+    text-align: center;
   }
 
   .label {
@@ -774,7 +802,7 @@
   }
 
   .formSection {
-    background: #1e1e1e;
+    background: transparent;
   }
 
   .card {
@@ -797,7 +825,7 @@
   .input,
   .textarea,
   .radioLabel {
-    background: #2a2a2a;
+    background: rgba(42, 42, 42, 0.8);
     border-color: #3a3a3a;
     color: #e0e0e0;
   }
@@ -805,7 +833,7 @@
   .input:focus,
   .textarea:focus {
     border-color: #667eea;
-    background: #2a2a2a;
+    background: rgba(42, 42, 42, 0.95);
   }
 
   .radioLabel:hover {
