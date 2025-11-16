@@ -73,9 +73,7 @@ export default function Home() {
         <div className={styles.right}>
           <h2 className={styles.productTitle}>SPVV CLOTHING</h2>
           <p className={styles.price}>2,250 ฿ THB</p>
-          <Link href="/about" passHref legacyBehavior>
-            <a className={styles.primaryButton}>สั่งซื้อเสื้อ</a>
-          </Link>
+          <Link href="/about" className={styles.primaryButton}>สั่งซื้อเสื้อ</Link>
 
           <div className={styles.description}>
             <p>
@@ -139,6 +137,21 @@ export default function Home() {
                   <td>34</td>
                   <td>35</td>
                 </tr>
+                <tr>
+                  <td>มีสินค้าทั้งหมด(ตัว)</td>
+                  <td>120</td>
+                  <td>130</td>
+                  <td>178</td>
+                  <td>197</td>
+                  <td>178</td>
+                  <td>165</td>
+                  <td>147</td>
+                  <td>146</td>
+                  <td>182</td>
+                  <td>75</td>
+                  <td>126</td>
+                  <td>16</td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -152,16 +165,7 @@ export default function Home() {
               <h4>1899 ออร์เดอร์</h4>
               <p>จำนวนออร์เดอร์ (รวมทั้งสิ้น)</p>
             </div>
-            <div className={styles.statCard}>
-              <h4>เสื้อแบบที่1</h4>
-              <p>เสื้อทั้งหมด: 27328 ตัว</p>
-              <p>จำนวนออร์เดอร์: 1520 รายการ</p>
-            </div>
-            <div className={styles.statCard}>
-              <h4>เสื้อแบบที่2</h4>
-              <p>เสื้อทั้งหมด: 4291 ตัว</p>
-              <p>จำนวนออร์เดอร์: 379 รายการ</p>
-            </div>
+           
           </div>
         </div>
       </div>
