@@ -1,16 +1,16 @@
 .container {
   display: flex;
   justify-content: center;
-  background: #f7f8fc;
+  background: var(--bg-primary);
   padding: 20px;
 }
 
 .card {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  background: white;
+  background: var(--bg-card);
   border-radius: 18px;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+  box-shadow: var(--shadow);
   max-width: 1200px;
   width: 100%;
   overflow: hidden;
@@ -19,7 +19,7 @@
 /* Left */
 .left {
   position: relative;
-  background: #eef2ff;
+  background: var(--bg-secondary);
   padding: 20px;
   min-height: 600px; /* 👈 กันไม่ให้โดนบีบ */
 }
@@ -39,7 +39,7 @@
   top: 50%;
   transform: translateY(-50%);
   z-index: 20;
-  background: white;
+  background: var(--bg-card);
   border: none;
   font-size: 2rem;
   width: 45px;
@@ -59,11 +59,11 @@
   gap: 16px;
 }
 
-.productTitle { font-size: 2.1rem; font-weight: 700; }
-.price { font-size: 1.5rem; color: #6366f1; font-weight: 600; }
+.productTitle { font-size: 2.1rem; font-weight: 700; color: var(--text-primary); }
+.price { font-size: 1.5rem; color: var(--accent); font-weight: 600; }
 
 .primaryButton {
-  background: #6366f1;
+  background: var(--accent);
   color: white;
   padding: 14px;
   border-radius: 12px;
@@ -71,10 +71,10 @@
   text-align: center;
   transition: 0.25s;
 }
-.primaryButton:hover { background: #4f51d2; }
+.primaryButton:hover { filter: brightness(0.9); } /* This can stay or be changed to a specific color */
 
 .description p {
-  color: #4b5563;
+  color: var(--text-secondary);
   line-height: 1.6;
   margin: 5px 0;
 }
@@ -96,7 +96,7 @@
 }
 
 .sizeTable th, .sizeTable td {
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-color);
   padding: 8px;
   white-space: nowrap;
 }
@@ -109,15 +109,16 @@
 }
 
 .statCard {
-  background: #f5f7ff;
+  background: var(--bg-secondary);
   padding: 16px;
   border-radius: 12px;
   flex: 1;
   text-align: center;
+  transition: background-color 0.2s ease;
 }
 
 .statCard:hover {
-  background: #e1e6ff;
+  filter: brightness(0.95); /* This can stay or be changed to a specific color */
 }
 
 /* Responsive */

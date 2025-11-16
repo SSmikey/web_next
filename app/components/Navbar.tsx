@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import styles from "./Navbar.module.css";
 import ProfileDropdown from "./ProfileDropdown";
+import ThemeToggle from "./ThemeToggle";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -53,6 +54,7 @@ export default function Navbar() {
           </li>
         </ul>
         <div className={styles.authMenu}>
+          <ThemeToggle />
           {status === "loading" ? (
             <div className={styles.loadingSpinner}>Loading...</div>
           ) : session ? (
