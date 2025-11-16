@@ -59,6 +59,58 @@
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
 }
 
+/* ========================================
+   🎨 ส่วนที่เพิ่มใหม่: Smooth Slide Animation
+   ======================================== */
+
+/* Slide Item - แต่ละรูปภาพ */
+.slideItem {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1), 
+              opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Slide ที่กำลังแสดง */
+.slideActive {
+  opacity: 1;
+  transform: translateX(0);
+  z-index: 2;
+}
+
+/* Slide ที่จะออกไปทางซ้าย */
+.slideExitLeft {
+  opacity: 0;
+  transform: translateX(-100%);
+  z-index: 1;
+}
+
+/* Slide ที่จะออกไปทางขวา */
+.slideExitRight {
+  opacity: 0;
+  transform: translateX(100%);
+  z-index: 1;
+}
+
+/* Slide ที่ซ่อนอยู่ทางซ้าย (พร้อมเข้า) */
+.slideHiddenLeft {
+  opacity: 0;
+  transform: translateX(-100%);
+  z-index: 0;
+}
+
+/* Slide ที่ซ่อนอยู่ทางขวา (พร้อมเข้า) */
+.slideHiddenRight {
+  opacity: 0;
+  transform: translateX(100%);
+  z-index: 0;
+}
+
+/* ======================================== */
+
 /* Navigation Arrows */
 .arrow {
   position: absolute;
