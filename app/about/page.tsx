@@ -65,11 +65,11 @@ export default function AboutOrderForm() {
 
   // ========================================
   // 🎨 ปรับแต่งใหม่: Navigation Functions
-  // ========================================
+  // ======================================== 
   const handleNext = () => {
     if (isAnimating) return;
     
-    setDirection('right');
+    setDirection('right'); // เลื่อนจากขวามาซ้าย
     setPreviousImageIndex(currentImageIndex);
     setIsAnimating(true);
     
@@ -84,7 +84,7 @@ export default function AboutOrderForm() {
   const goToPrevious = () => {
     if (isAnimating) return;
     
-    setDirection('left');
+    setDirection('left'); // เลื่อนจากซ้ายมาขวา
     setPreviousImageIndex(currentImageIndex);
     setIsAnimating(true);
     
