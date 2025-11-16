@@ -16,38 +16,93 @@ export default function Home() {
   ];
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [fade, setFade] = useState(true);
+  const [previousImageIndex, setPreviousImageIndex] = useState(0);
+  const [direction, setDirection] = useState<'left' | 'right'>('right');
+  const [isAnimating, setIsAnimating] = useState(false);
 
-  // Slider Auto
+  // Auto slideshow every 5 seconds
   useEffect(() => {
     const interval = setInterval(() => {
-      setFade(false);
+      setDirection('right');
+      setPreviousImageIndex(prev => prev);
+      setIsAnimating(true);
+
+      setCurrentImageIndex((prevIndex) => {
+        setPreviousImageIndex(prevIndex);
+        const nextIndex = (prevIndex + 1) % sliderImages.length;
+        return nextIndex;
+      });
+
       setTimeout(() => {
-        setCurrentImageIndex((prev) => (prev + 1) % sliderImages.length);
-        setFade(true);
-      }, 300);
+        setIsAnimating(false);
+      }, 800);
     }, 5000);
+
     return () => clearInterval(interval);
   }, []);
 
   const goToPrevious = () => {
-    setFade(false);
+    if (isAnimating) return;
+
+    setDirection('left');
+    setPreviousImageIndex(currentImageIndex);
+    setIsAnimating(true);
+
+    const prevIndex = currentImageIndex === 0 ? sliderImages.length - 1 : currentImageIndex - 1;
+    setCurrentImageIndex(prevIndex);
+
     setTimeout(() => {
-      setCurrentImageIndex(
-        currentImageIndex === 0
-          ? sliderImages.length - 1
-          : currentImageIndex - 1
-      );
-      setFade(true);
-    }, 300);
+      setIsAnimating(false);
+    }, 700);
   };
 
   const goToNext = () => {
-    setFade(false);
+    if (isAnimating) return;
+
+    setDirection('right');
+    setPreviousImageIndex(currentImageIndex);
+    setIsAnimating(true);
+
+    const nextIndex = (currentImageIndex + 1) % sliderImages.length;
+    setCurrentImageIndex(nextIndex);
+
     setTimeout(() => {
-      setCurrentImageIndex((currentImageIndex + 1) % sliderImages.length);
-      setFade(true);
-    }, 300);
+      setIsAnimating(false);
+    }, 700);
+  };
+
+  const goToSlide = (index: number) => {
+    if (isAnimating || index === currentImageIndex) return;
+
+    setDirection(index > currentImageIndex ? 'right' : 'left');
+    setPreviousImageIndex(currentImageIndex);
+    setIsAnimating(true);
+
+    setCurrentImageIndex(index);
+
+    setTimeout(() => {
+      setIsAnimating(false);
+    }, 700);
+  };
+
+  const getSlideClass = (imageIndex: number) => {
+    if (imageIndex === currentImageIndex) {
+      return `${styles.slideItem} ${styles.slideActive}`;
+    }
+
+    if (isAnimating && imageIndex === previousImageIndex) {
+      if (direction === 'right') {
+        return `${styles.slideItem} ${styles.slideExitLeft}`;
+      } else {
+        return `${styles.slideItem} ${styles.slideExitRight}`;
+      }
+    }
+
+    if (direction === 'right') {
+      return `${styles.slideItem} ${styles.slideHiddenRight}`;
+    } else {
+      return `${styles.slideItem} ${styles.slideHiddenLeft}`;
+    }
   };
 
   return (
@@ -56,26 +111,43 @@ export default function Home() {
         {/* Left Image */}
         <div className={styles.left}>
           <div className={styles.imageWrapper}>
-            <Image
-              src={sliderImages[currentImageIndex]}
-              alt={`Product ${currentImageIndex + 1}`}
-              fill
-              style={{ objectFit: "contain" }}
-              className={fade ? styles.fadeIn : styles.fadeOut}
-              priority
-            />
-            <button
-              className={`${styles.arrow} ${styles.arrowLeft}`}
-              onClick={goToPrevious}
-            >
-              ‹
-            </button>
-            <button
-              className={`${styles.arrow} ${styles.arrowRight}`}
-              onClick={goToNext}
-            >
-              ›
-            </button>
+            <div className={styles.slideshowContainer}>
+              {sliderImages.map((image, index) => (
+                <div key={index} className={getSlideClass(index)}>
+                  <Image
+                    src={image}
+                    alt={`Product ${index + 1}`}
+                    fill
+                    style={{ objectFit: "contain" }}
+                    priority
+                  />
+                </div>
+              ))}
+              <button
+                className={`${styles.arrow} ${styles.arrowLeft}`}
+                onClick={goToPrevious}
+              >
+                ‹
+              </button>
+              <button
+                className={`${styles.arrow} ${styles.arrowRight}`}
+                onClick={goToNext}
+              >
+                ›
+              </button>
+              <div className={styles.dotsContainer}>
+                {sliderImages.map((_, index) => (
+                  <button
+                    key={index}
+                    className={`${styles.dot} ${
+                      index === currentImageIndex ? styles.dotActive : ""
+                    }`}
+                    onClick={() => goToSlide(index)}
+                    aria-label={`Go to slide ${index + 1}`}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 
