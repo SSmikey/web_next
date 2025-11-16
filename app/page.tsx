@@ -1,44 +1,93 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import styles from "./page.module.css";
 
 export default function Home() {
+  const sliderImages = [
+    "/spwv.jpg",
+    "/4spvv.jpg",
+    "/images/V3.png",
+    "/images/V4.png",
+    "/images/V5.png",
+    "/images/Premium.png",
+  ];
+
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [fade, setFade] = useState(true);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setFade(false);
+      setTimeout(() => {
+        setCurrentImageIndex((prev) => (prev + 1) % sliderImages.length);
+        setFade(true);
+      }, 300); // fade out time
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const goToPrevious = () => {
+    setFade(false);
+    setTimeout(() => {
+      setCurrentImageIndex(
+        currentImageIndex === 0 ? sliderImages.length - 1 : currentImageIndex - 1
+      );
+      setFade(true);
+    }, 300);
+  };
+
+  const goToNext = () => {
+    setFade(false);
+    setTimeout(() => {
+      setCurrentImageIndex((currentImageIndex + 1) % sliderImages.length);
+      setFade(true);
+    }, 300);
+  };
+
   return (
     <div className={styles.container}>
-      {/* Hero Section */}
-      <div className={styles.hero}>
-        <h1 className={styles.title}>SPVV CLOTHING</h1>
-        <p className={styles.subtitle}>WELCOME TO MY WEBSITE</p>
-      </div>
+      <div className={styles.card}>
+        {/* Left Image */}
+        <div className={styles.left}>
+          <div className={`${styles.imageWrapper} ${fade ? styles.fadeIn : styles.fadeOut}`}>
+            <Image
+              src={sliderImages[currentImageIndex]}
+              alt={`Product ${currentImageIndex + 1}`}
+              fill
+              style={{ objectFit: "contain" }}
+              priority
+            />
+            <button className={`${styles.arrow} ${styles.arrowLeft}`} onClick={goToPrevious}>
+              ‹
+            </button>
+            <button className={`${styles.arrow} ${styles.arrowRight}`} onClick={goToNext}>
+              ›
+            </button>
+          </div>
+        </div>
 
-      {/* Product Section */}
-      <div className={styles.productLayout}>
-        {/* Left Column */}
-        <div className={styles.leftColumn}>
-          {/* Product Image (Hover Switch) */}
-          <div className={styles.productImageBox}>
-            <div className={styles.imageHoverBox}>
-              <Image
-                src="/spwv.jpg"
-                alt="SPVV Front"
-                width={400}
-                height={400}
-                className={`${styles.hoverImage} ${styles.frontImage}`}
-              />
+        {/* Right Info */}
+        <div className={styles.right}>
+          <h2 className={styles.productTitle}>SPVV CLOTHING</h2>
+          <p className={styles.price}>2,250 ฿ THB</p>
+          <Link href="/about" passHref legacyBehavior>
+            <a className={styles.primaryButton}>สั่งซื้อเสื้อ</a>
+          </Link>
 
-              <Image
-                src="/4spvv.jpg"
-                alt="SPVV Back"
-                width={400}
-                height={400}
-                className={`${styles.hoverImage} ${styles.backImage}`}
-              />
-            </div>
+          <div className={styles.description}>
+            <p>
+              SPVV CLOTHING เป็นเว็บไซต์จำหน่ายเสื้อคุณภาพดีที่ออกแบบมาให้เหมาะกับทุกโอกาส
+              ไม่ว่าจะเป็นใส่เที่ยวหรือไปงานกิจกรรมต่างๆ
+              เป็นเสื้อโปโลเกรดพรีเมี่ยม ปัจจุบันเรามี 5 แบบหลัก พร้อมแบบพิเศษ
+              ขาวดำอีก 5 แบบ และยังมีแบบพิเศษให้สะสม
+            </p>
+            <p>ค่าจัดส่ง: ตัวแรก 50 บาท ตัวต่อไปเพิ่ม 10 บาทต่อชิ้น</p>
+            <p>SHIPPING 50 THB FOR THE FIRST ITEM 10 THB FOR EACH ADDITIONAL ITEM</p>
           </div>
 
-          {/* Size Table */}
           <div className={styles.sizeTableSection}>
             <h3>ตารางไซส์ SIZE TABLE</h3>
             <table className={styles.sizeTable}>
@@ -94,98 +143,24 @@ export default function Home() {
             </table>
           </div>
 
-          {/* Order Channels */}
-          <div className={styles.orderChannels}>
-            <h3>สั่งซื้อได้ 2 ช่องทาง</h3>
-
-            <div className={styles.qrSection}>
-              <div className={styles.qrBox}>
-                <div className={styles.qrPlaceholder}>QR 1</div>
-                <p>LINE @ ไลน์ใครก็ใส่ไป</p>
-              </div>
-
-              <div className={styles.qrBox}>
-                <div className={styles.qrPlaceholder}>QR 2</div>
-                <p>SCAN เพื่อจ่ายเงิน</p>
-              </div>
+          <div className={styles.statsSection}>
+            <div className={styles.statCard}>
+              <h4>31619 ตัว</h4>
+              <p>เสื้อทั้งหมด (รวมทั้งสิ้น)</p>
             </div>
-
-            <div className={styles.priceInfo}>
-              <h4>เสื้อ 243</h4>
-              <p>แบบสี / แบบโพกศว</p>
-              <p className={styles.shippingPrice}>ค่าจัดส่ง</p>
-              <p>ตัวแรก 50 บาท</p>
-              <p>ตัวต่อไป เพิ่มตัวละ 10 บาท</p>
+            <div className={styles.statCard}>
+              <h4>1899 ออร์เดอร์</h4>
+              <p>จำนวนออร์เดอร์ (รวมทั้งสิ้น)</p>
             </div>
-          </div>
-        </div>
-
-        {/* Right Column */}
-        <div className={styles.rightColumn}>
-          <div className={styles.productInfo}>
-            <h2 className={styles.productTitle}>SPVV CLOTHING</h2>
-
-            <div className={styles.subtitle} style={{ color: "#000" }}>
-              <p>2,250 ฿ THB</p>
+            <div className={styles.statCard}>
+              <h4>เสื้อแบบที่1</h4>
+              <p>เสื้อทั้งหมด: 27328 ตัว</p>
+              <p>จำนวนออร์เดอร์: 1520 รายการ</p>
             </div>
-
-            <div
-              className={styles.buttons}
-              style={{ justifyContent: "flex-start", marginBottom: "30px" }}
-            >
-              <Link href="/about" className={styles.primaryButton}>
-                สั่งซื้อเสื้อ
-              </Link>
-            </div>
-
-            <div className={styles.description}>
-              <hr />
-
-              <p>
-                SPVV CLOTHING เป็นเว็บไซต์จำหน่ายเสื้อคุณภาพดีที่ออกแบบมาให้เหมาะกับทุกโอกาส 
-                ไม่ว่าจะเป็นใส่เที่ยวหรือ ไปงานกิจกรรมต่างๆ เป็นเสื้อโปโลเกรดพรีเมี่ยม ปัจจุบันเรามี 5 แบบหลัก 
-                พร้อมแบบพิเศษ ขาวดำอีก 5 แบบ และยังมีแบบพิเศษอีกให้สะสม
-              </p>
-
-              <p>
-                ค่าจัดส่ง: ตัวแรก 50 บาท ตัวต่อไปเพิ่ม 10 บาทต่อชิ้น
-              </p>
-
-              <p>SHIPPING 50 THB FOR THE FIRST ITEM 10 THB FOR EACH ADDITIONAL ITEM</p>
-
-              <hr />
-            </div>
-
-            <h3 className={styles.statsHeader}>สถิติการขายเสื้อ</h3>
-
-            <div className={styles.statsGrid}>
-              <div className={styles.statCard}>
-                <h4>31619 ตัว</h4>
-                <p>เสื้อทั้งหมด (รวมทั้งสิ้น)</p>
-              </div>
-
-              <div className={styles.statCard}>
-                <h4>1899 ออร์เดอร์</h4>
-                <p>จำนวนออร์เดอร์ (รวมทั้งสิ้น)</p>
-              </div>
-            </div>
-
-            <div className={styles.shirtTypes}>
-              <div className={styles.shirtTypeCard}>
-                <h4>เสื้อแบบที่1</h4>
-                <p>เสื้อทั้งหมด: 27328 ตัว</p>
-                <p>จำนวนออร์เดอร์: 1520 รายการ</p>
-              </div>
-
-              <div className={styles.shirtTypeCard}>
-                <h4>เสื้อแบบที่2</h4>
-                <p>เสื้อทั้งหมด: 4291 ตัว</p>
-                <p>จำนวนออร์เดอร์: 379 รายการ</p>
-              </div>
-            </div>
-
-            <div className={styles.sizeDetail}>
-              <p>จำนวนเสื้อแต่ละไซส์ (รวมทั้งสิ้น)</p>
+            <div className={styles.statCard}>
+              <h4>เสื้อแบบที่2</h4>
+              <p>เสื้อทั้งหมด: 4291 ตัว</p>
+              <p>จำนวนออร์เดอร์: 379 รายการ</p>
             </div>
           </div>
         </div>
