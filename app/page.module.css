@@ -1,15 +1,16 @@
 .container {
   display: flex;
   justify-content: center;
-  background: var(--bg-primary);
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   padding: 40px 20px;
   min-height: 100vh;
+  align-items: center;
 }
 
 .card {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  background: var(--bg-card);
+  background: white;
   border-radius: 24px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
   width: 1400px;
@@ -20,12 +21,30 @@
 /* Left Section */
 .left {
   position: relative;
-  background: var(--bg-secondary);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 40px;
   min-height: 600px;
   display: flex;
   justify-content: center;
   align-items: center;
+  border-radius: 24px 0 0 24px;
+  overflow: hidden;
+}
+
+.left::before {
+  content: '';
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+  background-size: 30px 30px;
+  animation: movePattern 20s linear infinite;
+  opacity: 0.3;
+}
+
+@keyframes movePattern {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(30px, 30px); }
 }
 
 .imageWrapper {
@@ -127,15 +146,33 @@
   top: 50%;
   transform: translateY(-50%);
   z-index: 20;
-  background: var(--bg-card);
+  background: rgba(255, 255, 255, 0.9);
+  color: #667eea;
   border: none;
   font-size: 2rem;
   width: 45px;
   height: 45px;
   border-radius: 50%;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
 }
+
+.arrow:hover {
+  background: white;
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.arrow:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
 .arrowLeft { left: 15px; }
 .arrowRight { right: 15px; }
 
@@ -147,22 +184,43 @@
   gap: 16px;
 }
 
-.productTitle { font-size: 2.1rem; font-weight: 700; color: var(--text-primary); }
-.price { font-size: 1.5rem; color: var(--accent); font-weight: 600; }
+.productTitle {
+  font-size: 2.1rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.price {
+  font-size: 1.5rem;
+  color: #667eea;
+  font-weight: 600;
+}
 
 .primaryButton {
-  background: var(--accent);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   padding: 14px;
   border-radius: 12px;
   font-weight: 600;
   text-align: center;
-  transition: 0.25s;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
-.primaryButton:hover { filter: brightness(0.9); } /* This can stay or be changed to a specific color */
+
+.primaryButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.primaryButton:active {
+  transform: translateY(-1px);
+}
 
 .description p {
-  color: var(--text-secondary);
+  color: #666;
   line-height: 1.6;
   margin: 5px 0;
 }
@@ -171,6 +229,14 @@
 .sizeTableSection,
 .stockTableSection {
   margin-top: 10px;
+}
+
+.sizeTableSection h3,
+.stockTableSection h3 {
+  color: #333;
+  font-weight: 600;
+  margin-bottom: 12px;
+  font-size: 1.1rem;
 }
 
 .tableWrapper {
@@ -184,9 +250,19 @@
 }
 
 .sizeTable th, .sizeTable td {
-  border: 1px solid var(--border-color);
+  border: 1px solid #e6e9ef;
   padding: 8px;
   white-space: nowrap;
+}
+
+.sizeTable th {
+  background: rgba(102, 126, 234, 0.05);
+  color: #333;
+  font-weight: 600;
+}
+
+.sizeTable td {
+  color: #555;
 }
 
 /* Stats */
@@ -197,16 +273,29 @@
 }
 
 .statCard {
-  background: var(--bg-secondary);
+  background: rgba(102, 126, 234, 0.05);
   padding: 16px;
   border-radius: 12px;
   flex: 1;
   text-align: center;
-  transition: background-color 0.2s ease;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(102, 126, 234, 0.1);
 }
 
 .statCard:hover {
-  filter: brightness(0.95); /* This can stay or be changed to a specific color */
+  background: rgba(102, 126, 234, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+}
+
+.statCard h4 {
+  color: #667eea;
+  font-weight: 700;
+}
+
+.statCard p {
+  color: #666;
+  margin-top: 4px;
 }
 
 /* Responsive */
@@ -230,6 +319,7 @@
   }
   .left {
     min-height: 450px;
+    border-radius: 24px 24px 0 0;
   }
   .slideshowContainer {
     border-radius: 14px;
@@ -241,6 +331,8 @@
     width: 40px;
     height: 40px;
     font-size: 1.8rem;
+    background: rgba(255, 255, 255, 0.9);
+    color: #667eea;
   }
   .dotsContainer {
     bottom: 15px;
@@ -266,6 +358,7 @@
   .left {
     min-height: 350px;
     padding: 15px;
+    border-radius: 20px 20px 0 0;
   }
   .slideshowContainer {
     border-radius: 12px;
@@ -278,6 +371,8 @@
     width: 35px;
     height: 35px;
     font-size: 1.5rem;
+    background: rgba(255, 255, 255, 0.9);
+    color: #667eea;
   }
   .dotsContainer {
     bottom: 12px;
@@ -309,6 +404,7 @@
   .left {
     min-height: 300px;
     padding: 10px;
+    border-radius: 16px 16px 0 0;
   }
   .slideshowContainer {
     border-radius: 10px;
@@ -321,6 +417,8 @@
     width: 32px;
     height: 32px;
     font-size: 1.3rem;
+    background: rgba(255, 255, 255, 0.9);
+    color: #667eea;
   }
   .dotsContainer {
     bottom: 10px;
@@ -352,6 +450,7 @@
   .left {
     min-height: 240px;
     padding: 8px;
+    border-radius: 12px 12px 0 0;
   }
   .slideshowContainer {
     border-radius: 8px;
@@ -366,6 +465,8 @@
     font-size: 1.2rem;
     left: 5px;
     right: 5px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #667eea;
   }
   .dotsContainer {
     bottom: 8px;
