@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import styles from "./page.module.css";
 
 export default function AboutOrderForm() {
@@ -26,154 +27,172 @@ export default function AboutOrderForm() {
 
   return (
     <div className={styles.container}>
-      <div className={styles.card}>
-        {/* Header Section */}
-        <h1 className={styles.title}>ข้อมูลผู้สั่งซื้อ</h1>
-        <p className={styles.lead}>กรุณากรอกข้อมูลผู้สั่งซื้อให้ครบถ้วน</p>
-
-        {/* Form Section */}
-        <form
-          ref={formRef}
-          className={styles.form}
-          onSubmit={handleSubmit}
-          noValidate
-        >
-          {/* Personal Information */}
-          <div className={styles.row}>
-            <div className={styles.formGroup}>
-              <label className={styles.label} htmlFor="firstName">
-                ชื่อจริง <span className={styles.required}>*</span>
-              </label>
-              <input
-                id="firstName"
-                name="firstName"
-                className={styles.input}
-                type="text"
-                placeholder="ชื่อจริง"
-                required
-              />
-            </div>
-
-            <div className={styles.formGroup}>
-              <label className={styles.label} htmlFor="lastName">
-                นามสกุล <span className={styles.required}>*</span>
-              </label>
-              <input
-                id="lastName"
-                name="lastName"
-                className={styles.input}
-                type="text"
-                placeholder="นามสกุล"
-                required
-              />
-            </div>
-          </div>
-
-          {/* Contact Information */}
-          <div className={styles.row}>
-            <div className={styles.formGroup}>
-              <label className={styles.label} htmlFor="phone">
-                เบอร์โทร <span className={styles.required}>*</span>
-              </label>
-              <input
-                id="phone"
-                name="phone"
-                className={styles.input}
-                type="tel"
-                placeholder="08X-XXX-XXXX"
-                required
-              />
-            </div>
-
-            <div className={styles.formGroup}>
-              <label className={styles.label} htmlFor="email">
-                อีเมล <span className={styles.required}>*</span>
-              </label>
-              <input
-                id="email"
-                name="email"
-                className={styles.input}
-                type="email"
-                placeholder="example@email.com"
-                required
-              />
-            </div>
-          </div>
-
-          {/* Address Information */}
-          <div className={styles.formGroup}>
-            <label className={styles.label} htmlFor="address">
-              ที่อยู่สำหรับการจัดส่ง <span className={styles.required}>*</span>
-            </label>
-            <textarea
-              id="address"
-              name="address"
-              className={styles.textarea}
-              placeholder="ที่อยู่ รหัสไปรษณีย์"
-              rows={4}
-              required
+      <div className={styles.splitLayout}>
+        {/* Left Section - Image */}
+        <div className={styles.imageSection}>
+          <div className={styles.imageWrapper}>
+            <Image
+              src="/images/V1.png"
+              alt="Product Preview"
+              fill
+              style={{ objectFit: "contain" }}
+              priority
             />
           </div>
+        </div>
 
-          {/* Additional Notes */}
-          <div className={styles.formGroup}>
-            <label className={styles.label} htmlFor="note">
-              หมายเหตุ (ถ้ามี)
-            </label>
-            <textarea
-              id="note"
-              name="note"
-              className={styles.textarea}
-              placeholder="หมายเหตุเพิ่มเติม (ถ้ามี)"
-              rows={3}
-            />
-          </div>
+        {/* Right Section - Form */}
+        <div className={styles.formSection}>
+          <div className={styles.card}>
+            {/* Header Section */}
+            <h1 className={styles.title}>ข้อมูลผู้สั่งซื้อ</h1>
+            <p className={styles.lead}>กรุณากรอกข้อมูลผู้สั่งซื้อให้ครบถ้วน</p>
 
-          {/* Shipping Method */}
-          <fieldset className={styles.fieldset}>
-            <legend className={styles.label}>
-              การจัดส่งสินค้า <span className={styles.required}>*</span>
-            </legend>
-            <div className={styles.radioGroup}>
-              <label className={styles.radioLabel}>
-                <input
-                  type="radio"
-                  name="shippingMethod"
-                  value="mail"
-                  required
-                />
-                <span>ต้องการให้จัดส่งสินค้าทางไปรษณีย์</span>
-              </label>
-
-              <label className={styles.radioLabel}>
-                <input
-                  type="radio"
-                  name="shippingMethod"
-                  value="pickup"
-                  required
-                />
-                <span>ต้องการมารับเสื้อด้วยตนเอง</span>
-              </label>
-            </div>
-          </fieldset>
-
-          {/* Action Buttons */}
-          <div className={styles.actions}>
-            <button
-              type="submit"
-              className={styles.primaryButton}
-              aria-label="ถัดไป"
+            {/* Form Section */}
+            <form
+              ref={formRef}
+              className={styles.form}
+              onSubmit={handleSubmit}
+              noValidate
             >
-              ถัดไป : เลือกแบบและขนาดเสื้อ
-            </button>
+              {/* Personal Information */}
+              <div className={styles.row}>
+                <div className={styles.formGroup}>
+                  <label className={styles.label} htmlFor="firstName">
+                    ชื่อจริง <span className={styles.required}>*</span>
+                  </label>
+                  <input
+                    id="firstName"
+                    name="firstName"
+                    className={styles.input}
+                    type="text"
+                    placeholder="ชื่อจริง"
+                    required
+                  />
+                </div>
 
-            <Link href="/">
-              <button type="button" className={styles.secondaryButton}>
-                กลับสู่หน้าหลัก
-              </button>
-            </Link>
+                <div className={styles.formGroup}>
+                  <label className={styles.label} htmlFor="lastName">
+                    นามสกุล <span className={styles.required}>*</span>
+                  </label>
+                  <input
+                    id="lastName"
+                    name="lastName"
+                    className={styles.input}
+                    type="text"
+                    placeholder="นามสกุล"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Contact Information */}
+              <div className={styles.row}>
+                <div className={styles.formGroup}>
+                  <label className={styles.label} htmlFor="phone">
+                    เบอร์โทร <span className={styles.required}>*</span>
+                  </label>
+                  <input
+                    id="phone"
+                    name="phone"
+                    className={styles.input}
+                    type="tel"
+                    placeholder="08X-XXX-XXXX"
+                    required
+                  />
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.label} htmlFor="email">
+                    อีเมล <span className={styles.required}>*</span>
+                  </label>
+                  <input
+                    id="email"
+                    name="email"
+                    className={styles.input}
+                    type="email"
+                    placeholder="example@email.com"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Address Information */}
+              <div className={styles.formGroup}>
+                <label className={styles.label} htmlFor="address">
+                  ที่อยู่สำหรับการจัดส่ง <span className={styles.required}>*</span>
+                </label>
+                <textarea
+                  id="address"
+                  name="address"
+                  className={styles.textarea}
+                  placeholder="ที่อยู่ รหัสไปรษณีย์"
+                  rows={4}
+                  required
+                />
+              </div>
+
+              {/* Additional Notes */}
+              <div className={styles.formGroup}>
+                <label className={styles.label} htmlFor="note">
+                  หมายเหตุ (ถ้ามี)
+                </label>
+                <textarea
+                  id="note"
+                  name="note"
+                  className={styles.textarea}
+                  placeholder="หมายเหตุเพิ่มเติม (ถ้ามี)"
+                  rows={3}
+                />
+              </div>
+
+              {/* Shipping Method */}
+              <fieldset className={styles.fieldset}>
+                <legend className={styles.label}>
+                  การจัดส่งสินค้า <span className={styles.required}>*</span>
+                </legend>
+                <div className={styles.radioGroup}>
+                  <label className={styles.radioLabel}>
+                    <input
+                      type="radio"
+                      name="shippingMethod"
+                      value="mail"
+                      required
+                    />
+                    <span>ต้องการให้จัดส่งสินค้าทางไปรษณีย์</span>
+                  </label>
+
+                  <label className={styles.radioLabel}>
+                    <input
+                      type="radio"
+                      name="shippingMethod"
+                      value="pickup"
+                      required
+                    />
+                    <span>ต้องการมารับเสื้อด้วยตนเอง</span>
+                  </label>
+                </div>
+              </fieldset>
+
+              {/* Action Buttons */}
+              <div className={styles.actions}>
+                <button
+                  type="submit"
+                  className={styles.primaryButton}
+                  aria-label="ถัดไป"
+                >
+                  ถัดไป : เลือกแบบและขนาดเสื้อ
+                </button>
+
+                <Link href="/">
+                  <button type="button" className={styles.secondaryButton}>
+                    กลับสู่หน้าหลัก
+                  </button>
+                </Link>
+              </div>
+            </form>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );
