@@ -19,15 +19,34 @@ export default function AboutOrderForm() {
   const router = useRouter();
   const formRef = useRef<HTMLFormElement | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [previousImageIndex, setPreviousImageIndex] = useState(0);
+  
+  // ========================================
+  // 🎨 เพิ่มใหม่: State สำหรับ Animation
+  // ========================================
+  const [direction, setDirection] = useState<'left' | 'right'>('right');
+  const [isAnimating, setIsAnimating] = useState(false);
 
   // Auto slideshow every 5 seconds
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+      setDirection('right');
+      setPreviousImageIndex(prev => prev);
+      setIsAnimating(true);
+      
+      setCurrentImageIndex((prevIndex) => {
+        setPreviousImageIndex(prevIndex);
+        const nextIndex = (prevIndex + 1) % images.length;
+        return nextIndex;
+      });
+      
+      setTimeout(() => {
+        setIsAnimating(false);
+      }, 700);
     }, 5000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, []); // ✅ ไม่มี dependency เพื่อให้ทำงานต่อเนื่อง
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -44,18 +63,77 @@ export default function AboutOrderForm() {
     router.push("/contact");
   };
 
+  // ========================================
+  // 🎨 ปรับแต่งใหม่: Navigation Functions
+  // ========================================
+  const handleNext = () => {
+    if (isAnimating) return;
+    
+    setDirection('right');
+    setPreviousImageIndex(currentImageIndex);
+    setIsAnimating(true);
+    
+    const nextIndex = (currentImageIndex + 1) % images.length;
+    setCurrentImageIndex(nextIndex);
+    
+    setTimeout(() => {
+      setIsAnimating(false);
+    }, 700);
+  };
+
   const goToPrevious = () => {
-    setCurrentImageIndex((prevIndex) => 
-      prevIndex === 0 ? images.length - 1 : prevIndex - 1
-    );
+    if (isAnimating) return;
+    
+    setDirection('left');
+    setPreviousImageIndex(currentImageIndex);
+    setIsAnimating(true);
+    
+    const prevIndex = currentImageIndex === 0 ? images.length - 1 : currentImageIndex - 1;
+    setCurrentImageIndex(prevIndex);
+    
+    setTimeout(() => {
+      setIsAnimating(false);
+    }, 700);
   };
 
   const goToNext = () => {
-    setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+    handleNext();
   };
 
   const goToSlide = (index: number) => {
+    if (isAnimating || index === currentImageIndex) return;
+    
+    setDirection(index > currentImageIndex ? 'right' : 'left');
+    setPreviousImageIndex(currentImageIndex);
+    setIsAnimating(true);
+    
     setCurrentImageIndex(index);
+    
+    setTimeout(() => {
+      setIsAnimating(false);
+    }, 700);
+  };
+
+  // ========================================
+  // 🎨 เพิ่มใหม่: คำนวณ Class สำหรับแต่ละรูป
+  // ========================================
+  const getSlideClass = (imageIndex: number) => {
+    // รูปปัจจุบัน
+    if (imageIndex === currentImageIndex) {
+      return `${styles.slideItem} ${styles.slideActive}`;
+    }
+    
+    // รูปก่อนหน้า (กำลัง exit)
+    if (isAnimating && imageIndex === previousImageIndex) {
+      if (direction === 'right') {
+        return `${styles.slideItem} ${styles.slideExitLeft}`;
+      } else {
+        return `${styles.slideItem} ${styles.slideExitRight}`;
+      }
+    }
+    
+    // รูปอื่นๆ ซ่อนไว้
+    return `${styles.slideItem} ${styles.slideHiddenRight}`;
   };
 
   return (
@@ -68,19 +146,27 @@ export default function AboutOrderForm() {
             className={`${styles.arrow} ${styles.arrowLeft}`}
             onClick={goToPrevious}
             aria-label="Previous image"
+            disabled={isAnimating}
           >
             ‹
           </button>
 
           <div className={styles.imageWrapper}>
             <div className={styles.slideshowContainer}>
-              <Image
-                src={images[currentImageIndex]}
-                alt={`Product ${currentImageIndex + 1}`}
-                fill
-                style={{ objectFit: "contain" }}
-                priority
-              />
+              {/* ========================================
+                  🎨 ปรับแต่งใหม่: แสดงทุกรูป แต่ควบคุมด้วย CSS
+                  ======================================== */}
+              {images.map((imageSrc, index) => (
+                <div key={index} className={getSlideClass(index)}>
+                  <Image
+                    src={imageSrc}
+                    alt={`Product ${index + 1}`}
+                    fill
+                    style={{ objectFit: "contain" }}
+                    priority={index === 0}
+                  />
+                </div>
+              ))}
             </div>
 
             {/* Dots Indicator */}
@@ -91,6 +177,7 @@ export default function AboutOrderForm() {
                   className={`${styles.dot} ${index === currentImageIndex ? styles.dotActive : ''}`}
                   onClick={() => goToSlide(index)}
                   aria-label={`Go to slide ${index + 1}`}
+                  disabled={isAnimating}
                 />
               ))}
             </div>
@@ -101,6 +188,7 @@ export default function AboutOrderForm() {
             className={`${styles.arrow} ${styles.arrowRight}`}
             onClick={goToNext}
             aria-label="Next image"
+            disabled={isAnimating}
           >
             ›
           </button>
