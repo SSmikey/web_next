@@ -16,12 +16,15 @@
   overflow: hidden;
 }
 
-/* Left */
+/* Left Section */
 .left {
   position: relative;
   background: var(--bg-secondary);
   padding: 20px;
-  min-height: 600px; /* 👈 กันไม่ให้โดนบีบ */
+  min-height: 650px; /* เพิ่มความสูงเพื่อไม่ให้โดนบีบ */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .imageWrapper {
