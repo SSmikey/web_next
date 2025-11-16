@@ -9,7 +9,7 @@ type Size = typeof SIZES[number];
 
 // 12 แบบเสื้อ พร้อมรูปภาพ
 const SHIRT_DESIGNS = [
-  { id: 1, name: 'เสื้อรุ่นคลาสสิค', public: '/public/spvv1.jpg', description: 'เสื้อคอปก สีดำเหลือง', color: '#667eea' },
+  { id: 1, name: 'เสื้อรุ่นคลาสสิค', public: '/images/spvv1.jpg', description: 'เสื้อคอปก สีดำเหลือง', color: '#667eea' },
   { id: 2, name: 'เสื้อรุ่นพรีเมียม', image: '/images/spvv2.jpg', description: 'เสื้อคอปก สีน้ำเงินเหลือง', color: '#764ba2' },
   { id: 3, name: 'เสื้อรุ่นสปอร์ต', image: '/images/spvv3.jpg', description: 'เสื้อกีฬา ระบายอากาศดี', color: '#f093fb' },
   { id: 4, name: 'เสื้อรุ่นเบสิค', image: '/images/spvv4.jpg', description: 'เสื้อคอปก สีพื้น', color: '#4facfe' },
