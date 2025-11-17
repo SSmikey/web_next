@@ -97,7 +97,7 @@
 /* Dots Indicator */
 .dotsContainer {
   position: absolute;
-  bottom: 20px;
+  bottom: 15px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -134,8 +134,7 @@
 
 .arrow {
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 20px;
   z-index: 20;
   background: rgba(255, 255, 255, 0.9);
   color: var(--accent-primary);
@@ -156,16 +155,16 @@
 
 .arrow:hover {
   background: white;
-  transform: translateY(-50%) scale(1.1);
+  transform: scale(1.1);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
 .arrow:active {
-  transform: translateY(-50%) scale(0.95);
+  transform: scale(0.95);
 }
 
-.arrowLeft { left: 15px; }
-.arrowRight { right: 15px; }
+.arrowLeft { left: 20px; }
+.arrowRight { right: 20px; }
 
 /* Right Section */
 .right {
