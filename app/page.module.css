@@ -24,9 +24,6 @@
   background: var(--gradient-primary);
   padding: 0;
   min-height: 600px;
-  display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
   border-radius: var(--radius-2xl) 0 0 var(--radius-2xl);
   overflow: hidden;
 }
@@ -65,9 +62,6 @@
   height: 100%;
   transition: transform 0.8s cubic-bezier(0.45, 0, 0.15, 1),
               opacity 0.8s cubic-bezier(0.45, 0, 0.15, 1);
-  display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
 }
 
 .slideActive {

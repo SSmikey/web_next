@@ -168,7 +168,7 @@ export default function AboutOrderForm() {
                     src={imageSrc}
                     alt={`Product ${index + 1}`}
                     fill
-                    style={{ objectFit: "contain" }}
+                    style={{ objectFit: "contain", objectPosition: "top center" }}
                     priority={index === 0}
                   />
                 </div>

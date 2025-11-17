@@ -117,7 +117,7 @@ export default function Home() {
                     src={image}
                     alt={`Product ${index + 1}`}
                     fill
-                    style={{ objectFit: "contain" }}
+                    style={{ objectFit: "contain", objectPosition: "top center" }}
                     priority
                   />
                 </div>
