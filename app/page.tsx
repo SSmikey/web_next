@@ -110,8 +110,7 @@ export default function Home() {
       <div className={styles.card}>
         {/* Left Image */}
         <div className={styles.left}>
-          <div className={styles.imageWrapper}>
-            <div className={styles.slideshowContainer}>
+          <div className={styles.slideshowContainer}>
               {sliderImages.map((image, index) => (
                 <div key={index} className={getSlideClass(index)}>
                   <Image
@@ -148,7 +147,6 @@ export default function Home() {
                 ))}
               </div>
             </div>
-          </div>
         </div>
 
         {/* Right Section */}

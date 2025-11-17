@@ -158,7 +158,6 @@ export default function AboutOrderForm() {
             ‹
           </button>
 
-          <div className={styles.imageWrapper}>
             <div className={styles.slideshowContainer}>
               {/* ========================================
                   🎨 ปรับแต่งใหม่: แสดงทุกรูป แต่ควบคุมด้วย CSS
@@ -188,7 +187,6 @@ export default function AboutOrderForm() {
                 />
               ))}
             </div>
-          </div>
 
           {/* Navigation Arrow Right - Outside */}
           <button 

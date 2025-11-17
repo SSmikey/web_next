@@ -27,12 +27,13 @@
 .imageSection {
   background: var(--gradient-primary);
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 0;
   position: relative;
   overflow: hidden;
   border-radius: var(--radius-2xl) 0 0 var(--radius-2xl);
+  min-height: 600px;
 }
 
 .imageSection::before {
@@ -51,22 +52,14 @@
   100% { transform: translate(30px, 30px); }
 }
 
-.imageWrapper {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  background: transparent;
-  padding: 0;
-}
-
 .slideshowContainer {
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  border-radius: var(--radius-lg);
+  border-radius: 0;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.05);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
 }
 
 /* ========================================
@@ -80,42 +73,45 @@
   left: 0;
   width: 100%;
   height: 100%;
-  transition: transform 0.8s cubic-bezier(0.45, 0, 0.15, 1), 
+  transition: transform 0.8s cubic-bezier(0.45, 0, 0.15, 1),
               opacity 0.8s cubic-bezier(0.45, 0, 0.15, 1);
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
 }
 
 /* Slide ที่กำลังแสดง */
 .slideActive {
   opacity: 1;
-  transform: translateX(0) scale(1);
+  transform: translateX(0);
   z-index: 2;
 }
 
 /* Slide ที่จะออกไปทางซ้าย */
 .slideExitLeft {
   opacity: 0;
-  transform: translateX(-100%) scale(0.95);
+  transform: translateX(-100%);
   z-index: 1;
 }
 
 /* Slide ที่จะออกไปทางขวา */
 .slideExitRight {
   opacity: 0;
-  transform: translateX(100%) scale(0.95);
+  transform: translateX(100%);
   z-index: 1;
 }
 
 /* Slide ที่ซ่อนอยู่ทางซ้าย (พร้อมเข้า) */
 .slideHiddenLeft {
   opacity: 0;
-  transform: translateX(-100%) scale(0.95);
+  transform: translateX(-100%);
   z-index: 0;
 }
 
 /* Slide ที่ซ่อนอยู่ทางขวา (พร้อมเข้า) */
 .slideHiddenRight {
   opacity: 0;
-  transform: translateX(100%) scale(0.95);
+  transform: translateX(100%);
   z-index: 0;
 }
 
