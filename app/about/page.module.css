@@ -3,7 +3,7 @@
   margin: 0;
   padding: 40px 20px;
   min-height: 100vh;
-  background: var(--gradient-secondary);
+  background: var(--bg-card);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -25,7 +25,7 @@
 
 /* Image Section (Left) */
 .imageSection {
-  background: var(--gradient-primary);
+  background: var(--bg-card);
   padding: 0;
   position: relative;
   overflow: hidden;
@@ -115,32 +115,33 @@
 .arrow {
   position: absolute;
   top: 20px;
+  z-index: 20;
   background: rgba(255, 255, 255, 0.9);
-  color: var(--accent-primary);
+  color: #333333;
   border: none;
-  font-size: 3rem;
-  font-weight: bold;
-  width: 50px;
-  height: 50px;
+  font-size: 2rem;
+  width: 45px;
+  height: 45px;
   border-radius: var(--radius-full);
   cursor: pointer;
-  z-index: 10;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   line-height: 1;
   padding: 0;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .arrow:hover {
-  background: white;
+  background: rgba(255, 255, 255, 1);
+  color: #333333;
   transform: scale(1.1);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
 .arrow:active {
+  background: rgba(255, 255, 255, 0.8);
   transform: scale(0.95);
 }
 
@@ -841,12 +842,16 @@
   }
 
   .arrow {
-    background: rgba(42, 42, 42, 0.9);
-    color: #8b9dc3;
+    background: rgba(255, 255, 255, 0.9);
+    color: #333333;
   }
 
   .arrow:hover {
-    background: #2a2a2a;
+    background: rgba(255, 255, 255, 1);
+  }
+
+  .arrow:active {
+    background: rgba(255, 255, 255, 0.8);
   }
 
   .dot {

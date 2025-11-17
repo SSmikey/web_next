@@ -1,7 +1,7 @@
 .container {
   display: flex;
   justify-content: center;
-  background: var(--gradient-secondary);
+  background: var(--bg-card);
   padding: 40px 20px;
   min-height: 100vh;
   align-items: center;
@@ -21,7 +21,7 @@
 /* Left Section */
 .left {
   position: relative;
-  background: var(--gradient-primary);
+  background: var(--bg-card);
   padding: 0;
   min-height: 600px;
   border-radius: var(--radius-2xl) 0 0 var(--radius-2xl);
@@ -137,7 +137,7 @@
   top: 20px;
   z-index: 20;
   background: rgba(255, 255, 255, 0.9);
-  color: var(--accent-primary);
+  color: #333333;
   border: none;
   font-size: 2rem;
   width: 45px;
@@ -154,12 +154,14 @@
 }
 
 .arrow:hover {
-  background: white;
+  background: rgba(255, 255, 255, 1);
+  color: #333333;
   transform: scale(1.1);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
 .arrow:active {
+  background: rgba(255, 255, 255, 0.8);
   transform: scale(0.95);
 }
 
@@ -322,7 +324,7 @@
     height: 40px;
     font-size: 1.8rem;
     background: rgba(255, 255, 255, 0.9);
-    color: #667eea;
+    color: #333333;
   }
   .dotsContainer {
     bottom: 15px;
@@ -362,7 +364,7 @@
     height: 35px;
     font-size: 1.5rem;
     background: rgba(255, 255, 255, 0.9);
-    color: #667eea;
+    color: #333333;
   }
   .dotsContainer {
     bottom: 12px;
@@ -408,7 +410,7 @@
     height: 32px;
     font-size: 1.3rem;
     background: rgba(255, 255, 255, 0.9);
-    color: #667eea;
+    color: #333333;
   }
   .dotsContainer {
     bottom: 10px;
@@ -456,7 +458,7 @@
     left: 5px;
     right: 5px;
     background: rgba(255, 255, 255, 0.9);
-    color: #667eea;
+    color: #333333;
   }
   .dotsContainer {
     bottom: 8px;
