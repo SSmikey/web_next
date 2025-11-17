@@ -1,5 +1,5 @@
 .navbar {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--gradient-primary);
   backdrop-filter: blur(10px);
   padding: 0;
   position: sticky;
@@ -92,7 +92,7 @@
   font-size: 1rem;
   font-weight: 500;
   padding: 8px 16px;
-  border-radius: 25px;
+  border-radius: var(--radius-full);
   transition: background-color 0.2s ease;
 }
 
@@ -123,7 +123,7 @@
   font-size: 0.9rem;
   font-weight: 500;
   padding: 6px 14px;
-  border-radius: 20px;
+  border-radius: var(--radius-full);
   transition: all 0.2s ease;
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
