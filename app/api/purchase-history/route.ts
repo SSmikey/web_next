@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import connectToDatabase from "@/lib/mongodb";
+import Order, { IOrder } from "@/models/Order";
 
 export async function GET(request: NextRequest) {
   try {
@@ -25,7 +26,12 @@ export async function GET(request: NextRequest) {
     await connectToDatabase();
     
     // Build query
-    const query: any = { userId: session.user?.id };
+    const query: any = {};
+    
+    // If user is logged in, show their orders
+    if (session.user?.id) {
+      query.userId = session.user.id;
+    }
     
     if (status && status !== "all") {
       query.status = status;
@@ -34,7 +40,7 @@ export async function GET(request: NextRequest) {
     if (search) {
       query.$or = [
         { orderNumber: { $regex: search, $options: "i" } },
-        { "items.name": { $regex: search, $options: "i" } }
+        { "items.productName": { $regex: search, $options: "i" } }
       ];
     }
     
@@ -45,153 +51,60 @@ export async function GET(request: NextRequest) {
       query.orderDate = { $gte: cutoffDate };
     }
 
-    // For now, return mock data since we don't have a proper database schema
-    // In a real implementation, you would query the database here
-    const mockOrders = [
-      {
-        id: "ORD-2023-001",
-        orderNumber: "ORD-2023-001",
-        date: "2023-11-10",
-        status: "delivered",
-        total: 2590,
-        items: [
-          {
-            id: 1,
-            name: "โปรแกรมออกแบบกราฟิก Professional",
-            price: 1990,
-            quantity: 1,
-            image: "🎨"
-          },
-          {
-            id: 2,
-            name: "เทมเพลตการนำเสนอธุรกิจ",
-            price: 600,
-            quantity: 1,
-            image: "📊"
-          }
-        ]
-      },
-      {
-        id: "ORD-2023-002",
-        orderNumber: "ORD-2023-002",
-        date: "2023-11-05",
-        status: "shipped",
-        total: 1290,
-        items: [
-          {
-            id: 3,
-            name: "ชุดฟอนต์ไทยสำหรับนักออกแบบ",
-            price: 1290,
-            quantity: 1,
-            image: "🔤"
-          }
-        ]
-      },
-      {
-        id: "ORD-2023-003",
-        orderNumber: "ORD-2023-003",
-        date: "2023-10-28",
-        status: "processing",
-        total: 3500,
-        items: [
-          {
-            id: 4,
-            name: "คอร์สเรียนการใช้โปรแกรมตัดต่อวิดีโอ",
-            price: 2500,
-            quantity: 1,
-            image: "🎬"
-          },
-          {
-            id: 5,
-            name: "อุปกรณ์เสริมสำหรับการถ่ายวิดีโอ",
-            price: 1000,
-            quantity: 1,
-            image: "📹"
-          }
-        ]
-      },
-      {
-        id: "ORD-2023-004",
-        orderNumber: "ORD-2023-004",
-        date: "2023-10-15",
-        status: "pending",
-        total: 890,
-        items: [
-          {
-            id: 6,
-            name: "eBook การเขียนโปรแกรมสำหรับผู้เริ่มต้น",
-            price: 890,
-            quantity: 1,
-            image: "📚"
-          }
-        ]
-      },
-      {
-        id: "ORD-2023-005",
-        orderNumber: "ORD-2023-005",
-        date: "2023-09-30",
-        status: "cancelled",
-        total: 1500,
-        items: [
-          {
-            id: 7,
-            name: "สมาชิกพรีเมียม 1 เดือน",
-            price: 1500,
-            quantity: 1,
-            image: "⭐"
-          }
-        ]
-      }
-    ];
-
-    // Apply filters to mock data
-    let filteredOrders = mockOrders;
+    // Build sort options
+    let sortOptions: any = { orderDate: -1 }; // Default: newest first
     
-    if (status && status !== "all") {
-      filteredOrders = filteredOrders.filter(order => order.status === status);
-    }
-    
-    if (search) {
-      filteredOrders = filteredOrders.filter(order =>
-        order.orderNumber.toLowerCase().includes(search.toLowerCase()) ||
-        order.items.some(item => item.name.toLowerCase().includes(search.toLowerCase()))
-      );
-    }
-    
-    if (timeFilter) {
-      const days = parseInt(timeFilter);
-      const cutoffDate = new Date();
-      cutoffDate.setDate(cutoffDate.getDate() - days);
-      
-      filteredOrders = filteredOrders.filter(order => new Date(order.date) >= cutoffDate);
-    }
-
-    // Apply sorting
     switch (sortBy) {
-      case "date-desc":
-        filteredOrders.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-        break;
       case "date-asc":
-        filteredOrders.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        sortOptions = { orderDate: 1 };
         break;
       case "total-desc":
-        filteredOrders.sort((a, b) => b.total - a.total);
+        sortOptions = { totalAmount: -1 };
         break;
       case "total-asc":
-        filteredOrders.sort((a, b) => a.total - b.total);
+        sortOptions = { totalAmount: 1 };
         break;
       case "status":
-        filteredOrders.sort((a, b) => a.status.localeCompare(b.status));
+        sortOptions = { status: 1 };
         break;
       default:
-        filteredOrders.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        sortOptions = { orderDate: -1 };
     }
 
-    const total = filteredOrders.length;
-    const orders = filteredOrders.slice((page - 1) * limit, page * limit);
+    // Get total count
+    const total = await Order.countDocuments(query);
+    
+    // Get orders with pagination
+    const orders = await Order.find(query)
+      .sort(sortOptions)
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .lean();
+
+    // Transform orders to match expected format
+    const transformedOrders = orders.map((order: any) => ({
+      id: order._id.toString(),
+      orderNumber: order.orderNumber,
+      date: order.orderDate.toISOString().split('T')[0], // Format as YYYY-MM-DD
+      status: order.status,
+      total: order.totalAmount + order.shippingCost,
+      totalAmount: order.totalAmount,
+      shippingCost: order.shippingCost,
+      shippingMethod: order.shippingMethod,
+      customerInfo: order.customerInfo,
+      paymentSlip: order.paymentSlip,
+      items: order.items.map((item: any) => ({
+        id: item._id || Math.random().toString(),
+        name: item.productName,
+        price: item.price,
+        quantity: item.quantity,
+        size: item.size,
+        image: item.imageUrl || "👕"
+      }))
+    }));
 
     return NextResponse.json({
-      orders,
+      orders: transformedOrders,
       pagination: {
         total,
         page,
@@ -212,14 +125,13 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     
-    if (!session) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
-
-    const { items, totalAmount, shippingAddress } = await request.json();
+    const {
+      customerInfo,
+      items,
+      totalAmount,
+      shippingCost,
+      shippingMethod
+    } = await request.json();
     
     if (!items || items.length === 0) {
       return NextResponse.json(
@@ -228,35 +140,37 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!customerInfo) {
+      return NextResponse.json(
+        { error: "Customer information is required" },
+        { status: 400 }
+      );
+    }
+
     await connectToDatabase();
     
-    // Generate order number
-    const orderNumber = `ORD-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 1000)).padStart(3, "0")}`;
-    
     // Create new order
-    const newOrder = {
-      orderNumber,
-      userId: session.user?.id,
+    const newOrder = new Order({
+      userId: session?.user?.id || undefined,
+      customerInfo,
       items,
       totalAmount,
-      shippingAddress,
+      shippingCost,
+      shippingMethod,
       status: "pending",
       orderDate: new Date(),
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
+    });
     
-    // In a real implementation, you would save to the database here
-    // For now, we'll just return the order object
-    const result = {
-      insertedId: new Date().getTime().toString()
-    };
+    await newOrder.save();
     
     return NextResponse.json({
       success: true,
       order: {
-        ...newOrder,
-        _id: result.insertedId
+        id: newOrder._id.toString(),
+        orderNumber: newOrder.orderNumber,
+        status: newOrder.status,
+        totalAmount: newOrder.totalAmount + newOrder.shippingCost,
+        items: newOrder.items
       }
     });
   } catch (error) {

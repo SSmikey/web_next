@@ -103,7 +103,7 @@
   display: flex;
   gap: 12px;
   z-index: 10;
-  background: rgba(0, 0, 0, 0.3);
+  background: var(--bg-overlay);
   padding: 10px 20px;
   border-radius: 25px;
   backdrop-filter: blur(10px);
@@ -113,7 +113,7 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.5);
+  background: var(--bg-tertiary);
   border: 2px solid transparent;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -121,12 +121,12 @@
 }
 
 .dot:hover {
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--bg-card);
   transform: scale(1.2);
 }
 
 .dotActive {
-  background: white;
+  background: var(--bg-card);
   width: 30px;
   border-radius: 10px;
   border-color: white;
@@ -136,15 +136,15 @@
   position: absolute;
   top: 20px;
   z-index: 20;
-  background: rgba(255, 255, 255, 0.9);
-  color: #333333;
+  background: var(--bg-card);
+  color: var(--text-primary);
   border: none;
   font-size: 2rem;
   width: 45px;
   height: 45px;
   border-radius: var(--radius-full);
   cursor: pointer;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-md);
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
@@ -154,14 +154,14 @@
 }
 
 .arrow:hover {
-  background: rgba(255, 255, 255, 1);
-  color: #333333;
+  background: var(--bg-card);
+  color: var(--text-primary);
   transform: scale(1.1);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-lg);
 }
 
 .arrow:active {
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--bg-card);
   transform: scale(0.95);
 }
 
@@ -199,12 +199,12 @@
   font-weight: 600;
   text-align: center;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  box-shadow: var(--shadow-primary);
 }
 
 .primaryButton:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+  box-shadow: var(--shadow-primary-hover);
 }
 
 .primaryButton:active {
@@ -248,7 +248,7 @@
 }
 
 .sizeTable th {
-  background: rgba(102, 126, 234, 0.05);
+  background: var(--bg-tertiary);
   color: var(--text-primary);
   font-weight: 600;
 }
@@ -275,9 +275,9 @@
 }
 
 .statCard:hover {
-  background: rgba(102, 126, 234, 0.1);
+  background: var(--accent-primary-transparent);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+  box-shadow: var(--shadow-primary);
 }
 
 .statCard h4 {
@@ -323,8 +323,8 @@
     width: 40px;
     height: 40px;
     font-size: 1.8rem;
-    background: rgba(255, 255, 255, 0.9);
-    color: #333333;
+    background: var(--bg-card);
+    color: var(--text-primary);
   }
   .dotsContainer {
     bottom: 15px;
@@ -363,8 +363,8 @@
     width: 35px;
     height: 35px;
     font-size: 1.5rem;
-    background: rgba(255, 255, 255, 0.9);
-    color: #333333;
+    background: var(--bg-card);
+    color: var(--text-primary);
   }
   .dotsContainer {
     bottom: 12px;
@@ -409,8 +409,8 @@
     width: 32px;
     height: 32px;
     font-size: 1.3rem;
-    background: rgba(255, 255, 255, 0.9);
-    color: #333333;
+    background: var(--bg-card);
+    color: var(--text-primary);
   }
   .dotsContainer {
     bottom: 10px;
@@ -457,8 +457,8 @@
     font-size: 1.2rem;
     left: 5px;
     right: 5px;
-    background: rgba(255, 255, 255, 0.9);
-    color: #333333;
+    background: var(--bg-card);
+    color: var(--text-primary);
   }
   .dotsContainer {
     bottom: 8px;

@@ -1,68 +1,814 @@
-import { getServerSession } from "next-auth/next"
-import { redirect } from "next/navigation"
-import { authOptions } from "../api/auth/[...nextauth]/route"
+'use client';
+
+import { useState, useEffect } from 'react';
+import { getServerSession } from "next-auth/next";
+import { redirect } from "next/navigation";
+import { authOptions } from "../api/auth/[...nextauth]/route";
+import styles from './page.module.css';
+
+interface StockData {
+  _id: string;
+  type: string;
+  sizes: {
+    SSS: number;
+    SS: number;
+    S: number;
+    M: number;
+    L: number;
+    XL: number;
+    '2XL': number;
+    '3XL': number;
+    '4XL': number;
+    '5XL': number;
+    '6XL': number;
+    '7XL': number;
+    '8XL': number;
+    '9XL': number;
+    '10XL': number;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface Order {
+  id: string;
+  orderNumber: string;
+  date: string;
+  status: 'pending' | 'waiting_payment' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  total: number;
+  subtotal: number;
+  shippingCost: number;
+  customerInfo: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    address: string;
+    note?: string;
+  };
+  items: Array<{
+    productId: string;
+    productName: string;
+    productDescription: string;
+    price: number;
+    quantity: number;
+    size: string;
+    imageUrl?: string;
+  }>;
+  paymentInfo?: {
+    bankName: string;
+    accountName: string;
+    accountNumber: string;
+    qrCodeUrl?: string;
+  };
+  paymentSlip?: {
+    url: string;
+    uploadedAt: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface Stats {
+  totalUsers: number;
+  totalOrders: number;
+  totalRevenue: number;
+  ordersByStatus: {
+    pending: number;
+    waiting_payment: number;
+    processing: number;
+    shipped: number;
+    delivered: number;
+    cancelled: number;
+  };
+  monthlyRevenue: Array<{
+    month: string;
+    revenue: number;
+    count: number;
+  }>;
+  recentOrders: Array<{
+    id: string;
+    orderNumber: string;
+    customerName: string;
+    status: string;
+    total: number;
+    date: string;
+  }>;
+}
 
 export default async function AdminPage() {
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession(authOptions);
 
   if (!session) {
-    redirect("/auth/signin")
+    redirect("/auth/signin");
   }
 
   if (session.user?.role !== "admin") {
-    redirect("/auth/signin?error=AccessDenied")
+    redirect("/auth/signin?error=AccessDenied");
+  }
+
+  return <AdminDashboard session={session} />;
+}
+
+function AdminDashboard({ session }: { session: any }) {
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [showOrderModal, setShowOrderModal] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [editingPayment, setEditingPayment] = useState(false);
+  const [paymentInfo, setPaymentInfo] = useState({
+    bankName: '',
+    accountName: '',
+    accountNumber: '',
+    qrCodeUrl: ''
+  });
+  const [activeTab, setActiveTab] = useState<'orders' | 'stock'>('orders');
+  const [stockData, setStockData] = useState<StockData[]>([]);
+  const [editingStock, setEditingStock] = useState(false);
+  const [stockUpdates, setStockUpdates] = useState<StockData[]>([]);
+  const [savingStock, setSavingStock] = useState(false);
+
+  useEffect(() => {
+    fetchStats();
+    fetchOrders();
+    fetchStockData();
+  }, [currentPage, statusFilter, searchQuery]);
+
+  const fetchStats = async () => {
+    try {
+      const response = await fetch('/api/admin/stats');
+      if (response.ok) {
+        const data = await response.json();
+        setStats(data);
+      }
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+    }
+  };
+
+  const fetchOrders = async () => {
+    try {
+      setLoading(true);
+      const params = new URLSearchParams({
+        page: currentPage.toString(),
+        limit: '10',
+        status: statusFilter,
+        search: searchQuery
+      });
+      
+      const response = await fetch(`/api/admin/orders?${params}`);
+      if (response.ok) {
+        const data = await response.json();
+        setOrders(data.orders);
+        setTotalPages(data.pagination.pages);
+      }
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchStockData = async () => {
+    try {
+      const response = await fetch('/api/admin/stock');
+      if (response.ok) {
+        const data = await response.json();
+        setStockData(data.data);
+        setStockUpdates(data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching stock data:', error);
+    }
+  };
+
+  const handleStockUpdate = (typeIndex: number, size: string, value: string) => {
+    const numValue = parseInt(value) || 0;
+    const newStockUpdates = [...stockUpdates];
+    newStockUpdates[typeIndex] = {
+      ...newStockUpdates[typeIndex],
+      sizes: {
+        ...newStockUpdates[typeIndex].sizes,
+        [size]: numValue
+      }
+    };
+    setStockUpdates(newStockUpdates);
+  };
+
+  const saveStockUpdates = async () => {
+    try {
+      setSavingStock(true);
+      const response = await fetch('/api/admin/stock', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          stockUpdates
+        }),
+      });
+
+      if (response.ok) {
+        setStockData(stockUpdates);
+        setEditingStock(false);
+        fetchStockData();
+      }
+    } catch (error) {
+      console.error('Error updating stock:', error);
+    } finally {
+      setSavingStock(false);
+    }
+  };
+
+  const cancelStockEdit = () => {
+    setStockUpdates(stockData);
+    setEditingStock(false);
+  };
+
+  const handleStatusChange = async (orderId: string, newStatus: string) => {
+    try {
+      setUpdatingStatus(true);
+      const response = await fetch('/api/admin/orders', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          orderId,
+          status: newStatus
+        }),
+      });
+
+      if (response.ok) {
+        fetchOrders();
+        fetchStats();
+        if (selectedOrder && selectedOrder.id === orderId) {
+          setSelectedOrder({ ...selectedOrder, status: newStatus as any });
+        }
+      }
+    } catch (error) {
+      console.error('Error updating status:', error);
+    } finally {
+      setUpdatingStatus(false);
+    }
+  };
+
+  const handlePaymentInfoUpdate = async () => {
+    if (!selectedOrder) return;
+
+    try {
+      setEditingPayment(true);
+      const response = await fetch('/api/admin/orders', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          orderId: selectedOrder.id,
+          paymentInfo
+        }),
+      });
+
+      if (response.ok) {
+        setSelectedOrder({ ...selectedOrder, paymentInfo });
+        setEditingPayment(false);
+        fetchOrders();
+      }
+    } catch (error) {
+      console.error('Error updating payment info:', error);
+    } finally {
+      setEditingPayment(false);
+    }
+  };
+
+  const openOrderModal = (order: Order) => {
+    setSelectedOrder(order);
+    setPaymentInfo({
+      bankName: order.paymentInfo?.bankName || '',
+      accountName: order.paymentInfo?.accountName || '',
+      accountNumber: order.paymentInfo?.accountNumber || '',
+      qrCodeUrl: order.paymentInfo?.qrCodeUrl || ''
+    });
+    setShowOrderModal(true);
+  };
+
+  const closeModal = () => {
+    setShowOrderModal(false);
+    setSelectedOrder(null);
+    setEditingPayment(false);
+  };
+
+  const getStatusBadgeClass = (status: string) => {
+    const statusClasses: { [key: string]: string } = {
+      pending: styles.statusBadge + '.pending',
+      waiting_payment: styles.statusBadge + '.waiting_payment',
+      processing: styles.statusBadge + '.processing',
+      shipped: styles.statusBadge + '.shipped',
+      delivered: styles.statusBadge + '.delivered',
+      cancelled: styles.statusBadge + '.cancelled'
+    };
+    return statusClasses[status] || statusClasses.pending;
+  };
+
+  const getStatusText = (status: string) => {
+    const statusMap: { [key: string]: string } = {
+      pending: 'รอดำเนินการ',
+      waiting_payment: 'รอการชำระเงิน',
+      processing: 'กำลังดำเนินการ',
+      shipped: 'จัดส่งแล้ว',
+      delivered: 'จัดส่งสำเร็จ',
+      cancelled: 'ยกเลิก'
+    };
+    return statusMap[status] || status;
+  };
+
+  if (loading && !stats) {
+    return (
+      <div className={styles.container}>
+        <div style={{ textAlign: 'center', padding: '2rem' }}>
+          <p>กำลังโหลดข้อมูล...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem' }}>
-      <div style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Admin Dashboard</h1>
-        <p style={{ color: '#666' }}>
-          Welcome, {session.user?.name}. You have admin privileges.
+    <div className={styles.container}>
+      {/* Header */}
+      <div className={styles.header}>
+        <h1 className={styles.title}>📊 แดชบอร์ดผู้ดูแลระบบ</h1>
+        <p className={styles.subtitle}>
+          ยินดีต้อนรับ, {session.user?.name}. คุณมีสิทธิ์ผู้ดูแลระบบ
         </p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
-        <div style={{ border: '1px solid #e5e7eb', borderRadius: '0.5rem', padding: '1.5rem', backgroundColor: 'white' }}>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '0.5rem' }}>User Management</h2>
-          <p style={{ color: '#666', marginBottom: '1rem' }}>
-            Manage user roles and permissions
-          </p>
-          <p style={{ fontSize: '0.875rem', color: '#666' }}>
-            View and modify user roles, create new users, and manage access permissions.
-          </p>
-        </div>
+      {/* Statistics Cards */}
+      {stats && (
+        <div className={styles.statsGrid}>
+          <div className={styles.statCard}>
+            <div className={styles.statHeader}>
+              <span className={styles.statTitle}>ผู้ใช้ทั้งหมด</span>
+              <div className={`${styles.statIcon} ${styles.statIcon + '.users'}`}>👥</div>
+            </div>
+            <div className={styles.statValue}>{stats.totalUsers.toLocaleString()}</div>
+            <div className={styles.statChange}>+0% เดือนนี้</div>
+          </div>
 
-        <div style={{ border: '1px solid #e5e7eb', borderRadius: '0.5rem', padding: '1.5rem', backgroundColor: 'white' }}>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '0.5rem' }}>System Settings</h2>
-          <p style={{ color: '#666', marginBottom: '1rem' }}>
-            Configure system-wide settings
-          </p>
-          <p style={{ fontSize: '0.875rem', color: '#666' }}>
-            Manage application settings, security configurations, and system preferences.
-          </p>
-        </div>
+          <div className={styles.statCard}>
+            <div className={styles.statHeader}>
+              <span className={styles.statTitle}>คำสั่งซื้อทั้งหมด</span>
+              <div className={`${styles.statIcon} ${styles.statIcon + '.orders'}`}>📦</div>
+            </div>
+            <div className={styles.statValue}>{stats.totalOrders.toLocaleString()}</div>
+            <div className={styles.statChange}>+0% เดือนนี้</div>
+          </div>
 
-        <div style={{ border: '1px solid #e5e7eb', borderRadius: '0.5rem', padding: '1.5rem', backgroundColor: 'white' }}>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '0.5rem' }}>Analytics</h2>
-          <p style={{ color: '#666', marginBottom: '1rem' }}>
-            View system analytics and reports
-          </p>
-          <p style={{ fontSize: '0.875rem', color: '#666' }}>
-            Monitor system performance, user activity, and generate reports.
-          </p>
+          <div className={styles.statCard}>
+            <div className={styles.statHeader}>
+              <span className={styles.statTitle}>รายได้ทั้งหมด</span>
+              <div className={`${styles.statIcon} ${styles.statIcon + '.revenue'}`}>💰</div>
+            </div>
+            <div className={styles.statValue}>฿{stats.totalRevenue.toLocaleString()}</div>
+            <div className={styles.statChange}>+0% เดือนนี้</div>
+          </div>
+
+          <div className={styles.statCard}>
+            <div className={styles.statHeader}>
+              <span className={styles.statTitle}>รอดำเนินการ</span>
+              <div className={`${styles.statIcon} ${styles.statIcon + '.pending'}`}>⏳</div>
+            </div>
+            <div className={styles.statValue}>{stats.ordersByStatus.pending}</div>
+            <div className={styles.statChange}>คำสั่งซื้อที่ต้องดำเนินการ</div>
+          </div>
         </div>
+      )}
+
+      {/* Tab Navigation */}
+      <div className={styles.tabNavigation}>
+        <button
+          className={`${styles.tabButton} ${activeTab === 'orders' ? styles.activeTab : ''}`}
+          onClick={() => setActiveTab('orders')}
+        >
+          📋 จัดการคำสั่งซื้อ
+        </button>
+        <button
+          className={`${styles.tabButton} ${activeTab === 'stock' ? styles.activeTab : ''}`}
+          onClick={() => setActiveTab('stock')}
+        >
+          📦 จัดการสต็อกสินค้า
+        </button>
       </div>
 
-      <div style={{ border: '1px solid #e5e7eb', borderRadius: '0.5rem', padding: '1.5rem', backgroundColor: 'white' }}>
-        <h2 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem' }}>Admin Information</h2>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <p><strong>Name:</strong> {session.user?.name}</p>
-          <p><strong>Email:</strong> {session.user?.email}</p>
-          <p><strong>Role:</strong> {session.user?.role}</p>
-          <p><strong>User ID:</strong> {session.user?.id}</p>
+      {/* Main Content */}
+      <div className={styles.mainContent}>
+        {/* Orders Section */}
+        {activeTab === 'orders' && (
+          <div className={styles.ordersSection}>
+          <div className={styles.sectionHeader}>
+            <h2 className={styles.sectionTitle}>📋 จัดการคำสั่งซื้อ</h2>
+            <div className={styles.filters}>
+              <input
+                type="text"
+                placeholder="ค้นหาคำสั่งซื้อ..."
+                className={styles.searchInput}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <select
+                className={styles.statusFilter}
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+              >
+                <option value="all">ทุกสถานะ</option>
+                <option value="pending">รอดำเนินการ</option>
+                <option value="waiting_payment">รอการชำระเงิน</option>
+                <option value="processing">กำลังดำเนินการ</option>
+                <option value="shipped">จัดส่งแล้ว</option>
+                <option value="delivered">จัดส่งสำเร็จ</option>
+                <option value="cancelled">ยกเลิก</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Orders Table */}
+          <table className={styles.ordersTable}>
+            <thead>
+              <tr>
+                <th>เลขที่ออเดอร์</th>
+                <th>ลูกค้า</th>
+                <th>วันที่</th>
+                <th>สถานะ</th>
+                <th>ยอดรวม</th>
+                <th>การจัดการ</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orders.map((order) => (
+                <tr key={order.id} className={styles.orderRow}>
+                  <td className={styles.orderNumber}>{order.orderNumber}</td>
+                  <td className={styles.customerName}>
+                    {order.customerInfo.firstName} {order.customerInfo.lastName}
+                  </td>
+                  <td>{order.date}</td>
+                  <td>
+                    <span className={`${styles.statusBadge} ${getStatusBadgeClass(order.status)}`}>
+                      {getStatusText(order.status)}
+                    </span>
+                  </td>
+                  <td className={styles.totalAmount}>฿{order.total.toLocaleString()}</td>
+                  <td>
+                    <div className={styles.actionButtons}>
+                      <button
+                        className={`${styles.actionButton} ${styles.viewButton}`}
+                        onClick={() => openOrderModal(order)}
+                      >
+                        ดู
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          {/* Pagination */}
+          <div className={styles.pagination}>
+            <button
+              className={styles.paginationButton}
+              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+              disabled={currentPage === 1}
+            >
+              ก่อนหน้า
+            </button>
+            {[...Array(totalPages)].map((_, i) => (
+              <button
+                key={i + 1}
+                className={`${styles.paginationButton} ${currentPage === i + 1 ? styles.active : ''}`}
+                onClick={() => setCurrentPage(i + 1)}
+              >
+                {i + 1}
+              </button>
+            ))}
+            <button
+              className={styles.paginationButton}
+              onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+              disabled={currentPage === totalPages}
+            >
+              ถัดไป
+            </button>
+          </div>
+          </div>
+        )}
+
+        {/* Stock Management Section */}
+        {activeTab === 'stock' && (
+          <div className={styles.stockSection}>
+            <div className={styles.sectionHeader}>
+              <h2 className={styles.sectionTitle}>📦 จัดการสต็อกสินค้า</h2>
+              <div className={styles.stockActions}>
+                {!editingStock ? (
+                  <button
+                    className={styles.editStockButton}
+                    onClick={() => setEditingStock(true)}
+                  >
+                    แก้ไขสต็อก
+                  </button>
+                ) : (
+                  <div className={styles.stockEditActions}>
+                    <button
+                      className={styles.saveStockButton}
+                      onClick={saveStockUpdates}
+                      disabled={savingStock}
+                    >
+                      {savingStock ? 'กำลังบันทึก...' : 'บันทึก'}
+                    </button>
+                    <button
+                      className={styles.cancelStockButton}
+                      onClick={cancelStockEdit}
+                    >
+                      ยกเลิก
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className={styles.stockTables}>
+              {stockUpdates.map((stock, stockIndex) => (
+                <div key={stock._id} className={styles.stockTableContainer}>
+                  <h3 className={styles.stockTypeTitle}>{stock.type}</h3>
+                  
+                  <div className={styles.tableWrapper}>
+                    <table className={styles.stockTable}>
+                      <thead>
+                        <tr>
+                          <th>SIZE</th>
+                          <th>SSS</th>
+                          <th>SS</th>
+                          <th>S</th>
+                          <th>M</th>
+                          <th>L</th>
+                          <th>XL</th>
+                          <th>2XL</th>
+                          <th>3XL</th>
+                          <th>4XL</th>
+                          <th>5XL</th>
+                          <th>6XL</th>
+                          <th>7XL</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>จำนวน</td>
+                          {['SSS', 'SS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', '6XL', '7XL'].map(size => (
+                            <td key={size}>
+                              {editingStock ? (
+                                <input
+                                  type="number"
+                                  min="0"
+                                  className={styles.stockInput}
+                                  value={stock.sizes[size as keyof typeof stock.sizes]}
+                                  onChange={(e) => handleStockUpdate(stockIndex, size, e.target.value)}
+                                />
+                              ) : (
+                                <span className={styles.stockValue}>{stock.sizes[size as keyof typeof stock.sizes]}</span>
+                              )}
+                            </td>
+                          ))}
+                        </tr>
+                      </tbody>
+                    </table>
+
+                    <table className={styles.stockTable}>
+                      <thead>
+                        <tr>
+                          <th>SIZE</th>
+                          <th>8XL</th>
+                          <th>9XL</th>
+                          <th>10XL</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>จำนวน</td>
+                          {['8XL', '9XL', '10XL'].map(size => (
+                            <td key={size}>
+                              {editingStock ? (
+                                <input
+                                  type="number"
+                                  min="0"
+                                  className={styles.stockInput}
+                                  value={stock.sizes[size as keyof typeof stock.sizes]}
+                                  onChange={(e) => handleStockUpdate(stockIndex, size, e.target.value)}
+                                />
+                              ) : (
+                                <span className={styles.stockValue}>{stock.sizes[size as keyof typeof stock.sizes]}</span>
+                              )}
+                            </td>
+                          ))}
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Sidebar - only show on orders tab */}
+        {activeTab === 'orders' && (
+          <div className={styles.sidebar}>
+          {/* Recent Orders */}
+          {stats && (
+            <div className={styles.recentOrders}>
+              <h3>📦 คำสั่งซื้อล่าสุด</h3>
+              {stats.recentOrders.map((order) => (
+                <div key={order.id} className={styles.recentOrderItem}>
+                  <div className={styles.recentOrderNumber}>{order.orderNumber}</div>
+                  <div className={styles.recentOrderCustomer}>{order.customerName}</div>
+                  <span className={`${styles.recentOrderStatus} ${styles.recentOrderStatus + '.' + order.status}`}>
+                    {getStatusText(order.status)}
+                  </span>
+                  <div className={styles.recentOrderTotal}>฿{order.total.toLocaleString()}</div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
+        )}
       </div>
+
+      {/* Order Details Modal */}
+      {showOrderModal && selectedOrder && (
+        <div className={styles.modal} onClick={closeModal}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <h2 className={styles.modalTitle}>รายละเอียดคำสั่งซื้อ</h2>
+              <button className={styles.closeButton} onClick={closeModal}>×</button>
+            </div>
+
+            <div className={styles.orderDetails}>
+              {/* Customer Info */}
+              <div>
+                <h3>ข้อมูลลูกค้า</h3>
+                <div className={styles.detailRow}>
+                  <span className={styles.detailLabel}>ชื่อ:</span>
+                  <span className={styles.detailValue}>
+                    {selectedOrder.customerInfo.firstName} {selectedOrder.customerInfo.lastName}
+                  </span>
+                </div>
+                <div className={styles.detailRow}>
+                  <span className={styles.detailLabel}>อีเมล:</span>
+                  <span className={styles.detailValue}>{selectedOrder.customerInfo.email}</span>
+                </div>
+                <div className={styles.detailRow}>
+                  <span className={styles.detailLabel}>เบอร์โทร:</span>
+                  <span className={styles.detailValue}>{selectedOrder.customerInfo.phone}</span>
+                </div>
+                <div className={styles.detailRow}>
+                  <span className={styles.detailLabel}>ที่อยู่:</span>
+                  <span className={styles.detailValue}>{selectedOrder.customerInfo.address}</span>
+                </div>
+              </div>
+
+              {/* Order Status */}
+              <div>
+                <h3>สถานะคำสั่งซื้อ</h3>
+                <select
+                  className={styles.statusSelect}
+                  value={selectedOrder.status}
+                  onChange={(e) => handleStatusChange(selectedOrder.id, e.target.value)}
+                  disabled={updatingStatus}
+                >
+                  <option value="pending">รอดำเนินการ</option>
+                  <option value="waiting_payment">รอการชำระเงิน</option>
+                  <option value="processing">กำลังดำเนินการ</option>
+                  <option value="shipped">จัดส่งแล้ว</option>
+                  <option value="delivered">จัดส่งสำเร็จ</option>
+                  <option value="cancelled">ยกเลิก</option>
+                </select>
+              </div>
+
+              {/* Order Items */}
+              <div>
+                <h3>รายการสินค้า</h3>
+                <div className={styles.itemsList}>
+                  {selectedOrder.items.map((item, index) => (
+                    <div key={index} className={styles.itemRow}>
+                      {item.imageUrl && (
+                        <img
+                          src={item.imageUrl}
+                          alt={item.productName}
+                          className={styles.itemImage}
+                        />
+                      )}
+                      <div className={styles.itemDetails}>
+                        <div className={styles.itemName}>{item.productName}</div>
+                        <div className={styles.itemMeta}>
+                          {item.productDescription} • ไซส์ {item.size} • {item.quantity} ชิ้น
+                        </div>
+                      </div>
+                      <div className={styles.itemPrice}>
+                        ฿{(item.price * item.quantity).toLocaleString()}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Payment Info */}
+              <div>
+                <h3>ข้อมูลการชำระเงิน</h3>
+                <div className={styles.paymentInfo}>
+                  <div className={styles.paymentInfoRow}>
+                    <span className={styles.paymentInfoLabel}>ธนาคาร:</span>
+                    <span className={styles.paymentInfoValue}>{selectedOrder.paymentInfo?.bankName || '-'}</span>
+                  </div>
+                  <div className={styles.paymentInfoRow}>
+                    <span className={styles.paymentInfoLabel}>ชื่อบัญชี:</span>
+                    <span className={styles.paymentInfoValue}>{selectedOrder.paymentInfo?.accountName || '-'}</span>
+                  </div>
+                  <div className={styles.paymentInfoRow}>
+                    <span className={styles.paymentInfoLabel}>เลขที่บัญชี:</span>
+                    <span className={styles.paymentInfoValue}>{selectedOrder.paymentInfo?.accountNumber || '-'}</span>
+                  </div>
+                  
+                  {editingPayment ? (
+                    <div>
+                      <input
+                        type="text"
+                        placeholder="ธนาคาร"
+                        className={styles.paymentInput}
+                        value={paymentInfo.bankName}
+                        onChange={(e) => setPaymentInfo({ ...paymentInfo, bankName: e.target.value })}
+                      />
+                      <input
+                        type="text"
+                        placeholder="ชื่อบัญชี"
+                        className={styles.paymentInput}
+                        value={paymentInfo.accountName}
+                        onChange={(e) => setPaymentInfo({ ...paymentInfo, accountName: e.target.value })}
+                      />
+                      <input
+                        type="text"
+                        placeholder="เลขที่บัญชี"
+                        className={styles.paymentInput}
+                        value={paymentInfo.accountNumber}
+                        onChange={(e) => setPaymentInfo({ ...paymentInfo, accountNumber: e.target.value })}
+                      />
+                      <input
+                        type="text"
+                        placeholder="QR Code URL"
+                        className={styles.paymentInput}
+                        value={paymentInfo.qrCodeUrl}
+                        onChange={(e) => setPaymentInfo({ ...paymentInfo, qrCodeUrl: e.target.value })}
+                      />
+                      <button
+                        className={styles.saveButton}
+                        onClick={handlePaymentInfoUpdate}
+                        disabled={editingPayment}
+                      >
+                        บันทึกข้อมูลการชำระเงิน
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      className={styles.saveButton}
+                      onClick={() => setEditingPayment(true)}
+                    >
+                      แก้ไขข้อมูลการชำระเงิน
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Order Summary */}
+              <div>
+                <h3>สรุปคำสั่งซื้อ</h3>
+                <div className={styles.detailRow}>
+                  <span className={styles.detailLabel}>ราคาสินค้า:</span>
+                  <span className={styles.detailValue}>฿{selectedOrder.subtotal.toLocaleString()}</span>
+                </div>
+                <div className={styles.detailRow}>
+                  <span className={styles.detailLabel}>ค่าจัดส่ง:</span>
+                  <span className={styles.detailValue}>฿{selectedOrder.shippingCost.toLocaleString()}</span>
+                </div>
+                <div className={styles.detailRow}>
+                  <span className={styles.detailLabel}>ยอดรวมทั้งหมด:</span>
+                  <span className={styles.detailValue}>฿{selectedOrder.total.toLocaleString()}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
-  )
+  );
 }

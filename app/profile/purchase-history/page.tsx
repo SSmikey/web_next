@@ -7,7 +7,8 @@ import ProfileLayout from "../components/ProfileLayout";
 import styles from "./page.module.css";
 
 const statusLabels = {
-  pending: "รอดำเนินการ",
+  pending: "รอชำระเงิน",
+  waiting_payment: "รอตรวจสอบการชำระเงิน",
   processing: "กำลังดำเนินการ",
   shipped: "จัดส่งแล้ว",
   delivered: "จัดส่งสำเร็จ",
@@ -27,6 +28,23 @@ export default function PurchaseHistoryPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [selectedOrder, setSelectedOrder] = useState<any>(null);
+  const [showOrderDetails, setShowOrderDetails] = useState(false);
+  const [showPaymentPopup, setShowPaymentPopup] = useState(false);
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [cancelingOrderId, setCancelingOrderId] = useState<string | null>(null);
+  const [uploadingSlip, setUploadingSlip] = useState(false);
+  const [paymentSettings, setPaymentSettings] = useState<{
+    bankName: string;
+    accountName: string;
+    accountNumber: string;
+    qrCodeImage: string;
+  }>({
+    bankName: '',
+    accountName: '',
+    accountNumber: '',
+    qrCodeImage: ''
+  });
   const ordersPerPage = 5;
 
   // Fetch orders from API
@@ -74,8 +92,21 @@ export default function PurchaseHistoryPage() {
   useEffect(() => {
     if (session) {
       fetchOrders();
+      fetchPaymentSettings();
     }
   }, [fetchOrders, session]);
+
+  const fetchPaymentSettings = async () => {
+    try {
+      const response = await fetch('/api/admin/payment-settings');
+      if (response.ok) {
+        const data = await response.json();
+        setPaymentSettings(data);
+      }
+    } catch (error) {
+      console.error('Error fetching payment settings:', error);
+    }
+  };
 
   const toggleOrderExpansion = (orderId: string) => {
     setExpandedOrders(prev =>
@@ -105,9 +136,83 @@ export default function PurchaseHistoryPage() {
     setCurrentPage(1);
   };
 
+  const handleViewOrderDetails = (order: any) => {
+    setSelectedOrder(order);
+    setShowOrderDetails(true);
+  };
+
+  const handleShowPaymentPopup = (order: any) => {
+    setSelectedOrder(order);
+    setShowPaymentPopup(true);
+  };
+
+  const handlePaymentSlipUpload = async (orderId: string, file: File) => {
+    if (!file) {
+      alert('กรุณาเลือกไฟล์สลิปการโอนเงิน');
+      return;
+    }
+
+    setUploadingSlip(true);
+    
+    try {
+      const formData = new FormData();
+      formData.append('paymentSlip', file);
+      
+      const response = await fetch(`/api/orders/${orderId}/payment-slip`, {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        alert('อัปโหลดสลิปการโอนเงินสำเร็จแล้ว');
+        setShowPaymentPopup(false);
+        // Refresh orders list
+        fetchOrders();
+      } else {
+        const data = await response.json();
+        alert(data.error || 'Failed to upload payment slip');
+      }
+    } catch (error) {
+      console.error('Error uploading payment slip:', error);
+      alert('Failed to upload payment slip. Please try again.');
+    } finally {
+      setUploadingSlip(false);
+    }
+  };
+
+  const handleCancelOrder = async (orderId: string) => {
+    setCancelingOrderId(orderId);
+    setShowCancelConfirm(true);
+  };
+
+  const confirmCancelOrder = async () => {
+    if (!cancelingOrderId) return;
+    
+    try {
+      const response = await fetch(`/api/orders/${cancelingOrderId}`, {
+        method: 'DELETE',
+      });
+      
+      if (response.ok) {
+        // Refresh orders list
+        fetchOrders();
+        setShowCancelConfirm(false);
+        setCancelingOrderId(null);
+      } else {
+        const data = await response.json();
+        alert(data.error || 'Failed to cancel order');
+      }
+    } catch (error) {
+      console.error('Error canceling order:', error);
+      alert('Failed to cancel order. Please try again.');
+    }
+  };
+
   const getStatusClass = (status: string) => {
     switch (status) {
       case "pending": return styles.statusPending;
+      case "waiting_payment": return styles.statusWaitingPayment;
       case "processing": return styles.statusProcessing;
       case "shipped": return styles.statusShipped;
       case "delivered": return styles.statusDelivered;
@@ -165,7 +270,13 @@ export default function PurchaseHistoryPage() {
               className={`${styles.filterTab} ${activeFilter === "pending" ? styles.active : ""}`}
               onClick={() => handleFilterChange("pending")}
             >
-              รอดำเนินการ
+              รอชำระเงิน
+            </button>
+            <button
+              className={`${styles.filterTab} ${activeFilter === "waiting_payment" ? styles.active : ""}`}
+              onClick={() => handleFilterChange("waiting_payment")}
+            >
+              รอตรวจสอบการชำระเงิน
             </button>
             <button
               className={`${styles.filterTab} ${activeFilter === "processing" ? styles.active : ""}`}
@@ -248,7 +359,25 @@ export default function PurchaseHistoryPage() {
                     <div className={styles.orderItems}>
                       {order.items.map((item: any) => (
                         <div key={item.id} className={styles.orderItem}>
-                          <div className={styles.itemImage}>{item.image}</div>
+                          <div className={styles.itemImage}>
+                            {item.image && item.image !== "👕" ? (
+                              <img
+                                src={item.image}
+                                alt={item.name}
+                                className={styles.productImage}
+                                onError={(e) => {
+                                  const target = e.currentTarget;
+                                  target.style.display = 'none';
+                                  const parent = target.parentElement;
+                                  if (parent) {
+                                    parent.innerHTML = '<div style="font-size: 40px">👕</div>';
+                                  }
+                                }}
+                              />
+                            ) : (
+                              <div style={{ fontSize: '40px' }}>👕</div>
+                            )}
+                          </div>
                           <div className={styles.itemDetails}>
                             <div className={styles.itemName}>{item.name}</div>
                             <div className={styles.itemPrice}>฿{item.price.toLocaleString()}</div>
@@ -263,7 +392,10 @@ export default function PurchaseHistoryPage() {
                         ยอดรวม: ฿{order.total.toLocaleString()}
                       </div>
                       <div className={styles.orderActions}>
-                        <button className={styles.btnSecondary}>
+                        <button
+                          className={styles.btnSecondary}
+                          onClick={() => handleViewOrderDetails(order)}
+                        >
                           ดูรายละเอียด
                         </button>
                         {order.status === "delivered" && (
@@ -271,8 +403,19 @@ export default function PurchaseHistoryPage() {
                             รีวิวสินค้า
                           </button>
                         )}
+                        {(order.status === "pending" || order.status === "waiting_payment") && (
+                          <button
+                            className={`${styles.btnSecondary} ${styles.btnPayment}`}
+                            onClick={() => handleShowPaymentPopup(order)}
+                          >
+                            {order.status === "pending" ? "ชำระเงิน" : "อัปโหลดสลิปใหม่"}
+                          </button>
+                        )}
                         {order.status === "pending" && (
-                          <button className={styles.btnSecondary}>
+                          <button
+                            className={`${styles.btnSecondary} ${styles.btnCancel}`}
+                            onClick={() => handleCancelOrder(order.id)}
+                          >
                             ยกเลิกคำสั่งซื้อ
                           </button>
                         )}
@@ -336,6 +479,306 @@ export default function PurchaseHistoryPage() {
                 <polyline points="9 18 15 12 9 6"></polyline>
               </svg>
             </button>
+          </div>
+        )}
+
+        {/* Order Details Popup */}
+        {showOrderDetails && selectedOrder && (
+          <div className={styles.popupOverlay}>
+            <div className={styles.popupContainer}>
+              <div className={styles.popupHeader}>
+                <button
+                  className={styles.popupCloseButton}
+                  onClick={() => setShowOrderDetails(false)}
+                >
+                  ×
+                </button>
+                <h2 className={styles.popupTitle}>รายละเอียดคำสั่งซื้อ</h2>
+                <p className={styles.popupSubtitle}>เลขที่ออเดอร์: {selectedOrder.orderNumber}</p>
+              </div>
+              
+              <div className={styles.popupBody}>
+                <div className={styles.orderInfoSection}>
+                  <h3 className={styles.sectionTitle}>ข้อมูลคำสั่งซื้อ</h3>
+                  <div className={styles.infoRow}>
+                    <span className={styles.infoLabel}>เลขที่ออเดอร์:</span>
+                    <span className={styles.infoValue}>{selectedOrder.orderNumber}</span>
+                  </div>
+                  <div className={styles.infoRow}>
+                    <span className={styles.infoLabel}>วันที่สั่งซื้อ:</span>
+                    <span className={styles.infoValue}>{formatDate(selectedOrder.date)}</span>
+                  </div>
+                  <div className={styles.infoRow}>
+                    <span className={styles.infoLabel}>สถานะ:</span>
+                    <span className={`${styles.statusBadge} ${getStatusClass(selectedOrder.status)}`}>
+                      {statusLabels[selectedOrder.status as keyof typeof statusLabels]}
+                    </span>
+                  </div>
+                  <div className={styles.infoRow}>
+                    <span className={styles.infoLabel}>วิธีการจัดส่ง:</span>
+                    <span className={styles.infoValue}>{selectedOrder.shippingMethod === 'mail' ? 'ไปรษณีย์' : 'รับสินค้าเอง'}</span>
+                  </div>
+                  <div className={styles.infoRow}>
+                    <span className={styles.infoLabel}>ค่าจัดส่ง:</span>
+                    <span className={styles.infoValue}>฿{selectedOrder.shippingCost?.toLocaleString() || '0'}</span>
+                  </div>
+                  <div className={styles.infoRow}>
+                    <span className={styles.infoLabel}>วิธีการชำระเงิน:</span>
+                    <span className={styles.infoValue}>โอนเงินผ่านธนาคาร</span>
+                  </div>
+                  {selectedOrder.paymentSlip && (
+                    <div className={styles.infoRow}>
+                      <span className={styles.infoLabel}>สลิปการโอนเงิน:</span>
+                      <span className={styles.infoValue}>
+                        <button
+                          className={styles.viewSlipButton}
+                          onClick={() => window.open(selectedOrder.paymentSlip.url, '_blank')}
+                        >
+                          ดูสลิป
+                        </button>
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                <div className={styles.customerInfoSection}>
+                  <h3 className={styles.sectionTitle}>ข้อมูลผู้สั่งซื้อ</h3>
+                  <div className={styles.infoRow}>
+                    <span className={styles.infoLabel}>ชื่อ-นามสกุล:</span>
+                    <span className={styles.infoValue}>
+                      {selectedOrder.customerInfo?.firstName} {selectedOrder.customerInfo?.lastName}
+                    </span>
+                  </div>
+                  <div className={styles.infoRow}>
+                    <span className={styles.infoLabel}>อีเมล:</span>
+                    <span className={styles.infoValue}>{selectedOrder.customerInfo?.email}</span>
+                  </div>
+                  <div className={styles.infoRow}>
+                    <span className={styles.infoLabel}>เบอร์โทร:</span>
+                    <span className={styles.infoValue}>{selectedOrder.customerInfo?.phone}</span>
+                  </div>
+                  <div className={styles.infoRow}>
+                    <span className={styles.infoLabel}>ที่อยู่จัดส่ง:</span>
+                    <span className={styles.infoValue}>{selectedOrder.customerInfo?.address}</span>
+                  </div>
+                  {selectedOrder.customerInfo?.note && (
+                    <div className={styles.infoRow}>
+                      <span className={styles.infoLabel}>หมายเหตุ:</span>
+                      <span className={styles.infoValue}>{selectedOrder.customerInfo.note}</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className={styles.itemsSection}>
+                  <h3 className={styles.sectionTitle}>รายการสินค้า</h3>
+                  {selectedOrder.items.map((item: any) => (
+                    <div key={item.id} className={styles.detailItem}>
+                      <div className={styles.detailItemImage}>
+                        {item.image && item.image !== "👕" ? (
+                          <img
+                            src={item.image}
+                            alt={item.name}
+                            className={styles.detailProductImage}
+                            onError={(e) => {
+                              const target = e.currentTarget;
+                              target.style.display = 'none';
+                              const parent = target.parentElement;
+                              if (parent) {
+                                parent.innerHTML = '<div style="font-size: 40px">👕</div>';
+                              }
+                            }}
+                          />
+                        ) : (
+                          <div style={{ fontSize: '40px' }}>👕</div>
+                        )}
+                      </div>
+                      <div className={styles.detailItemInfo}>
+                        <div className={styles.detailItemName}>{item.name}</div>
+                        <div className={styles.detailItemPrice}>฿{item.price.toLocaleString()}</div>
+                        <div className={styles.detailItemQuantity}>จำนวน: {item.quantity}</div>
+                        <div className={styles.detailItemSize}>ขนาด: {item.size}</div>
+                        <div className={styles.detailItemTotal}>
+                          รวม: ฿{(item.price * item.quantity).toLocaleString()}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className={styles.totalSection}>
+                  <div className={styles.subtotalRow}>
+                    <span className={styles.totalLabel}>ราคาสินค้า:</span>
+                    <span className={styles.totalValue}>฿{selectedOrder.totalAmount?.toLocaleString() || '0'}</span>
+                  </div>
+                  <div className={styles.totalRow}>
+                    <span className={styles.totalLabel}>ยอดรวมทั้งหมด:</span>
+                    <span className={styles.totalValue}>฿{selectedOrder.total.toLocaleString()}</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className={styles.popupFooter}>
+                <button
+                  className={`${styles.popupButton} ${styles.popupButtonPrimary}`}
+                  onClick={() => setShowOrderDetails(false)}
+                >
+                  ปิด
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Cancel Order Confirmation Popup */}
+        {showCancelConfirm && (
+          <div className={styles.popupOverlay}>
+            <div className={styles.popupContainer}>
+              <div className={styles.popupHeader}>
+                <h2 className={styles.popupTitle}>ยืนยันการยกเลิกคำสั่งซื้อ</h2>
+              </div>
+              
+              <div className={styles.popupBody}>
+                <p className={styles.confirmMessage}>
+                  คุณต้องการยกเลิกคำสั่งซื้อนี้ใช่หรือไม่?
+                </p>
+                <p className={styles.confirmSubMessage}>
+                  หลังจากยกเลิกแล้ว คุณจะไม่สามารถกู้คืนคำสั่งซื้อนี้ได้
+                </p>
+              </div>
+              
+              <div className={styles.popupFooter}>
+                <button
+                  className={`${styles.popupButton} ${styles.popupButtonSecondary}`}
+                  onClick={() => {
+                    setShowCancelConfirm(false);
+                    setCancelingOrderId(null);
+                  }}
+                >
+                  ยกเลิก
+                </button>
+                <button
+                  className={`${styles.popupButton} ${styles.popupButtonDanger}`}
+                  onClick={confirmCancelOrder}
+                >
+                  ยืนยันการยกเลิก
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Payment Popup */}
+        {showPaymentPopup && selectedOrder && (
+          <div className={styles.popupOverlay}>
+            <div className={styles.popupContainer}>
+              <div className={styles.popupHeader}>
+                <button
+                  className={styles.popupCloseButton}
+                  onClick={() => setShowPaymentPopup(false)}
+                >
+                  ×
+                </button>
+                <h2 className={styles.popupTitle}>ชำระเงินสำหรับคำสั่งซื้อ</h2>
+                <p className={styles.popupSubtitle}>เลขที่ออเดอร์: {selectedOrder.orderNumber}</p>
+              </div>
+              
+              <div className={styles.popupBody}>
+                <div className={styles.paymentInfoSection}>
+                  <h3 className={styles.sectionTitle}>ข้อมูลการชำระเงิน</h3>
+                  
+                  <div className={styles.paymentInfoCard}>
+                    <div className={styles.paymentInfoRow}>
+                      <span className={styles.paymentInfoLabel}>ชื่อธนาคาร:</span>
+                      <span className={styles.paymentInfoValue}>{paymentSettings.bankName || 'ธนาคารกสิกรไทย'}</span>
+                    </div>
+                    <div className={styles.paymentInfoRow}>
+                      <span className={styles.paymentInfoLabel}>ชื่อบัญชี:</span>
+                      <span className={styles.paymentInfoValue}>{paymentSettings.accountName || 'สมชาย ใจดี'}</span>
+                    </div>
+                    <div className={styles.paymentInfoRow}>
+                      <span className={styles.paymentInfoLabel}>เลขที่บัญชี:</span>
+                      <span className={styles.paymentInfoValue}>{paymentSettings.accountNumber || '123-456-7890'}</span>
+                    </div>
+                    <div className={styles.paymentInfoRow}>
+                      <span className={styles.paymentInfoLabel}>จำนวนเงิน:</span>
+                      <span className={styles.paymentInfoValue}>฿{selectedOrder.total.toLocaleString()}</span>
+                    </div>
+                  </div>
+
+                  <div className={styles.qrCodeSection}>
+                    <h4 className={styles.qrCodeTitle}>สแกน QR Code เพื่อชำระเงิน</h4>
+                    <div className={styles.qrCodeContainer}>
+                      <img
+                        src={paymentSettings.qrCodeImage || "/images/QR code for ordering.png"}
+                        alt="QR Code for Payment"
+                        className={styles.qrCodeImage}
+                        onError={(e) => {
+                          const target = e.currentTarget;
+                          target.style.display = 'none';
+                          const parent = target.parentElement;
+                          if (parent) {
+                            parent.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 200px; background: #f8f9fa; border-radius: 8px; color: #666;">QR Code ไม่สามารถแสดงได้</div>';
+                          }
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className={styles.slipUploadSection}>
+                    <h4 className={styles.slipUploadTitle}>อัปโหลดสลิปการโอนเงิน</h4>
+                    <div className={styles.slipUploadContainer}>
+                      <input
+                        type="file"
+                        id="paymentSlip"
+                        accept="image/*"
+                        className={styles.slipUploadInput}
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            handlePaymentSlipUpload(selectedOrder.id, file);
+                          }
+                        }}
+                      />
+                      <label
+                        htmlFor="paymentSlip"
+                        className={`${styles.slipUploadLabel} ${uploadingSlip ? styles.uploading : ''}`}
+                      >
+                        {uploadingSlip ? 'กำลังอัปโหลด...' : 'เลือกไฟล์สลิป'}
+                      </label>
+                      <p className={styles.slipUploadNote}>
+                        รองรับไฟล์ JPEG, PNG, WebP ขนาดไม่เกิน 5MB
+                      </p>
+                    </div>
+                  </div>
+
+                  {selectedOrder.status === "waiting_payment" && selectedOrder.paymentSlip && (
+                    <div className={styles.uploadedSlipSection}>
+                      <h4 className={styles.uploadedSlipTitle}>สลิปที่อัปโหลดแล้ว</h4>
+                      <div className={styles.uploadedSlipContainer}>
+                        <img
+                          src={selectedOrder.paymentSlip.url}
+                          alt="Payment Slip"
+                          className={styles.uploadedSlipImage}
+                          onClick={() => window.open(selectedOrder.paymentSlip.url, '_blank')}
+                        />
+                        <p className={styles.uploadedSlipDate}>
+                          อัปโหลดเมื่อ: {new Date(selectedOrder.paymentSlip.uploadedAt).toLocaleString('th-TH')}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              <div className={styles.popupFooter}>
+                <button
+                  className={`${styles.popupButton} ${styles.popupButtonSecondary}`}
+                  onClick={() => setShowPaymentPopup(false)}
+                >
+                  ปิด
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>

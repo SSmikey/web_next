@@ -32,10 +32,10 @@
 .authCard {
   max-width: 400px;
   width: 100%;
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--bg-card);
   backdrop-filter: blur(10px);
   border-radius: var(--radius-xl);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-lg);
   padding: 2.5rem;
   position: relative;
   z-index: 10;
@@ -89,9 +89,9 @@
 }
 
 .authError {
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  color: #dc2626;
+  background: var(--bg-error);
+  border: 1px solid var(--accent-error);
+  color: var(--text-error);
   padding: 0.75rem 1rem;
   border-radius: 10px;
   font-size: 0.9rem;
@@ -116,13 +116,13 @@
   border-radius: var(--radius-md);
   font-size: 1rem;
   transition: all 0.2s ease;
-  background: white;
+  background: var(--bg-card);
 }
 
 .authInput:focus {
   outline: none;
   border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  box-shadow: 0 0 0 3px var(--accent-primary-transparent);
 }
 
 .authButton {
@@ -156,7 +156,7 @@
 
 .authButton:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+  box-shadow: var(--shadow-primary);
 }
 
 .authButton:disabled {
@@ -169,7 +169,7 @@
 .authDemo {
   margin-top: 1.5rem;
   padding: 1rem;
-  background: rgba(102, 126, 234, 0.1);
+  background: var(--accent-primary-transparent);
   border-radius: var(--radius-md);
   text-align: center;
   font-size: 0.85rem;
@@ -358,36 +358,34 @@
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  .authCard {
-    background: rgba(30, 30, 30, 0.95);
-  }
-  
-  .authTitle {
-    color: #f9fafb;
-  }
-  
-  .authSubtitle {
-    color: #d1d5db;
-  }
-  
-  .authLabel {
-    color: #f9fafb;
-  }
-  
-  .authInput {
-    background: #374151;
-    border-color: #4b5563;
-    color: #f9fafb;
-  }
-  
-  .authInput:focus {
-    border-color: #60a5fa;
-    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
-  }
-  
-  .authDemo {
-    background: rgba(96, 165, 250, 0.1);
-    color: #d1d5db;
-  }
+html.dark .authCard {
+  background: var(--bg-card);
+}
+
+html.dark .authTitle {
+  color: var(--text-primary);
+}
+
+html.dark .authSubtitle {
+  color: var(--text-tertiary);
+}
+
+html.dark .authLabel {
+  color: var(--text-primary);
+}
+
+html.dark .authInput {
+  background: var(--bg-tertiary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+html.dark .authInput:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px var(--accent-primary-transparent);
+}
+
+html.dark .authDemo {
+  background: var(--accent-primary-transparent);
+  color: var(--text-tertiary);
 }

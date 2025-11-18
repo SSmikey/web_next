@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
 
 const SIZES = ['SSS', 'SS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', '6XL', '7XL', '8XL'] as const;
@@ -35,10 +36,35 @@ const images = [
 ];
 
 export default function ContactPage() {
+  const router = useRouter();
   const [selectedShirt, setSelectedShirt] = useState<number>(0);
   const [selectedSize, setSelectedSize] = useState<Size | null>(null);
   const [quantity, setQuantity] = useState(0);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<string | boolean>(false);
+  const [loading, setLoading] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [orderData, setOrderData] = useState<any>(null);
+  const [customerInfo, setCustomerInfo] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    address: '',
+    note: ''
+  });
+
+  // Load customer info from sessionStorage on component mount
+  useEffect(() => {
+    const savedCustomerInfo = sessionStorage.getItem('customerInfo');
+    if (savedCustomerInfo) {
+      try {
+        const parsedInfo = JSON.parse(savedCustomerInfo);
+        setCustomerInfo(parsedInfo);
+      } catch (error) {
+        console.error('Error parsing customer info from sessionStorage:', error);
+      }
+    }
+  }, []);
 
   // Slideshow states
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -144,23 +170,101 @@ export default function ContactPage() {
     setError(false);
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (!selectedSize || selectedShirt === 0 || quantity === 0) {
       setError(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 
-    alert(
-      `✅ ยืนยันการสั่งซื้อสำเร็จ!\n\n` +
-      `แบบเสื้อ: ${currentShirt.name}\n` +
-      `รายละเอียด: ${currentShirt.description}\n` +
-      `ขนาด: ${selectedSize}\n` +
-      `จำนวน: ${quantity} ตัว\n` +
-      `ราคาเสื้อ: ${subtotal.toLocaleString()} บาท\n` +
-      `ค่าจัดส่ง: ${shippingCost.toLocaleString()} บาท\n` +
-      `ยอดรวม: ${totalPrice.toLocaleString()} บาท`
-    );
+    // Validate customer information
+    const { firstName, lastName, email, phone, address } = customerInfo;
+    if (!firstName || !lastName || !email || !phone || !address) {
+      setError(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    setLoading(true);
+    setError(false);
+
+    try {
+      const orderData = {
+        customerInfo: {
+          firstName,
+          lastName,
+          email,
+          phone,
+          address,
+          note: customerInfo.note
+        },
+        items: [{
+          productId: currentShirt.id.toString(),
+          productName: currentShirt.name,
+          productDescription: currentShirt.description,
+          price: currentShirt.price,
+          quantity,
+          size: selectedSize,
+          imageUrl: currentShirt.image
+        }],
+        totalAmount: subtotal,
+        shippingCost,
+        shippingMethod: 'mail' // Default to mail, can be made configurable
+      };
+
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Set order data for popup
+        setOrderData({
+          orderNumber: data.order.orderNumber,
+          shirtName: currentShirt.name,
+          shirtDescription: currentShirt.description,
+          size: selectedSize,
+          quantity: quantity,
+          subtotal: subtotal,
+          shippingCost: shippingCost,
+          totalPrice: totalPrice
+        });
+        
+        // Show confirmation popup
+        setShowConfirmation(true);
+        
+        // Reset form
+        handleReset();
+        setCustomerInfo({
+          firstName: '',
+          lastName: '',
+          email: '',
+          phone: '',
+          address: '',
+          note: ''
+        });
+      } else {
+        setError(data.error || 'Failed to create order');
+      }
+    } catch (error) {
+      console.error('Error creating order:', error);
+      setError('Failed to create order. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCustomerInfoChange = (field: string, value: string) => {
+    setCustomerInfo(prev => ({
+      ...prev,
+      [field]: value
+    }));
+    setError(false);
   };
 
   return (
@@ -171,7 +275,7 @@ export default function ContactPage() {
             ======================================== */}
         <div className={styles.imageSection}>
           {/* Navigation Arrow Left */}
-          <button 
+          <button
             className={`${styles.arrow} ${styles.arrowLeft}`}
             onClick={goToPrevious}
             aria-label="Previous image"
@@ -180,37 +284,35 @@ export default function ContactPage() {
             ‹
           </button>
 
-          <div className={styles.imageWrapper}>
-            <div className={styles.slideshowContainer}>
-              {images.map((imageSrc, index) => (
-                <div key={index} className={getSlideClass(index)}>
-                  <Image
-                    src={imageSrc}
-                    alt={`Product ${index + 1}`}
-                    fill
-                    style={{ objectFit: "contain", objectPosition: "top" }}
-                    priority={index === 0}
-                  />
-                </div>
-              ))}
-            </div>
-
-            {/* Dots Indicator */}
-            <div className={styles.dotsContainer}>
-              {images.map((_, index) => (
-                <button
-                  key={index}
-                  className={`${styles.dot} ${index === currentImageIndex ? styles.dotActive : ''}`}
-                  onClick={() => goToSlide(index)}
-                  aria-label={`Go to slide ${index + 1}`}
-                  disabled={isAnimating}
+          <div className={styles.slideshowContainer}>
+            {images.map((imageSrc, index) => (
+              <div key={index} className={getSlideClass(index)}>
+                <Image
+                  src={imageSrc}
+                  alt={`Product ${index + 1}`}
+                  fill
+                  style={{ objectFit: "contain", objectPosition: "top center" }}
+                  priority={index === 0}
                 />
-              ))}
-            </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Dots Indicator */}
+          <div className={styles.dotsContainer}>
+            {images.map((_, index) => (
+              <button
+                key={index}
+                className={`${styles.dot} ${index === currentImageIndex ? styles.dotActive : ''}`}
+                onClick={() => goToSlide(index)}
+                aria-label={`Go to slide ${index + 1}`}
+                disabled={isAnimating}
+              />
+            ))}
           </div>
 
           {/* Navigation Arrow Right */}
-          <button 
+          <button
             className={`${styles.arrow} ${styles.arrowRight}`}
             onClick={goToNext}
             aria-label="Next image"
@@ -234,9 +336,89 @@ export default function ContactPage() {
             {/* Error Message */}
             {error && (
               <div className={styles.errorMessage}>
-                ⚠️ กรุณาเลือกแบบเสื้อ ขนาด และจำนวนก่อนยืนยันการสั่งซื้อ
+                ⚠️ {typeof error === 'string' && error.includes('Missing') ? 'กรุณากรอกข้อมูลให้ครบถ้วน' : 'กรุณาเลือกแบบเสื้อ ขนาด และจำนวนก่อนยืนยันการสั่งซื้อ'}
               </div>
             )}
+
+            {/* Customer Information Form */}
+            <div className={styles.section}>
+              <div className={styles.sectionTitle}>
+                <span>👤</span> ข้อมูลผู้สั่งซื้อ
+              </div>
+              
+              <div className={styles.customerInfoGrid}>
+                <div className={styles.formGroup}>
+                  <label className={styles.inputLabel}>ชื่อ <span className={styles.required}>*</span></label>
+                  <input
+                    type="text"
+                    className={styles.input}
+                    placeholder="ชื่อจริง"
+                    value={customerInfo.firstName}
+                    onChange={(e) => handleCustomerInfoChange('firstName', e.target.value)}
+                    required
+                  />
+                </div>
+                
+                <div className={styles.formGroup}>
+                  <label className={styles.inputLabel}>นามสกุล <span className={styles.required}>*</span></label>
+                  <input
+                    type="text"
+                    className={styles.input}
+                    placeholder="นามสกุล"
+                    value={customerInfo.lastName}
+                    onChange={(e) => handleCustomerInfoChange('lastName', e.target.value)}
+                    required
+                  />
+                </div>
+                
+                <div className={styles.formGroup}>
+                  <label className={styles.inputLabel}>เบอร์โทร <span className={styles.required}>*</span></label>
+                  <input
+                    type="tel"
+                    className={styles.input}
+                    placeholder="08X-XXX-XXXX"
+                    value={customerInfo.phone}
+                    onChange={(e) => handleCustomerInfoChange('phone', e.target.value)}
+                    required
+                  />
+                </div>
+                
+                <div className={styles.formGroup}>
+                  <label className={styles.inputLabel}>อีเมล <span className={styles.required}>*</span></label>
+                  <input
+                    type="email"
+                    className={styles.input}
+                    placeholder="example@email.com"
+                    value={customerInfo.email}
+                    onChange={(e) => handleCustomerInfoChange('email', e.target.value)}
+                    required
+                  />
+                </div>
+                
+                <div className={styles.formGroupFull}>
+                  <label className={styles.inputLabel}>ที่อยู่จัดส่ง <span className={styles.required}>*</span></label>
+                  <textarea
+                    className={styles.textarea}
+                    placeholder="ที่อยู่ รหัสไปรษณีย์"
+                    rows={3}
+                    value={customerInfo.address}
+                    onChange={(e) => handleCustomerInfoChange('address', e.target.value)}
+                    required
+                  />
+                </div>
+                
+                <div className={styles.formGroupFull}>
+                  <label className={styles.inputLabel}>หมายเหตุ (ถ้ามี)</label>
+                  <textarea
+                    className={styles.textarea}
+                    placeholder="หมายเหตุเพิ่มเติม"
+                    rows={2}
+                    value={customerInfo.note}
+                    onChange={(e) => handleCustomerInfoChange('note', e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
 
             {/* Shirt Selection Dropdown */}
             <div className={styles.section}>
@@ -389,13 +571,100 @@ export default function ContactPage() {
               <button onClick={handleReset} className={styles.resetButton}>
                 🔄 ล้างข้อมูล
               </button>
-              <button onClick={handleConfirm} className={styles.confirmButton}>
-                ✅ ยืนยันการสั่งซื้อ
+              <button onClick={handleConfirm} disabled={loading} className={styles.confirmButton}>
+                {loading ? '⏳ กำลังดำเนินการ...' : '✅ ยืนยันการสั่งซื้อ'}
               </button>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Order Confirmation Popup */}
+      {showConfirmation && orderData && (
+        <div className={styles.popupOverlay}>
+          <div className={styles.popupContainer}>
+            <div className={styles.popupHeader}>
+              <button
+                className={styles.popupCloseButton}
+                onClick={() => setShowConfirmation(false)}
+              >
+                ×
+              </button>
+              <div className={styles.popupSuccessIcon}>
+                ✓
+              </div>
+              <h2 className={styles.popupTitle}>ยืนยันการสั่งซื้อสำเร็จ!</h2>
+              <p className={styles.popupSubtitle}>ขอบคุณสำหรับการสั่งซื้อสินค้า</p>
+            </div>
+            
+            <div className={styles.popupBody}>
+              <div className={styles.popupOrderNumber}>
+                <div className={styles.popupOrderNumberLabel}>เลขที่ออเดอร์</div>
+                <div className={styles.popupOrderNumberValue}>{orderData.orderNumber}</div>
+              </div>
+              
+              <div className={styles.popupCustomerInfo}>
+                <div className={styles.popupCustomerNameLabel}>ชื่อผู้สั่งซื้อ</div>
+                <div className={styles.popupCustomerNameValue}>{orderData.customerName}</div>
+              </div>
+              
+              <div className={styles.popupOrderDetails}>
+                <h3 className={styles.popupDetailTitle}>
+                  <span>📋</span> รายละเอียดการสั่งซื้อ
+                </h3>
+                
+                <div className={styles.popupDetailItem}>
+                  <span className={styles.popupDetailLabel}>แบบเสื้อ:</span>
+                  <span className={styles.popupDetailValue}>{orderData.shirtName} - {orderData.shirtDescription}</span>
+                </div>
+                
+                <div className={styles.popupDetailItem}>
+                  <span className={styles.popupDetailLabel}>ขนาด:</span>
+                  <span className={styles.popupDetailValue}>{orderData.size}</span>
+                </div>
+                
+                <div className={styles.popupDetailItem}>
+                  <span className={styles.popupDetailLabel}>จำนวน:</span>
+                  <span className={styles.popupDetailValue}>{orderData.quantity} ตัว</span>
+                </div>
+                
+                <div className={styles.popupDetailItem}>
+                  <span className={styles.popupDetailLabel}>ราคาเสื้อ:</span>
+                  <span className={styles.popupDetailValue}>{orderData.subtotal.toLocaleString()} บาท</span>
+                </div>
+                
+                <div className={styles.popupDetailItem}>
+                  <span className={styles.popupDetailLabel}>ค่าจัดส่ง:</span>
+                  <span className={styles.popupDetailValue}>{orderData.shippingCost.toLocaleString()} บาท</span>
+                </div>
+              </div>
+              
+              <div className={styles.popupTotal}>
+                <span className={styles.popupTotalLabel}>ยอดรวมทั้งหมด:</span>
+                <span className={styles.popupTotalValue}>{orderData.totalPrice.toLocaleString()} บาท</span>
+              </div>
+            </div>
+            
+            <div className={styles.popupFooter}>
+              <button
+                className={`${styles.popupButton} ${styles.popupButtonSecondary}`}
+                onClick={() => setShowConfirmation(false)}
+              >
+                ปิด
+              </button>
+              <button
+                className={`${styles.popupButton} ${styles.popupButtonPrimary}`}
+                onClick={() => {
+                  setShowConfirmation(false);
+                  // Optional: Navigate to another page or perform another action
+                }}
+              >
+                ตกลง
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

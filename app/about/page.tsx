@@ -26,6 +26,17 @@ export default function AboutOrderForm() {
   // ========================================
   const [direction, setDirection] = useState<'left' | 'right'>('right');
   const [isAnimating, setIsAnimating] = useState(false);
+  
+  // State for storing customer information
+  const [customerInfo, setCustomerInfo] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    address: '',
+    note: '',
+    shippingMethod: ''
+  });
 
   // Auto slideshow every 5 seconds
   useEffect(() => {
@@ -48,6 +59,13 @@ export default function AboutOrderForm() {
     return () => clearInterval(interval);
   }, []); // ✅ ไม่มี dependency เพื่อให้ทำงานต่อเนื่อง
 
+  const handleInputChange = (field: string, value: string) => {
+    setCustomerInfo(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     
@@ -58,6 +76,9 @@ export default function AboutOrderForm() {
       form.reportValidity();
       return;
     }
+
+    // Store customer info in sessionStorage to pass to contact page
+    sessionStorage.setItem('customerInfo', JSON.stringify(customerInfo));
 
     // If valid, navigate to contact page (เลือกแบบและขนาดเสื้อ)
     router.push("/contact");
@@ -229,6 +250,8 @@ export default function AboutOrderForm() {
                     className={styles.input}
                     type="text"
                     placeholder="ชื่อจริง"
+                    value={customerInfo.firstName}
+                    onChange={(e) => handleInputChange('firstName', e.target.value)}
                     required
                   />
                 </div>
@@ -243,6 +266,8 @@ export default function AboutOrderForm() {
                     className={styles.input}
                     type="text"
                     placeholder="นามสกุล"
+                    value={customerInfo.lastName}
+                    onChange={(e) => handleInputChange('lastName', e.target.value)}
                     required
                   />
                 </div>
@@ -260,6 +285,8 @@ export default function AboutOrderForm() {
                     className={styles.input}
                     type="tel"
                     placeholder="08X-XXX-XXXX"
+                    value={customerInfo.phone}
+                    onChange={(e) => handleInputChange('phone', e.target.value)}
                     required
                   />
                 </div>
@@ -274,6 +301,8 @@ export default function AboutOrderForm() {
                     className={styles.input}
                     type="email"
                     placeholder="example@email.com"
+                    value={customerInfo.email}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
                     required
                   />
                 </div>
@@ -290,6 +319,8 @@ export default function AboutOrderForm() {
                   className={styles.textarea}
                   placeholder="ที่อยู่ รหัสไปรษณีย์"
                   rows={4}
+                  value={customerInfo.address}
+                  onChange={(e) => handleInputChange('address', e.target.value)}
                   required
                 />
               </div>
@@ -305,6 +336,8 @@ export default function AboutOrderForm() {
                   className={styles.textarea}
                   placeholder="หมายเหตุเพิ่มเติม (ถ้ามี)"
                   rows={3}
+                  value={customerInfo.note}
+                  onChange={(e) => handleInputChange('note', e.target.value)}
                 />
               </div>
 
@@ -319,6 +352,8 @@ export default function AboutOrderForm() {
                       type="radio"
                       name="shippingMethod"
                       value="mail"
+                      checked={customerInfo.shippingMethod === 'mail'}
+                      onChange={(e) => handleInputChange('shippingMethod', e.target.value)}
                       required
                     />
                     <span>ต้องการให้จัดส่งสินค้าทางไปรษณีย์</span>
@@ -329,6 +364,8 @@ export default function AboutOrderForm() {
                       type="radio"
                       name="shippingMethod"
                       value="pickup"
+                      checked={customerInfo.shippingMethod === 'pickup'}
+                      onChange={(e) => handleInputChange('shippingMethod', e.target.value)}
                       required
                     />
                     <span>ต้องการมารับเสื้อด้วยตนเอง</span>

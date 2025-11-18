@@ -5,6 +5,28 @@ import Image from "next/image";
 import Link from "next/link";
 import styles from "./page.module.css";
 
+interface StockData {
+  _id: string;
+  type: string;
+  sizes: {
+    SSS: number;
+    SS: number;
+    S: number;
+    M: number;
+    L: number;
+    XL: number;
+    '2XL': number;
+    '3XL': number;
+    '4XL': number;
+    '5XL': number;
+    '6XL': number;
+    '7XL': number;
+    '8XL': number;
+    '9XL': number;
+    '10XL': number;
+  };
+}
+
 export default function Home() {
   const sliderImages = [
     "/images/V1.png",
@@ -104,6 +126,61 @@ export default function Home() {
       return `${styles.slideItem} ${styles.slideHiddenLeft}`;
     }
   };
+
+  const [stockData, setStockData] = useState<StockData[]>([]);
+  const [loadingStock, setLoadingStock] = useState(true);
+
+  useEffect(() => {
+    fetchStockData();
+  }, []);
+
+  const fetchStockData = async () => {
+    try {
+      const response = await fetch('/api/stock');
+      if (response.ok) {
+        const data = await response.json();
+        setStockData(data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching stock data:', error);
+    } finally {
+      setLoadingStock(false);
+    }
+  };
+
+  const getStockValue = (type: string, size: string) => {
+    const stock = stockData.find(s => s.type === type);
+    return stock ? stock.sizes[size as keyof typeof stock.sizes] : 0;
+  };
+
+  const calculateTotalShirts = () => {
+    return stockData.reduce((total, stock) => {
+      const typeTotal = Object.values(stock.sizes).reduce((sum, count) => sum + count, 0);
+      return total + typeTotal;
+    }, 0);
+  };
+
+  const [totalOrders, setTotalOrders] = useState(1899); // Default value
+  const [loadingOrders, setLoadingOrders] = useState(false);
+
+  useEffect(() => {
+    const fetchOrderCount = async () => {
+      try {
+        setLoadingOrders(true);
+        const response = await fetch('/api/admin/stats');
+        if (response.ok) {
+          const data = await response.json();
+          setTotalOrders(data.totalOrders);
+        }
+      } catch (error) {
+        console.error('Error fetching order count:', error);
+      } finally {
+        setLoadingOrders(false);
+      }
+    };
+
+    fetchOrderCount();
+  }, []);
 
   return (
     <div className={styles.container}>
@@ -255,119 +332,76 @@ export default function Home() {
           {/* 🎉 STOCK TABLE เพิ่มใหม่ */}
           <div className={styles.stockTableSection}>
             <h3>จำนวนสินค้าแต่ละแบบ (STOCK)</h3>
+            
+            {loadingStock ? (
+              <div style={{ textAlign: 'center', padding: '2rem' }}>
+                <p>กำลังโหลดข้อมูลสต็อก...</p>
+              </div>
+            ) : (
+              <div className={styles.tableWrapper}>
+                <table className={styles.sizeTable}>
+                  <thead>
+                    <tr>
+                      <th>ประเภท</th>
+                      <th>SSS</th>
+                      <th>SS</th>
+                      <th>S</th>
+                      <th>M</th>
+                      <th>L</th>
+                      <th>XL</th>
+                      <th>2XL</th>
+                      <th>3XL</th>
+                      <th>4XL</th>
+                      <th>5XL</th>
+                      <th>6XL</th>
+                      <th>7XL</th>
+                    </tr>
+                  </thead>
 
-            <div className={styles.tableWrapper}>
-              <table className={styles.sizeTable}>
-                <thead>
-                  <tr>
-                    <th>ประเภท</th>
-                    <th>SSS</th>
-                    <th>SS</th>
-                    <th>S</th>
-                    <th>M</th>
-                    <th>L</th>
-                    <th>XL</th>
-                    <th>2XL</th>
-                    <th>3XL</th>
-                    <th>4XL</th>
-                    <th>5XL</th>
-                    <th>6XL</th>
-                    <th>7XL</th>
-                  </tr>
-                </thead>
+                  <tbody>
+                    {['ปกติ', 'ขาวดำ', 'พิเศษ'].map(type => (
+                      <tr key={type}>
+                        <td>{type}</td>
+                        {['SSS', 'SS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', '6XL', '7XL'].map(size => (
+                          <td key={size}>{getStockValue(type, size)}</td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
 
-                <tbody>
-                  <tr>
-                    <td>ปกติ</td>
-                    <td>10</td>
-                    <td>12</td>
-                    <td>8</td>
-                    <td>7</td>
-                    <td>5</td>
-                    <td>4</td>
-                    <td>6</td>
-                    <td>9</td>
-                    <td>11</td>
-                    <td>7</td>
-                    <td>3</td>
-                    <td>2</td>
-                  </tr>
-
-                  <tr>
-                    <td>ขาวดำ</td>
-                    <td>14</td>
-                    <td>15</td>
-                    <td>13</td>
-                    <td>12</td>
-                    <td>10</td>
-                    <td>9</td>
-                    <td>8</td>
-                    <td>10</td>
-                    <td>12</td>
-                    <td>11</td>
-                    <td>7</td>
-                    <td>5</td>
-                  </tr>
-
-                  <tr>
-                    <td>พิเศษ</td>
-                    <td>6</td>
-                    <td>7</td>
-                    <td>5</td>
-                    <td>4</td>
-                    <td>4</td>
-                    <td>3</td>
-                    <td>6</td>
-                    <td>8</td>
-                    <td>9</td>
-                    <td>6</td>
-                    <td>4</td>
-                    <td>3</td>
-                  </tr>
-                </tbody>
-              </table>
-
-              <table className={styles.sizeTable}>
-                <thead>
-                  <tr>
-                    <th>ประเภท</th>
-                    <th>8XL</th>
-                    <th>9XL</th>
-                    <th>10XL</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>ปกติ</td>
-                    <td>3</td>
-                    <td>6</td>
-                    <td>8</td>
-                  </tr>
-                  <tr>
-                    <td>ขาวดำ</td>
-                    <td>4</td>
-                    <td>2</td>
-                    <td>2</td>
-                  </tr>
-                  <tr>
-                    <td>พิเศษ</td>
-                    <td>2</td>
-                    <td>5</td>
-                    <td>6</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+                <table className={styles.sizeTable}>
+                  <thead>
+                    <tr>
+                      <th>ประเภท</th>
+                      <th>8XL</th>
+                      <th>9XL</th>
+                      <th>10XL</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {['ปกติ', 'ขาวดำ', 'พิเศษ'].map(type => (
+                      <tr key={type}>
+                        <td>{type}</td>
+                        {['8XL', '9XL', '10XL'].map(size => (
+                          <td key={size}>{getStockValue(type, size)}</td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
 
           {/* Stats */}
           <div className={styles.statsSection}>
             <div className={styles.statCard}>
-              <h4>31619 ตัว</h4>
+              <h4>{loadingStock ? 'กำลังโหลด...' : `${calculateTotalShirts().toLocaleString()} ตัว`}</h4>
               <p>เสื้อทั้งหมด</p>
             </div>
             <div className={styles.statCard}>
-              <h4>1899 ออร์เดอร์</h4>
+              <h4>{loadingOrders ? 'กำลังโหลด...' : `${totalOrders.toLocaleString()} ออร์เดอร์`}</h4>
               <p>จำนวนออร์เดอร์</p>
             </div>
           </div>
