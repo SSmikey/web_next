@@ -102,15 +102,15 @@
   position: absolute;
   top: 20px;
   z-index: 20;
-  background: rgba(255, 255, 255, 0.9);
-  color: #333333;
+  background: var(--bg-card);
+  color: var(--text-primary);
   border: none;
   font-size: 2rem;
   width: 45px;
   height: 45px;
   border-radius: var(--radius-full);
   cursor: pointer;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-md);
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
@@ -120,10 +120,10 @@
 }
 
 .arrow:hover {
-  background: rgba(255, 255, 255, 1);
-  color: #333333;
+  background: var(--bg-card);
+  color: var(--text-primary);
   transform: scale(1.1);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-lg);
 }
 
 .arrow:active {
@@ -152,7 +152,7 @@
   display: flex;
   gap: 12px;
   z-index: 10;
-  background: rgba(0, 0, 0, 0.3);
+  background: var(--bg-overlay);
   padding: 10px 20px;
   border-radius: 25px;
   backdrop-filter: blur(10px);
@@ -162,7 +162,7 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.5);
+  background: var(--bg-tertiary);
   border: 2px solid transparent;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -170,7 +170,7 @@
 }
 
 .dot:hover {
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--bg-card);
   transform: scale(1.2);
 }
 
@@ -179,7 +179,7 @@
 }
 
 .dotActive {
-  background: white;
+  background: var(--bg-card);
   width: 30px;
   border-radius: 10px;
   border-color: white;
@@ -189,7 +189,7 @@
    📝 Right Section - Form
    ======================================== */
 .formSection {
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--bg-card);
   backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
@@ -200,12 +200,12 @@
 }
 
 .formContent {
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--bg-card);
   backdrop-filter: blur(5px);
   padding: 40px;
   border-radius: var(--radius-xl);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-light);
   width: 100%;
   max-width: 600px;
 }
@@ -218,16 +218,16 @@
 .title {
   font-size: 2rem;
   margin: 0 0 12px 0;
-  color: #1a1a1a;
+  color: var(--text-primary);
   font-weight: 700;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--gradient-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .subtitle {
-  color: #666;
+  color: var(--text-secondary);
   font-size: 1rem;
   margin: 0;
 }
@@ -257,7 +257,7 @@
 .sectionTitle {
   font-size: 1.2rem;
   font-weight: 600;
-  color: #333;
+  color: var(--text-primary);
   margin-bottom: 15px;
   display: flex;
   align-items: center;
@@ -288,83 +288,83 @@
 .inputLabel {
   font-size: 0.95rem;
   font-weight: 600;
-  color: #333;
+  color: var(--text-primary);
   display: flex;
   align-items: center;
   gap: 4px;
 }
 
 .required {
-  color: #d32f2f;
+  color: var(--accent-error);
   font-weight: 700;
 }
 
 .input {
   padding: 12px 16px;
-  border: 2px solid #e6e9ef;
-  border-radius: 10px;
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
   font-size: 1rem;
-  color: #111827;
+  color: var(--text-primary);
   transition: all 0.3s ease;
   font-family: inherit;
-  background: #ffffff;
+  background: var(--bg-card);
 }
 
 .input:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 4px var(--accent-primary-transparent);
 }
 
 .input:hover {
-  border-color: #b8c1e0;
+  border-color: var(--border-light);
 }
 
 .textarea {
   padding: 12px 16px;
-  border: 2px solid #e6e9ef;
-  border-radius: 10px;
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
   font-size: 1rem;
-  color: #111827;
+  color: var(--text-primary);
   transition: all 0.3s ease;
   font-family: inherit;
-  background: #ffffff;
+  background: var(--bg-card);
   resize: vertical;
   min-height: 80px;
 }
 
 .textarea:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 4px var(--accent-primary-transparent);
 }
 
 .textarea:hover {
-  border-color: #b8c1e0;
+  border-color: var(--border-light);
 }
 
 /* Shirt Design Dropdown */
 .shirtDropdown {
   width: 100%;
   padding: 14px 16px;
-  border: 2px solid #e6e9ef;
-  border-radius: 12px;
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-lg);
   font-size: 1rem;
-  color: #111827;
+  color: var(--text-primary);
   transition: all 0.3s ease;
   font-family: inherit;
-  background: #ffffff;
+  background: var(--bg-card);
   cursor: pointer;
 }
 
 .shirtDropdown:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 4px var(--accent-primary-transparent);
 }
 
 .shirtDropdown:hover {
-  border-color: #b8c1e0;
+  border-color: var(--border-light);
 }
 
 /* Selected Shirt Preview - ปรับให้ภาพเต็มไม่ตัด */
@@ -380,7 +380,7 @@
 .previewTitle {
   font-size: 0.95rem;
   font-weight: 600;
-  color: #667eea;
+  color: var(--accent-primary);
   margin-bottom: 15px;
 }
 
@@ -388,13 +388,13 @@
   width: 100%;
   max-width: 250px;
   height: 250px;
-  background: white;
+  background: var(--bg-card);
   border-radius: 16px;
   margin: 0 auto 15px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+  box-shadow: var(--shadow-primary);
   overflow: hidden;
   padding: 15px;
   position: relative;
@@ -409,13 +409,13 @@
 .previewName {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #667eea;
+  color: var(--accent-primary);
   margin-bottom: 5px;
 }
 
 .previewDescription {
   font-size: 0.9rem;
-  color: #666;
+  color: var(--text-secondary);
   margin-bottom: 10px;
 }
 
@@ -451,16 +451,16 @@
 }
 
 .sizeButton:hover {
-  border-color: #667eea;
-  background: rgba(102, 126, 234, 0.05);
+  border-color: var(--accent-primary);
+  background: var(--accent-primary-transparent);
 }
 
 .sizeButtonSelected {
-  border: 3px solid #667eea;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: 3px solid var(--accent-primary);
+  background: var(--gradient-primary);
   color: white;
   transform: scale(1.05);
-  box-shadow: 0 6px 15px rgba(102, 126, 234, 0.3);
+  box-shadow: var(--shadow-primary);
 }
 
 /* Quantity Control */
@@ -479,7 +479,7 @@
   width: 45px;
   height: 45px;
   border: none;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--gradient-primary);
   color: white;
   border-radius: 10px;
   font-size: 1.5rem;
@@ -493,11 +493,11 @@
 
 .quantityButton:hover {
   transform: scale(1.1);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  box-shadow: var(--shadow-primary);
 }
 
 .quantityButton:disabled {
-  background: #cccccc;
+  background: var(--bg-disabled);
   cursor: not-allowed;
   transform: scale(1);
 }
@@ -505,7 +505,7 @@
 .quantityDisplay {
   font-size: 2rem;
   font-weight: 700;
-  color: #333;
+  color: var(--text-primary);
   min-width: 80px;
   text-align: center;
   padding: 8px 16px;
@@ -526,7 +526,7 @@
 .summaryTitle {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #667eea;
+  color: var(--accent-primary);
   margin-bottom: 15px;
   text-align: center;
 }
@@ -537,44 +537,44 @@
   margin-bottom: 12px;
   font-size: 0.95rem;
   padding: 10px;
-  background: white;
+  background: var(--bg-card);
   border-radius: 8px;
 }
 
 .summaryLabel {
-  color: #666;
+  color: var(--text-secondary);
   font-weight: 500;
 }
 
 .summaryValue {
-  color: #333;
+  color: var(--text-primary);
   font-weight: 700;
 }
 
 .summaryValueUnselected {
-  color: #999;
+  color: var(--text-tertiary);
   font-weight: 700;
 }
 
 .summaryTotal {
-  border-top: 2px solid #667eea;
+  border-top: 2px solid var(--accent-primary);
   padding-top: 15px;
   margin-top: 15px;
   display: flex;
   justify-content: space-between;
   font-size: 1rem;
   padding: 12px;
-  background: white;
+  background: var(--bg-card);
   border-radius: 8px;
 }
 
 .summaryTotalLabel {
-  color: #333;
+  color: var(--text-primary);
   font-weight: 700;
 }
 
 .summaryTotalValue {
-  color: #667eea;
+  color: var(--accent-primary);
   font-weight: 700;
   font-size: 1.5rem;
 }
@@ -590,9 +590,9 @@
   flex: 1;
   min-width: 150px;
   padding: 16px 24px;
-  background: white;
-  color: #667eea;
-  border: 2px solid #667eea;
+  background: var(--bg-card);
+  color: var(--accent-primary);
+  border: 2px solid var(--accent-primary);
   border-radius: 12px;
   font-size: 1rem;
   font-weight: 600;
@@ -601,16 +601,16 @@
 }
 
 .resetButton:hover {
-  background: #f8f9fa;
+  background: var(--bg-tertiary);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+  box-shadow: var(--shadow-primary);
 }
 
 .confirmButton {
   flex: 1;
   min-width: 150px;
   padding: 16px 24px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--gradient-primary);
   color: white;
   border: none;
   border-radius: var(--radius-lg);
@@ -618,7 +618,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  box-shadow: var(--shadow-primary);
 }
 
 /* Quantity Control */
@@ -641,13 +641,13 @@
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  box-shadow: var(--shadow-primary);
   transition: all 0.3s ease;
 }
 
 .confirmButton:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  box-shadow: var(--shadow-primary-hover);
 }
 
 .confirmButton:active {
@@ -787,7 +787,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: var(--bg-overlay);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -802,13 +802,13 @@
 }
 
 .popupContainer {
-  background: white;
-  border-radius: 24px;
+  background: var(--bg-card);
+  border-radius: var(--radius-2xl);
   max-width: 500px;
   width: 90%;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+  box-shadow: var(--shadow-lg);
   animation: slideUp 0.4s ease-out;
   position: relative;
 }
@@ -825,10 +825,10 @@
 }
 
 .popupHeader {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--gradient-primary);
   padding: 30px;
   text-align: center;
-  border-radius: 24px 24px 0 0;
+  border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
   position: relative;
 }
 
@@ -871,8 +871,8 @@
 }
 
 .popupOrderNumber {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-  border: 2px solid #667eea;
+  background: var(--bg-tertiary);
+  border: 2px solid var(--accent-primary);
   border-radius: 12px;
   padding: 15px;
   text-align: center;
@@ -881,19 +881,19 @@
 
 .popupOrderNumberLabel {
   font-size: 0.9rem;
-  color: #666;
+  color: var(--text-secondary);
   margin-bottom: 5px;
 }
 
 .popupOrderNumberValue {
   font-size: 1.3rem;
   font-weight: 700;
-  color: #667eea;
+  color: var(--accent-primary);
 }
 
 .popupCustomerInfo {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-  border: 2px solid #667eea;
+  background: var(--bg-tertiary);
+  border: 2px solid var(--accent-primary);
   border-radius: 12px;
   padding: 15px;
   text-align: center;
@@ -902,14 +902,14 @@
 
 .popupCustomerNameLabel {
   font-size: 0.9rem;
-  color: #666;
+  color: var(--text-secondary);
   margin-bottom: 5px;
 }
 
 .popupCustomerNameValue {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #667eea;
+  color: var(--accent-primary);
 }
 
 .popupOrderDetails {
@@ -919,7 +919,7 @@
 .popupDetailTitle {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #333;
+  color: var(--text-primary);
   margin-bottom: 15px;
   display: flex;
   align-items: center;
@@ -937,18 +937,18 @@
 }
 
 .popupDetailLabel {
-  color: #666;
+  color: var(--text-secondary);
   font-weight: 500;
 }
 
 .popupDetailValue {
-  color: #333;
+  color: var(--text-primary);
   font-weight: 600;
 }
 
 .popupTotal {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-  border: 2px solid #667eea;
+  background: var(--bg-tertiary);
+  border: 2px solid var(--accent-primary);
   border-radius: 12px;
   padding: 15px;
   display: flex;
@@ -960,13 +960,13 @@
 .popupTotalLabel {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .popupTotalValue {
   font-size: 1.4rem;
   font-weight: 700;
-  color: #667eea;
+  color: var(--accent-primary);
 }
 
 .popupFooter {
@@ -978,7 +978,7 @@
 .popupButton {
   flex: 1;
   padding: 14px 20px;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
@@ -987,36 +987,36 @@
 }
 
 .popupButtonPrimary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--gradient-primary);
   color: white;
 }
 
 .popupButtonPrimary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  box-shadow: var(--shadow-primary-hover);
 }
 
 .popupButtonSecondary {
-  background: white;
-  color: #667eea;
-  border: 2px solid #667eea;
+  background: var(--bg-card);
+  color: var(--accent-primary);
+  border: 2px solid var(--accent-primary);
 }
 
 .popupButtonSecondary:hover {
-  background: #f8f9fa;
+  background: var(--bg-tertiary);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+  box-shadow: var(--shadow-sm);
 }
 
 .popupCloseButton {
   position: absolute;
   top: 15px;
   right: 15px;
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--bg-overlay);
   border: none;
   width: 36px;
   height: 36px;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1028,7 +1028,7 @@
 }
 
 .popupCloseButton:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: var(--bg-overlay);
   transform: scale(1.1);
 }
 
@@ -1067,20 +1067,20 @@ html.dark .container {
 }
 
 html.dark .splitLayout {
-  background: #000000 !important;
+  background: var(--bg-card) !important;
 }
 
 html.dark .imageSection {
-  background: #000000 !important;
+  background: var(--bg-card) !important;
 }
 
 html.dark .formSection {
-  background: #000000 !important;
+  background: var(--bg-card) !important;
 }
 
 html.dark .formContent {
-  background: #000000 !important;
-  border-color: rgba(102, 126, 234, 0.2);
+  background: var(--bg-card) !important;
+  border-color: var(--border-color);
 }
 
 html.dark .title {
@@ -1102,53 +1102,53 @@ html.dark .inputLabel {
 html.dark .input,
 html.dark .textarea,
 html.dark .shirtDropdown {
-  background: #1a1a1a;
-  border-color: #333333;
-  color: #ffffff;
+  background: var(--bg-tertiary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
 }
 
 html.dark .input:focus,
 html.dark .textarea:focus,
 html.dark .shirtDropdown:focus {
   border-color: var(--accent-primary);
-  background: #1a1a1a;
+  background: var(--bg-tertiary);
 }
 
 html.dark .input:hover,
 html.dark .textarea:hover,
 html.dark .shirtDropdown:hover {
-  border-color: #555555;
+  border-color: var(--border-color);
 }
 
 html.dark .sizeButton {
-  background: #1a1a1a;
-  border-color: #333333;
-  color: #ffffff;
+  background: var(--bg-tertiary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
 }
 
 html.dark .sizeButton:hover {
   border-color: var(--accent-primary);
-  background: rgba(102, 126, 234, 0.1);
+  background: var(--accent-primary-transparent);
 }
 
 html.dark .quantityControl {
-  background: #1a1a1a;
-  border-color: #333333;
+  background: var(--bg-tertiary);
+  border-color: var(--border-color);
 }
 
 html.dark .quantityDisplay {
-  background: #1a1a1a;
+  background: var(--bg-tertiary);
   border-color: var(--accent-primary);
-  color: #ffffff;
+  color: var(--text-primary);
 }
 
 html.dark .summaryBox {
-  background: rgba(102, 126, 234, 0.05);
-  border-color: rgba(102, 126, 234, 0.2);
+  background: var(--bg-tertiary);
+  border-color: var(--border-color);
 }
 
 html.dark .summaryRow {
-  background: #1a1a1a;
+  background: var(--bg-tertiary);
 }
 
 html.dark .summaryLabel {
@@ -1164,7 +1164,7 @@ html.dark .summaryValueUnselected {
 }
 
 html.dark .summaryTotal {
-  background: #1a1a1a;
+  background: var(--bg-tertiary);
 }
 
 html.dark .summaryTotalLabel {
@@ -1172,8 +1172,8 @@ html.dark .summaryTotalLabel {
 }
 
 html.dark .selectedShirtPreview {
-  background: #1a1a1a;
-  border-color: rgba(102, 126, 234, 0.2);
+  background: var(--bg-tertiary);
+  border-color: var(--border-color);
 }
 
 html.dark .previewTitle {
@@ -1189,7 +1189,7 @@ html.dark .previewDescription {
 }
 
 html.dark .previewBadge {
-  background: #1a1a1a;
+  background: var(--bg-tertiary);
   color: var(--accent-primary);
   border-color: var(--accent-primary);
 }
@@ -1201,13 +1201,13 @@ html.dark .resetButton {
 }
 
 html.dark .resetButton:hover {
-  background: rgba(102, 126, 234, 0.1);
+  background: var(--accent-primary-transparent);
 }
 
 html.dark .dot {
-  background: rgba(255, 255, 255, 0.3);
+  background: var(--bg-tertiary);
 }
 
 html.dark .dotActive {
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--bg-card);
 }
