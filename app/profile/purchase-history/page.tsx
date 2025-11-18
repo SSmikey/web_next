@@ -27,6 +27,10 @@ export default function PurchaseHistoryPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [selectedOrder, setSelectedOrder] = useState<any>(null);
+  const [showOrderDetails, setShowOrderDetails] = useState(false);
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [cancelingOrderId, setCancelingOrderId] = useState<string | null>(null);
   const ordersPerPage = 5;
 
   // Fetch orders from API
@@ -103,6 +107,39 @@ export default function PurchaseHistoryPage() {
   const handleSortChange = (sort: string) => {
     setSortBy(sort);
     setCurrentPage(1);
+  };
+
+  const handleViewOrderDetails = (order: any) => {
+    setSelectedOrder(order);
+    setShowOrderDetails(true);
+  };
+
+  const handleCancelOrder = async (orderId: string) => {
+    setCancelingOrderId(orderId);
+    setShowCancelConfirm(true);
+  };
+
+  const confirmCancelOrder = async () => {
+    if (!cancelingOrderId) return;
+    
+    try {
+      const response = await fetch(`/api/orders/${cancelingOrderId}`, {
+        method: 'DELETE',
+      });
+      
+      if (response.ok) {
+        // Refresh orders list
+        fetchOrders();
+        setShowCancelConfirm(false);
+        setCancelingOrderId(null);
+      } else {
+        const data = await response.json();
+        alert(data.error || 'Failed to cancel order');
+      }
+    } catch (error) {
+      console.error('Error canceling order:', error);
+      alert('Failed to cancel order. Please try again.');
+    }
   };
 
   const getStatusClass = (status: string) => {
@@ -248,7 +285,25 @@ export default function PurchaseHistoryPage() {
                     <div className={styles.orderItems}>
                       {order.items.map((item: any) => (
                         <div key={item.id} className={styles.orderItem}>
-                          <div className={styles.itemImage}>{item.image}</div>
+                          <div className={styles.itemImage}>
+                            {item.image && item.image !== "👕" ? (
+                              <img
+                                src={item.image}
+                                alt={item.name}
+                                className={styles.productImage}
+                                onError={(e) => {
+                                  const target = e.currentTarget;
+                                  target.style.display = 'none';
+                                  const parent = target.parentElement;
+                                  if (parent) {
+                                    parent.innerHTML = '<div style="font-size: 40px">👕</div>';
+                                  }
+                                }}
+                              />
+                            ) : (
+                              <div style={{ fontSize: '40px' }}>👕</div>
+                            )}
+                          </div>
                           <div className={styles.itemDetails}>
                             <div className={styles.itemName}>{item.name}</div>
                             <div className={styles.itemPrice}>฿{item.price.toLocaleString()}</div>
@@ -263,7 +318,10 @@ export default function PurchaseHistoryPage() {
                         ยอดรวม: ฿{order.total.toLocaleString()}
                       </div>
                       <div className={styles.orderActions}>
-                        <button className={styles.btnSecondary}>
+                        <button
+                          className={styles.btnSecondary}
+                          onClick={() => handleViewOrderDetails(order)}
+                        >
                           ดูรายละเอียด
                         </button>
                         {order.status === "delivered" && (
@@ -272,7 +330,10 @@ export default function PurchaseHistoryPage() {
                           </button>
                         )}
                         {order.status === "pending" && (
-                          <button className={styles.btnSecondary}>
+                          <button
+                            className={`${styles.btnSecondary} ${styles.btnCancel}`}
+                            onClick={() => handleCancelOrder(order.id)}
+                          >
                             ยกเลิกคำสั่งซื้อ
                           </button>
                         )}
@@ -336,6 +397,129 @@ export default function PurchaseHistoryPage() {
                 <polyline points="9 18 15 12 9 6"></polyline>
               </svg>
             </button>
+          </div>
+        )}
+
+        {/* Order Details Popup */}
+        {showOrderDetails && selectedOrder && (
+          <div className={styles.popupOverlay}>
+            <div className={styles.popupContainer}>
+              <div className={styles.popupHeader}>
+                <button
+                  className={styles.popupCloseButton}
+                  onClick={() => setShowOrderDetails(false)}
+                >
+                  ×
+                </button>
+                <h2 className={styles.popupTitle}>รายละเอียดคำสั่งซื้อ</h2>
+                <p className={styles.popupSubtitle}>เลขที่ออเดอร์: {selectedOrder.orderNumber}</p>
+              </div>
+              
+              <div className={styles.popupBody}>
+                <div className={styles.orderInfoSection}>
+                  <h3 className={styles.sectionTitle}>ข้อมูลคำสั่งซื้อ</h3>
+                  <div className={styles.infoRow}>
+                    <span className={styles.infoLabel}>วันที่สั่งซื้อ:</span>
+                    <span className={styles.infoValue}>{formatDate(selectedOrder.date)}</span>
+                  </div>
+                  <div className={styles.infoRow}>
+                    <span className={styles.infoLabel}>สถานะ:</span>
+                    <span className={`${styles.statusBadge} ${getStatusClass(selectedOrder.status)}`}>
+                      {statusLabels[selectedOrder.status as keyof typeof statusLabels]}
+                    </span>
+                  </div>
+                </div>
+
+                <div className={styles.itemsSection}>
+                  <h3 className={styles.sectionTitle}>รายการสินค้า</h3>
+                  {selectedOrder.items.map((item: any) => (
+                    <div key={item.id} className={styles.detailItem}>
+                      <div className={styles.detailItemImage}>
+                        {item.image && item.image !== "👕" ? (
+                          <img
+                            src={item.image}
+                            alt={item.name}
+                            className={styles.detailProductImage}
+                            onError={(e) => {
+                              const target = e.currentTarget;
+                              target.style.display = 'none';
+                              const parent = target.parentElement;
+                              if (parent) {
+                                parent.innerHTML = '<div style="font-size: 40px">👕</div>';
+                              }
+                            }}
+                          />
+                        ) : (
+                          <div style={{ fontSize: '40px' }}>👕</div>
+                        )}
+                      </div>
+                      <div className={styles.detailItemInfo}>
+                        <div className={styles.detailItemName}>{item.name}</div>
+                        <div className={styles.detailItemPrice}>฿{item.price.toLocaleString()}</div>
+                        <div className={styles.detailItemQuantity}>จำนวน: {item.quantity}</div>
+                        <div className={styles.detailItemTotal}>
+                          รวม: ฿{(item.price * item.quantity).toLocaleString()}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className={styles.totalSection}>
+                  <div className={styles.totalRow}>
+                    <span className={styles.totalLabel}>ยอดรวมทั้งหมด:</span>
+                    <span className={styles.totalValue}>฿{selectedOrder.total.toLocaleString()}</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className={styles.popupFooter}>
+                <button
+                  className={`${styles.popupButton} ${styles.popupButtonPrimary}`}
+                  onClick={() => setShowOrderDetails(false)}
+                >
+                  ปิด
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Cancel Order Confirmation Popup */}
+        {showCancelConfirm && (
+          <div className={styles.popupOverlay}>
+            <div className={styles.popupContainer}>
+              <div className={styles.popupHeader}>
+                <h2 className={styles.popupTitle}>ยืนยันการยกเลิกคำสั่งซื้อ</h2>
+              </div>
+              
+              <div className={styles.popupBody}>
+                <p className={styles.confirmMessage}>
+                  คุณต้องการยกเลิกคำสั่งซื้อนี้ใช่หรือไม่?
+                </p>
+                <p className={styles.confirmSubMessage}>
+                  หลังจากยกเลิกแล้ว คุณจะไม่สามารถกู้คืนคำสั่งซื้อนี้ได้
+                </p>
+              </div>
+              
+              <div className={styles.popupFooter}>
+                <button
+                  className={`${styles.popupButton} ${styles.popupButtonSecondary}`}
+                  onClick={() => {
+                    setShowCancelConfirm(false);
+                    setCancelingOrderId(null);
+                  }}
+                >
+                  ยกเลิก
+                </button>
+                <button
+                  className={`${styles.popupButton} ${styles.popupButtonDanger}`}
+                  onClick={confirmCancelOrder}
+                >
+                  ยืนยันการยกเลิก
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>

@@ -804,3 +804,337 @@
     border-width: 3px;
   }
 }
+
+/* ========================================
+   🎉 Popup Styles for Order Details & Cancel
+   ======================================== */
+.popupOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.popupContainer {
+  background: white;
+  border-radius: 24px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+  animation: slideUp 0.4s ease-out;
+  position: relative;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.popupHeader {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 25px;
+  text-align: center;
+  border-radius: 24px 24px 0 0;
+  position: relative;
+}
+
+.popupTitle {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+}
+
+.popupSubtitle {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+  margin: 0;
+}
+
+.popupBody {
+  padding: 25px;
+}
+
+.popupFooter {
+  padding: 0 25px 25px;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.popupButton {
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.popupButtonPrimary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.popupButtonPrimary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.popupButtonSecondary {
+  background: white;
+  color: #667eea;
+  border: 2px solid #667eea;
+}
+
+.popupButtonSecondary:hover {
+  background: #f8f9fa;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+}
+
+.popupButtonDanger {
+  background: #ef4444;
+  color: white;
+}
+
+.popupButtonDanger:hover {
+  background: #dc2626;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+}
+
+.popupCloseButton {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.popupCloseButton:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+/* Order Details Styles */
+.orderInfoSection, .itemsSection, .totalSection {
+  margin-bottom: 25px;
+}
+
+.sectionTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 15px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  border-left: 3px solid #667eea;
+}
+
+.infoLabel {
+  color: #666;
+  font-weight: 500;
+}
+
+.infoValue {
+  color: #333;
+  font-weight: 600;
+}
+
+.statusBadge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.detailItem {
+  display: flex;
+  gap: 15px;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #e9ecef;
+}
+
+.detailItemImage {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border: 1px solid #e9ecef;
+}
+
+.detailProductImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.detailItemInfo {
+  flex: 1;
+}
+
+.detailItemName {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.detailItemPrice {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 3px;
+}
+
+.detailItemQuantity {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+}
+
+.detailItemTotal {
+  font-weight: 600;
+  color: #667eea;
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  border: 2px solid #667eea;
+  border-radius: 12px;
+}
+
+.totalLabel {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.totalValue {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #667eea;
+}
+
+/* Cancel Confirmation Styles */
+.confirmMessage {
+  font-size: 1.1rem;
+  color: #333;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.confirmSubMessage {
+  font-size: 0.9rem;
+  color: #666;
+  text-align: center;
+}
+
+/* Product Image Styles */
+.productImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+}
+
+.btnCancel {
+  background: #fee2e2;
+  color: #991b1b;
+  border-color: #fecaca;
+}
+
+.btnCancel:hover {
+  background: #fecaca;
+}
+
+/* Responsive for popups */
+@media (max-width: 768px) {
+  .popupContainer {
+    width: 95%;
+    margin: 20px;
+  }
+  
+  .popupHeader {
+    padding: 20px;
+  }
+  
+  .popupTitle {
+    font-size: 1.3rem;
+  }
+  
+  .popupBody {
+    padding: 20px;
+  }
+  
+  .popupFooter {
+    padding: 0 20px 20px;
+    flex-direction: column;
+  }
+  
+  .popupButton {
+    width: 100%;
+  }
+  
+  .detailItem {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .detailItemImage {
+    width: 100%;
+    height: 120px;
+  }
+}
