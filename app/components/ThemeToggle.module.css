@@ -1,0 +1,32 @@
+.themeToggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0;
+}
+
+.themeToggle:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: rotate(20deg);
+}
+
+.themeToggle svg {
+  transition: transform 0.3s ease;
+}
+
+.themeToggle:active {
+  transform: scale(0.95);
+}
+
+.placeholder {
+  width: 40px;
+  height: 40px;
+}

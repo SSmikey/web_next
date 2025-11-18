@@ -1,54 +1,420 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { useSession } from "next-auth/react";
 import styles from "./page.module.css";
 
+interface StockData {
+  _id: string;
+  type: string;
+  sizes: {
+    SSS: number;
+    SS: number;
+    S: number;
+    M: number;
+    L: number;
+    XL: number;
+    '2XL': number;
+    '3XL': number;
+    '4XL': number;
+    '5XL': number;
+    '6XL': number;
+    '7XL': number;
+    '8XL': number;
+    '9XL': number;
+    '10XL': number;
+  };
+}
+
 export default function Home() {
+  const { data: session, status } = useSession();
+  const sliderImages = [
+    "/images/V1.png",
+    "/images/V2.png",
+    "/images/V3.png",
+    "/images/V4.png",
+    "/images/V5.png",
+    "/images/Premium.png",
+  ];
+
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [previousImageIndex, setPreviousImageIndex] = useState(0);
+  const [direction, setDirection] = useState<'left' | 'right'>('right');
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  // Auto slideshow every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDirection('right');
+      setPreviousImageIndex(prev => prev);
+      setIsAnimating(true);
+
+      setCurrentImageIndex((prevIndex) => {
+        setPreviousImageIndex(prevIndex);
+        const nextIndex = (prevIndex + 1) % sliderImages.length;
+        return nextIndex;
+      });
+
+      setTimeout(() => {
+        setIsAnimating(false);
+      }, 800);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const goToPrevious = () => {
+    if (isAnimating) return;
+
+    setDirection('left');
+    setPreviousImageIndex(currentImageIndex);
+    setIsAnimating(true);
+
+    const prevIndex = currentImageIndex === 0 ? sliderImages.length - 1 : currentImageIndex - 1;
+    setCurrentImageIndex(prevIndex);
+
+    setTimeout(() => {
+      setIsAnimating(false);
+    }, 700);
+  };
+
+  const goToNext = () => {
+    if (isAnimating) return;
+
+    setDirection('right');
+    setPreviousImageIndex(currentImageIndex);
+    setIsAnimating(true);
+
+    const nextIndex = (currentImageIndex + 1) % sliderImages.length;
+    setCurrentImageIndex(nextIndex);
+
+    setTimeout(() => {
+      setIsAnimating(false);
+    }, 700);
+  };
+
+  const goToSlide = (index: number) => {
+    if (isAnimating || index === currentImageIndex) return;
+
+    setDirection(index > currentImageIndex ? 'right' : 'left');
+    setPreviousImageIndex(currentImageIndex);
+    setIsAnimating(true);
+
+    setCurrentImageIndex(index);
+
+    setTimeout(() => {
+      setIsAnimating(false);
+    }, 700);
+  };
+
+  const getSlideClass = (imageIndex: number) => {
+    if (imageIndex === currentImageIndex) {
+      return `${styles.slideItem} ${styles.slideActive}`;
+    }
+
+    if (isAnimating && imageIndex === previousImageIndex) {
+      if (direction === 'right') {
+        return `${styles.slideItem} ${styles.slideExitLeft}`;
+      } else {
+        return `${styles.slideItem} ${styles.slideExitRight}`;
+      }
+    }
+
+    if (direction === 'right') {
+      return `${styles.slideItem} ${styles.slideHiddenRight}`;
+    } else {
+      return `${styles.slideItem} ${styles.slideHiddenLeft}`;
+    }
+  };
+
+  const [stockData, setStockData] = useState<StockData[]>([]);
+  const [loadingStock, setLoadingStock] = useState(true);
+
+  useEffect(() => {
+    fetchStockData();
+  }, []);
+
+  const fetchStockData = async () => {
+    try {
+      const response = await fetch('/api/stock');
+      if (response.ok) {
+        const data = await response.json();
+        setStockData(data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching stock data:', error);
+    } finally {
+      setLoadingStock(false);
+    }
+  };
+
+  const getStockValue = (type: string, size: string) => {
+    const stock = stockData.find(s => s.type === type);
+    return stock ? stock.sizes[size as keyof typeof stock.sizes] : 0;
+  };
+
+  const calculateTotalShirts = () => {
+    return stockData.reduce((total, stock) => {
+      const typeTotal = Object.values(stock.sizes).reduce((sum, count) => sum + count, 0);
+      return total + typeTotal;
+    }, 0);
+  };
+
+  const [totalOrders, setTotalOrders] = useState(1899); // Default value
+  const [loadingOrders, setLoadingOrders] = useState(false);
+
+  useEffect(() => {
+    const fetchOrderCount = async () => {
+      try {
+        setLoadingOrders(true);
+        const response = await fetch('/api/admin/stats');
+        if (response.ok) {
+          const data = await response.json();
+          setTotalOrders(data.totalOrders);
+        }
+      } catch (error) {
+        console.error('Error fetching order count:', error);
+      } finally {
+        setLoadingOrders(false);
+      }
+    };
+
+    fetchOrderCount();
+  }, []);
+
   return (
     <div className={styles.container}>
-      <div className={styles.hero}>
-        <h1 className={styles.title}>Welcome to MyWebsite</h1>
-        <p className={styles.subtitle}>
-          Creating amazing digital experiences that make a difference
-        </p>
-        <div className={styles.buttons}>
-          <a href="/about" className={styles.primaryButton}>Learn More</a>
-          <a href="/contact" className={styles.secondaryButton}>Contact Us</a>
+      <div className={styles.card}>
+        {/* Left Image */}
+        <div className={styles.left}>
+          <div className={styles.slideshowContainer}>
+              {sliderImages.map((image, index) => (
+                <div key={index} className={getSlideClass(index)}>
+                  <Image
+                    src={image}
+                    alt={`Product ${index + 1}`}
+                    fill
+                    style={{ objectFit: "contain", objectPosition: "top center" }}
+                    priority
+                  />
+                </div>
+              ))}
+              <button
+                className={`${styles.arrow} ${styles.arrowLeft}`}
+                onClick={goToPrevious}
+              >
+                ‹
+              </button>
+              <button
+                className={`${styles.arrow} ${styles.arrowRight}`}
+                onClick={goToNext}
+              >
+                ›
+              </button>
+              <div className={styles.dotsContainer}>
+                {sliderImages.map((_, index) => (
+                  <button
+                    key={index}
+                    className={`${styles.dot} ${
+                      index === currentImageIndex ? styles.dotActive : ""
+                    }`}
+                    onClick={() => goToSlide(index)}
+                    aria-label={`Go to slide ${index + 1}`}
+                  />
+                ))}
+              </div>
+            </div>
         </div>
-      </div>
-      
-      <div className={styles.features}>
-        <h2 className={styles.sectionTitle}>Our Services</h2>
-        <div className={styles.featureGrid}>
-          <div className={styles.featureCard}>
-            <div className={styles.featureIcon}>🚀</div>
-            <h3 className={styles.featureTitle}>Web Development</h3>
-            <p className={styles.featureText}>
-              Building responsive, fast, and user-friendly websites using the latest technologies.
+
+        {/* Right Section */}
+        <div className={styles.right}>
+          <h2 className={styles.productTitle}>SPVV CLOTHING</h2>
+
+          {status === "loading" ? (
+            <div className={styles.primaryButton}>กำลังโหลด...</div>
+          ) : session ? (
+            <Link href="/buyer-information" className={styles.primaryButton}>
+              สั่งซื้อเสื้อ
+            </Link>
+          ) : (
+            <Link href="/auth/signin" className={styles.primaryButton}>
+              เข้าสู่ระบบ
+            </Link>
+          )}
+
+          <div className={styles.description}>
+            <p>
+              SPVV CLOTHING เป็นเว็บไซต์จำหน่ายเสื้อคุณภาพดีที่เหมาะกับทุกโอกาส
+              ไม่ว่าจะเป็นใส่เที่ยวหรือใส่กิจกรรมต่างๆ
+              เสื้อของเราเป็นโปโลเกรดพรีเมี่ยม มีให้เลือก 5 แบบหลัก
+              พร้อมแบบพิเศษ และลายสะสม
             </p>
+            <p>ค่าจัดส่ง: ตัวแรก 50 บาท ตัวต่อไป +10 บาท</p>
+            <p>SHIPPING 50 THB FIRST ITEM / 10 THB EACH EXTRA</p>
           </div>
-          
-          <div className={styles.featureCard}>
-            <div className={styles.featureIcon}>🎨</div>
-            <h3 className={styles.featureTitle}>UI/UX Design</h3>
-            <p className={styles.featureText}>
-              Creating beautiful and intuitive interfaces that delight users and drive engagement.
-            </p>
+
+          {/* SIZE TABLE */}
+          <div className={styles.sizeTableSection}>
+            <h3>ตารางไซส์ SIZE TABLE</h3>
+            <div className={styles.tableWrapper}>
+              <table className={styles.sizeTable}>
+                <thead>
+                  <tr>
+                    <th>SIZE</th>
+                    <th>SSS</th>
+                    <th>SS</th>
+                    <th>S</th>
+                    <th>M</th>
+                    <th>L</th>
+                    <th>XL</th>
+                    <th>2XL</th>
+                    <th>3XL</th>
+                    <th>4XL</th>
+                    <th>5XL</th>
+                    <th>6XL</th>
+                    <th>7XL</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>รอบอก</td>
+                    <td>34</td>
+                    <td>36</td>
+                    <td>38</td>
+                    <td>40</td>
+                    <td>42</td>
+                    <td>44</td>
+                    <td>46</td>
+                    <td>48</td>
+                    <td>50</td>
+                    <td>52</td>
+                    <td>54</td>
+                    <td>56</td>
+                  </tr>
+                  <tr>
+                    <td>ความยาว</td>
+                    <td>24</td>
+                    <td>25</td>
+                    <td>26</td>
+                    <td>27</td>
+                    <td>28</td>
+                    <td>29</td>
+                    <td>30</td>
+                    <td>31</td>
+                    <td>32</td>
+                    <td>33</td>
+                    <td>34</td>
+                    <td>35</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <table className={styles.sizeTable}>
+                <thead>
+                  <tr>
+                    <th>SIZE</th>
+                    <th>8XL</th>
+                    <th>9XL</th>
+                    <th>10XL</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>รอบอก</td>
+                    <td>58</td>
+                    <td>60</td>
+                    <td>62</td>
+                  </tr>
+                  <tr>
+                    <td>ความยาว</td>
+                    <td>36</td>
+                    <td>37</td>
+                    <td>38</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
-          
-          <div className={styles.featureCard}>
-            <div className={styles.featureIcon}>📱</div>
-            <h3 className={styles.featureTitle}>Mobile Apps</h3>
-            <p className={styles.featureText}>
-              Developing native and cross-platform mobile applications for iOS and Android.
-            </p>
+
+          {/* 🎉 STOCK TABLE เพิ่มใหม่ */}
+          <div className={styles.stockTableSection}>
+            <h3>จำนวนสินค้าแต่ละแบบ (STOCK)</h3>
+            
+            {loadingStock ? (
+              <div style={{ textAlign: 'center', padding: '2rem' }}>
+                <p>กำลังโหลดข้อมูลสต็อก...</p>
+              </div>
+            ) : (
+              <div className={styles.tableWrapper}>
+                <table className={styles.sizeTable}>
+                  <thead>
+                    <tr>
+                      <th>ประเภท</th>
+                      <th>SSS</th>
+                      <th>SS</th>
+                      <th>S</th>
+                      <th>M</th>
+                      <th>L</th>
+                      <th>XL</th>
+                      <th>2XL</th>
+                      <th>3XL</th>
+                      <th>4XL</th>
+                      <th>5XL</th>
+                      <th>6XL</th>
+                      <th>7XL</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {['ปกติ', 'ขาวดำ', 'พิเศษ'].map(type => (
+                      <tr key={type}>
+                        <td>{type}</td>
+                        {['SSS', 'SS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', '6XL', '7XL'].map(size => (
+                          <td key={size}>{getStockValue(type, size)}</td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+                <table className={styles.sizeTable}>
+                  <thead>
+                    <tr>
+                      <th>ประเภท</th>
+                      <th>8XL</th>
+                      <th>9XL</th>
+                      <th>10XL</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {['ปกติ', 'ขาวดำ', 'พิเศษ'].map(type => (
+                      <tr key={type}>
+                        <td>{type}</td>
+                        {['8XL', '9XL', '10XL'].map(size => (
+                          <td key={size}>{getStockValue(type, size)}</td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+
+          {/* Stats */}
+          <div className={styles.statsSection}>
+            <div className={styles.statCard}>
+              <h4>{loadingStock ? 'กำลังโหลด...' : `${calculateTotalShirts().toLocaleString()} ตัว`}</h4>
+              <p>เสื้อทั้งหมด</p>
+            </div>
+            <div className={styles.statCard}>
+              <h4>{loadingOrders ? 'กำลังโหลด...' : `${totalOrders.toLocaleString()} ออร์เดอร์`}</h4>
+              <p>จำนวนออร์เดอร์</p>
+            </div>
           </div>
         </div>
-      </div>
-      
-      <div className={styles.cta}>
-        <h2 className={styles.ctaTitle}>Ready to start your project?</h2>
-        <p className={styles.ctaText}>
-          Let's work together to bring your ideas to life. Get in touch with us today!
-        </p>
-        <a href="/contact" className={styles.ctaButton}>Get Started</a>
       </div>
     </div>
   );
