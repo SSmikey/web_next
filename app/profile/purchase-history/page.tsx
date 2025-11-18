@@ -440,6 +440,10 @@ export default function PurchaseHistoryPage() {
                     <span className={styles.infoLabel}>ค่าจัดส่ง:</span>
                     <span className={styles.infoValue}>฿{selectedOrder.shippingCost?.toLocaleString() || '0'}</span>
                   </div>
+                  <div className={styles.infoRow}>
+                    <span className={styles.infoLabel}>วิธีการชำระเงิน:</span>
+                    <span className={styles.infoValue}>โอนเงินสด (เก็บเงินปลายท้ายบ้าน)</span>
+                  </div>
                 </div>
 
                 <div className={styles.customerInfoSection}>

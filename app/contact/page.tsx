@@ -275,7 +275,7 @@ export default function ContactPage() {
             ======================================== */}
         <div className={styles.imageSection}>
           {/* Navigation Arrow Left */}
-          <button 
+          <button
             className={`${styles.arrow} ${styles.arrowLeft}`}
             onClick={goToPrevious}
             aria-label="Previous image"
@@ -284,37 +284,35 @@ export default function ContactPage() {
             ‹
           </button>
 
-          <div className={styles.imageWrapper}>
-            <div className={styles.slideshowContainer}>
-              {images.map((imageSrc, index) => (
-                <div key={index} className={getSlideClass(index)}>
-                  <Image
-                    src={imageSrc}
-                    alt={`Product ${index + 1}`}
-                    fill
-                    style={{ objectFit: "contain", objectPosition: "top" }}
-                    priority={index === 0}
-                  />
-                </div>
-              ))}
-            </div>
-
-            {/* Dots Indicator */}
-            <div className={styles.dotsContainer}>
-              {images.map((_, index) => (
-                <button
-                  key={index}
-                  className={`${styles.dot} ${index === currentImageIndex ? styles.dotActive : ''}`}
-                  onClick={() => goToSlide(index)}
-                  aria-label={`Go to slide ${index + 1}`}
-                  disabled={isAnimating}
+          <div className={styles.slideshowContainer}>
+            {images.map((imageSrc, index) => (
+              <div key={index} className={getSlideClass(index)}>
+                <Image
+                  src={imageSrc}
+                  alt={`Product ${index + 1}`}
+                  fill
+                  style={{ objectFit: "contain", objectPosition: "top center" }}
+                  priority={index === 0}
                 />
-              ))}
-            </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Dots Indicator */}
+          <div className={styles.dotsContainer}>
+            {images.map((_, index) => (
+              <button
+                key={index}
+                className={`${styles.dot} ${index === currentImageIndex ? styles.dotActive : ''}`}
+                onClick={() => goToSlide(index)}
+                aria-label={`Go to slide ${index + 1}`}
+                disabled={isAnimating}
+              />
+            ))}
           </div>
 
           {/* Navigation Arrow Right */}
-          <button 
+          <button
             className={`${styles.arrow} ${styles.arrowRight}`}
             onClick={goToNext}
             aria-label="Next image"
