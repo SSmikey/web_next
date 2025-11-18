@@ -2,17 +2,136 @@
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import ProfileLayout from "./components/ProfileLayout";
 
 export default function ProfilePage() {
-  const { data: session, status } = useSession();
+  const { data: session, status, update } = useSession();
   const router = useRouter();
+  
+  // Edit profile state
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [editName, setEditName] = useState("");
+  const [editEmail, setEditEmail] = useState("");
+  const [updatingProfile, setUpdatingProfile] = useState(false);
+  
+  // Change password state
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [changingPassword, setChangingPassword] = useState(false);
+
+  const handleUpdateProfile = async () => {
+    if (!editName || !editEmail) {
+      alert('กรุณากรอกชื่อและอีเมลให้ครบถ้วน');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(editEmail)) {
+      alert('รูปแบบอีเมลไม่ถูกต้อง');
+      return;
+    }
+
+    setUpdatingProfile(true);
+    
+    try {
+      const response = await fetch('/api/user/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: editName,
+          email: editEmail,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        alert('อัปเดตโปรไฟล์สำเร็จแล้ว');
+        setIsEditingProfile(false);
+        // Update session
+        if (update) {
+          await update({
+            ...session,
+            user: {
+              ...session?.user,
+              name: editName,
+              email: editEmail,
+            },
+          });
+        }
+      } else {
+        const errorData = await response.json();
+        alert(errorData.error || 'เกิดข้อผิดพลาดในการอัปเดตโปรไฟล์');
+      }
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      alert('เกิดข้อผิดพลาดในการอัปเดตโปรไฟล์');
+    } finally {
+      setUpdatingProfile(false);
+    }
+  };
+
+  const handleChangePassword = async () => {
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      alert('กรุณากรอกข้อมูลให้ครบถ้วน');
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      alert('รหัสผ่านใหม่ต้องมีอย่างน้อย 6 ตัวอักษร');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      alert('รหัสผ่านใหม่และการยืนยันรหัสผ่านไม่ตรงกัน');
+      return;
+    }
+
+    setChangingPassword(true);
+    
+    try {
+      const response = await fetch('/api/user/change-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          currentPassword,
+          newPassword,
+          confirmPassword,
+        }),
+      });
+
+      if (response.ok) {
+        alert('เปลี่ยนรหัสผ่านสำเร็จแล้ว');
+        setIsChangingPassword(false);
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
+      } else {
+        const errorData = await response.json();
+        alert(errorData.error || 'เกิดข้อผิดพลาดในการเปลี่ยนรหัสผ่าน');
+      }
+    } catch (error) {
+      console.error('Error changing password:', error);
+      alert('เกิดข้อผิดพลาดในการเปลี่ยนรหัสผ่าน');
+    } finally {
+      setChangingPassword(false);
+    }
+  };
 
   useEffect(() => {
     if (status === "loading") return;
     if (!session) {
       router.push("/auth/signin");
+    }
+    if (session) {
+      setEditName(session.user?.name || "");
+      setEditEmail(session.user?.email || "");
     }
   }, [session, status, router]);
 
@@ -66,8 +185,18 @@ export default function ProfilePage() {
           </div>
 
           <div className="profile-actions">
-            <button className="btn-primary">แก้ไขโปรไฟล์</button>
-            <button className="btn-secondary">เปลี่ยนรหัสผ่าน</button>
+            <button
+              className="btn-primary"
+              onClick={() => setIsEditingProfile(true)}
+            >
+              แก้ไขโปรไฟล์
+            </button>
+            <button
+              className="btn-secondary"
+              onClick={() => setIsChangingPassword(true)}
+            >
+              เปลี่ยนรหัสผ่าน
+            </button>
           </div>
         </div>
 
@@ -83,6 +212,119 @@ export default function ProfilePage() {
             </div>
           </div>
         </div>
+
+        {/* Edit Profile Modal */}
+        {isEditingProfile && (
+          <div className="modal-overlay">
+            <div className="modal-container">
+              <div className="modal-header">
+                <h2>แก้ไขโปรไฟล์</h2>
+                <button
+                  className="close-button"
+                  onClick={() => setIsEditingProfile(false)}
+                >
+                  ×
+                </button>
+              </div>
+              <div className="modal-body">
+                <div className="form-group">
+                  <label>ชื่อ</label>
+                  <input
+                    type="text"
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    className="form-input"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>อีเมล</label>
+                  <input
+                    type="email"
+                    value={editEmail}
+                    onChange={(e) => setEditEmail(e.target.value)}
+                    className="form-input"
+                  />
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button
+                  className="btn-secondary"
+                  onClick={() => setIsEditingProfile(false)}
+                >
+                  ยกเลิก
+                </button>
+                <button
+                  className="btn-primary"
+                  onClick={handleUpdateProfile}
+                  disabled={updatingProfile}
+                >
+                  {updatingProfile ? "กำลังบันทึก..." : "บันทึก"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Change Password Modal */}
+        {isChangingPassword && (
+          <div className="modal-overlay">
+            <div className="modal-container">
+              <div className="modal-header">
+                <h2>เปลี่ยนรหัสผ่าน</h2>
+                <button
+                  className="close-button"
+                  onClick={() => setIsChangingPassword(false)}
+                >
+                  ×
+                </button>
+              </div>
+              <div className="modal-body">
+                <div className="form-group">
+                  <label>รหัสผ่านปัจจุบัน</label>
+                  <input
+                    type="password"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    className="form-input"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>รหัสผ่านใหม่</label>
+                  <input
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="form-input"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>ยืนยันรหัสผ่านใหม่</label>
+                  <input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="form-input"
+                  />
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button
+                  className="btn-secondary"
+                  onClick={() => setIsChangingPassword(false)}
+                >
+                  ยกเลิก
+                </button>
+                <button
+                  className="btn-primary"
+                  onClick={handleChangePassword}
+                  disabled={changingPassword}
+                >
+                  {changingPassword ? "กำลังเปลี่ยน..." : "เปลี่ยนรหัสผ่าน"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       <style jsx>{`
@@ -98,20 +340,20 @@ export default function ProfilePage() {
         .profile-header h1 {
           font-size: 2rem;
           font-weight: 700;
-          color: #1f2937;
+          color: var(--text-primary);
           margin-bottom: 0.5rem;
         }
 
         .profile-header p {
-          color: #6b7280;
+          color: var(--text-secondary);
           font-size: 1.1rem;
         }
 
         .profile-card {
-          background: white;
-          border-radius: 12px;
+          background: var(--bg-card);
+          border-radius: var(--radius-lg);
           padding: 2rem;
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+          box-shadow: var(--shadow-sm);
           margin-bottom: 2rem;
         }
 
@@ -121,14 +363,14 @@ export default function ProfilePage() {
           gap: 1.5rem;
           margin-bottom: 2rem;
           padding-bottom: 2rem;
-          border-bottom: 1px solid #e5e7eb;
+          border-bottom: 1px solid var(--border-light);
         }
 
         .avatar-large {
           width: 80px;
           height: 80px;
-          border-radius: 50%;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          border-radius: var(--radius-full);
+          background: var(--gradient-primary);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -140,21 +382,21 @@ export default function ProfilePage() {
         .user-details h2 {
           font-size: 1.5rem;
           font-weight: 600;
-          color: #1f2937;
+          color: var(--text-primary);
           margin-bottom: 0.25rem;
         }
 
         .email {
-          color: #6b7280;
+          color: var(--text-secondary);
           margin-bottom: 0.5rem;
         }
 
         .role {
           display: inline-block;
           padding: 0.25rem 0.75rem;
-          background: #f3f4f6;
-          color: #374151;
-          border-radius: 9999px;
+          background: var(--bg-tertiary);
+          color: var(--text-secondary);
+          border-radius: var(--radius-full);
           font-size: 0.875rem;
           font-weight: 500;
         }
@@ -169,19 +411,19 @@ export default function ProfilePage() {
         .stat-item {
           text-align: center;
           padding: 1rem;
-          background: #f9fafb;
-          border-radius: 8px;
+          background: var(--bg-tertiary);
+          border-radius: var(--radius-md);
         }
 
         .stat-number {
           font-size: 1.5rem;
           font-weight: 700;
-          color: #667eea;
+          color: var(--accent-primary);
           margin-bottom: 0.25rem;
         }
 
         .stat-label {
-          color: #6b7280;
+          color: var(--text-secondary);
           font-size: 0.875rem;
         }
 
@@ -192,7 +434,7 @@ export default function ProfilePage() {
 
         .btn-primary, .btn-secondary {
           padding: 0.75rem 1.5rem;
-          border-radius: 8px;
+          border-radius: var(--radius-md);
           font-weight: 500;
           cursor: pointer;
           transition: all 0.2s ease;
@@ -200,7 +442,7 @@ export default function ProfilePage() {
         }
 
         .btn-primary {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          background: var(--gradient-primary);
           color: white;
         }
 
@@ -210,25 +452,25 @@ export default function ProfilePage() {
         }
 
         .btn-secondary {
-          background: #f3f4f6;
-          color: #374151;
+          background: var(--bg-tertiary);
+          color: var(--text-primary);
         }
 
         .btn-secondary:hover {
-          background: #e5e7eb;
+          background: var(--border-light);
         }
 
         .recent-activity {
-          background: white;
-          border-radius: 12px;
+          background: var(--bg-card);
+          border-radius: var(--radius-lg);
           padding: 1.5rem;
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+          box-shadow: var(--shadow-sm);
         }
 
         .recent-activity h3 {
           font-size: 1.25rem;
           font-weight: 600;
-          color: #1f2937;
+          color: var(--text-primary);
           margin-bottom: 1rem;
         }
 
@@ -243,8 +485,8 @@ export default function ProfilePage() {
           align-items: center;
           gap: 1rem;
           padding: 1rem;
-          background: #f9fafb;
-          border-radius: 8px;
+          background: var(--bg-tertiary);
+          border-radius: var(--radius-md);
         }
 
         .activity-icon {
@@ -252,13 +494,13 @@ export default function ProfilePage() {
         }
 
         .activity-content p {
-          color: #374151;
+          color: var(--text-primary);
           font-weight: 500;
           margin-bottom: 0.25rem;
         }
 
         .activity-time {
-          color: #6b7280;
+          color: var(--text-secondary);
           font-size: 0.875rem;
         }
 
@@ -273,6 +515,112 @@ export default function ProfilePage() {
           }
 
           .profile-actions {
+            flex-direction: column;
+          }
+
+          .btn-primary, .btn-secondary {
+            width: 100%;
+          }
+        }
+
+        .modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.5);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1000;
+        }
+
+        .modal-container {
+          background: var(--bg-card);
+          border-radius: var(--radius-lg);
+          padding: 2rem;
+          width: 90%;
+          max-width: 500px;
+          box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+          color: var(--text-primary);
+          font-size: 1.5rem;
+          font-weight: 600;
+          margin: 0;
+        }
+
+        .close-button {
+          background: none;
+          border: none;
+          font-size: 1.5rem;
+          color: var(--text-secondary);
+          cursor: pointer;
+          padding: 0;
+          width: 30px;
+          height: 30px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .close-button:hover {
+          color: var(--text-primary);
+        }
+
+        .modal-body {
+          margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+          margin-bottom: 1rem;
+        }
+
+        .form-group label {
+          display: block;
+          margin-bottom: 0.5rem;
+          color: var(--text-primary);
+          font-weight: 500;
+        }
+
+        .form-input {
+          width: 100%;
+          padding: 0.75rem;
+          border: 1px solid var(--border-color);
+          border-radius: var(--radius-md);
+          background: var(--bg-card);
+          color: var(--text-primary);
+          font-size: 1rem;
+          transition: border-color 0.2s ease;
+        }
+
+        .form-input:focus {
+          outline: none;
+          border-color: var(--accent-primary);
+        }
+
+        .modal-footer {
+          display: flex;
+          gap: 1rem;
+          justify-content: flex-end;
+        }
+
+        @media (max-width: 768px) {
+          .modal-container {
+            padding: 1.5rem;
+            margin: 1rem;
+          }
+
+          .modal-footer {
             flex-direction: column;
           }
 
