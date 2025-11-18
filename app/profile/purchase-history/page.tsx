@@ -34,6 +34,8 @@ export default function PurchaseHistoryPage() {
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [cancelingOrderId, setCancelingOrderId] = useState<string | null>(null);
   const [uploadingSlip, setUploadingSlip] = useState(false);
+  const [showSuccessNotification, setShowSuccessNotification] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
   const [paymentSettings, setPaymentSettings] = useState<{
     bankName: string;
     accountName: string;
@@ -165,10 +167,16 @@ export default function PurchaseHistoryPage() {
       
       if (response.ok) {
         const data = await response.json();
-        alert('อัปโหลดสลิปการโอนเงินสำเร็จแล้ว');
+        setSuccessMessage('อัปโหลดสลิปการโอนเงินสำเร็จแล้ว');
+        setShowSuccessNotification(true);
         setShowPaymentPopup(false);
         // Refresh orders list
         fetchOrders();
+        
+        // Hide notification after 3 seconds
+        setTimeout(() => {
+          setShowSuccessNotification(false);
+        }, 3000);
       } else {
         const data = await response.json();
         alert(data.error || 'Failed to upload payment slip');
@@ -778,6 +786,16 @@ export default function PurchaseHistoryPage() {
                   ปิด
                 </button>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Success Notification */}
+        {showSuccessNotification && (
+          <div className={styles.successNotification}>
+            <div className={styles.notificationContent}>
+              <div className={styles.notificationIcon}>✓</div>
+              <div className={styles.notificationText}>{successMessage}</div>
             </div>
           </div>
         )}
