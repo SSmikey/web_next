@@ -136,6 +136,42 @@
   gap: 2rem;
 }
 
+/* Ensure proper layout for tab content */
+.mainContent > div {
+  grid-column: 1 / -1;
+  width: 100%;
+}
+
+/* Make both orders and stock sections use the same grid column */
+.mainContent > .ordersSection,
+.mainContent > .stockSection {
+  grid-column: 1;
+}
+
+.mainContent > .sidebar {
+  grid-column: 2;
+  grid-row: 1 / -1;
+}
+
+@media (max-width: 1200px) {
+  .mainContent {
+    grid-template-columns: 1fr;
+  }
+  
+  .mainContent > div {
+    grid-column: 1 / -1;
+  }
+  
+  .sidebar {
+    order: -1;
+  }
+  
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+}
+
 .ordersSection {
   background: var(--bg-card);
   border-radius: var(--radius-xl);
@@ -823,6 +859,10 @@
     grid-template-columns: 1fr;
   }
   
+  .mainContent > div {
+    grid-column: 1 / -1;
+  }
+  
   .sidebar {
     order: -1;
   }
@@ -1031,6 +1071,8 @@ html.dark .paymentInfo {
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 .stockTableContainer {
@@ -1038,6 +1080,8 @@ html.dark .paymentInfo {
   border-radius: var(--radius-lg);
   padding: 1.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  overflow-x: auto;
 }
 
 .stockTypeTitle {
@@ -1052,38 +1096,42 @@ html.dark .paymentInfo {
 
 .stockTable {
   width: 100%;
+  max-width: 100%;
   border-collapse: collapse;
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   margin-bottom: 1rem;
+  table-layout: fixed;
 }
 
 .stockTable th {
   text-align: left;
-  padding: 1rem;
+  padding: 0.75rem 0.5rem;
   border-bottom: 2px solid var(--border-color);
   font-weight: 700;
   color: var(--text-secondary);
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   background: var(--bg-secondary);
+  white-space: nowrap;
 }
 
 .stockTable td {
-  padding: 1rem;
+  padding: 0.75rem 0.5rem;
   border-bottom: 1px solid var(--border-lighter);
   color: var(--text-primary);
-  font-size: 0.95rem;
+  font-size: 0.85rem;
+  white-space: nowrap;
 }
 
 .stockInput {
-  width: 60px;
-  padding: 0.5rem;
+  width: 50px;
+  padding: 0.4rem;
   border: 2px solid var(--border-color);
   border-radius: var(--radius-md);
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   background: var(--bg-card);
   color: var(--text-primary);
   text-align: center;
@@ -1099,18 +1147,21 @@ html.dark .paymentInfo {
 
 .stockValue {
   display: inline-block;
-  padding: 0.5rem;
+  padding: 0.4rem;
   background: var(--bg-card);
   border-radius: var(--radius-md);
   font-weight: 600;
-  min-width: 60px;
+  min-width: 50px;
   text-align: center;
+  font-size: 0.85rem;
 }
 
 .tableWrapper {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 /* Dark mode specific styles for stock management */
@@ -1137,6 +1188,34 @@ html.dark .stockValue {
 }
 
 /* Responsive design for stock management */
+@media (max-width: 1200px) {
+  .stockTable {
+    font-size: 0.75rem;
+  }
+  
+  .stockTable th {
+    padding: 0.5rem 0.3rem;
+    font-size: 0.7rem;
+  }
+  
+  .stockTable td {
+    padding: 0.5rem 0.3rem;
+    font-size: 0.75rem;
+  }
+  
+  .stockInput {
+    width: 45px;
+    font-size: 0.75rem;
+    padding: 0.3rem;
+  }
+  
+  .stockValue {
+    min-width: 45px;
+    font-size: 0.75rem;
+    padding: 0.3rem;
+  }
+}
+
 @media (max-width: 768px) {
   .tabNavigation {
     flex-direction: column;
@@ -1158,17 +1237,33 @@ html.dark .stockValue {
     width: 100%;
   }
   
-  .stockTable {
-    font-size: 0.8rem;
+  .stockTableContainer {
+    padding: 1rem;
   }
   
-  .stockTable th,
+  .stockTable {
+    font-size: 0.7rem;
+  }
+  
+  .stockTable th {
+    padding: 0.4rem 0.2rem;
+    font-size: 0.65rem;
+  }
+  
   .stockTable td {
-    padding: 0.5rem;
+    padding: 0.4rem 0.2rem;
+    font-size: 0.7rem;
   }
   
   .stockInput {
-    width: 50px;
-    font-size: 0.8rem;
+    width: 40px;
+    font-size: 0.7rem;
+    padding: 0.2rem;
+  }
+  
+  .stockValue {
+    min-width: 40px;
+    font-size: 0.7rem;
+    padding: 0.2rem;
   }
 }
