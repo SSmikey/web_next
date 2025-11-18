@@ -1,37 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SPVV CLOTHING
 
-## Getting Started
+เว็บไซต์จำหน่ายเสื้อโปโลออนไลน์คุณภาพพรีเมี่ยม เหมาะสำหรับทุกโอกาส
 
-First, run the development server:
+## 📋 ข้อมูลเว็บไซต์
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **ชื่อ**: SPVV CLOTHING
+- **ประเภท**: E-commerce (ขายเสื้อโปโล)
+- **ฟรีมเวิร์ก**: Next.js 16 + React 19
+- **ฐานข้อมูล**: MongoDB + Mongoose
+- **ระบบยืนยันตัวตน**: NextAuth.js
+
+## 🎯 ฟีเจอร์หลัก
+
+- **แสดงสินค้า**: สไลด์โชว์รูปสินค้า 5 แบบหลัก + พิเศษ
+- **ตารางไซส์**: ตารางขนาดเสื้อ SSS-10XL พร้อมมิติข้อมูล
+- **ระบบสต็อก**: แสดงจำนวนเสื้อแต่ละแบบและขนาดแบบ real-time
+- **สถิติ**: นับจำนวนเสื้อทั้งหมด และออร์เดอร์ทั้งหมด
+- **ระบบสั่งซื้อ**: ผู้ใช้ต้องเข้าสู่ระบบก่อนสั่งซื้อ
+- **Dark Mode**: รองรับ light/dark theme
+- **Responsive**: ออกแบบสำหรับมือถือและเดสก์ทอป
+
+## 📦 สินค้า
+
+- **ประเภท**: ปกติ, ขาวดำ, พิเศษ
+- **ไซส์**: SSS, SS, S, M, L, XL, 2XL-10XL
+- **ค่าส่ง**: ตัวแรก 50 บาท ตัวต่อไป +10 บาท
+
+## 📁 โครงสร้างโปรเจค
+
+```
+web_next/
+├── app/                    # App Router
+│   ├── page.tsx           # หน้าหลัก
+│   ├── layout.tsx         # Layout หลัก
+│   ├── admin/             # หน้า Admin
+│   ├── profile/           # โปรไฟล์ผู้ใช้
+│   ├── select-products/   # เลือกสินค้า
+│   ├── buyer-information/ # ข้อมูลผู้ซื้อ
+│   └── components/        # Components ต่างๆ
+├── pages/                  # API Routes
+├── models/                 # Database Models (Mongoose)
+├── lib/                    # Utility Functions
+├── public/                 # Static Files
+└── styles/                 # CSS Modules
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🔌 Dependencies
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **next-auth**: ระบบยืนยันตัวตน
+- **mongoose**: ODM สำหรับ MongoDB
+- **bcryptjs**: Hashing รหัสผ่าน
+- **next-themes**: Dark mode support
+- **react-slick**: Carousel/Slider
+- **dotenv**: Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📝 หมายเหตุ
 
-## Learn More
+ปัจจุบันเชื่อมต่อ MongoDB ผ่าน Mongoose และใช้ NextAuth สำหรับจัดการผู้ใช้
 
-To learn more about Next.js, take a look at the following resources:
+## 📸 UI Preview
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-"# web_next" 
+(./docs/images/ui1.png)
+(./docs/images/ui2.png)
+(./docs/images/ui3.png)
+(./docs/images/ui4.png)
+(./docs/images/ui5.png)
+(./docs/images/ui6.png)
+(./docs/images/ui7.png)
+(./docs/images/ui8.png)
