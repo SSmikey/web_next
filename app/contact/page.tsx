@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
@@ -50,6 +50,19 @@ export default function ContactPage() {
     address: '',
     note: ''
   });
+
+  // Load customer info from sessionStorage on component mount
+  useEffect(() => {
+    const savedCustomerInfo = sessionStorage.getItem('customerInfo');
+    if (savedCustomerInfo) {
+      try {
+        const parsedInfo = JSON.parse(savedCustomerInfo);
+        setCustomerInfo(parsedInfo);
+      } catch (error) {
+        console.error('Error parsing customer info from sessionStorage:', error);
+      }
+    }
+  }, []);
 
   // Slideshow states
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
