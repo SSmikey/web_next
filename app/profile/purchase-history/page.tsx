@@ -419,6 +419,10 @@ export default function PurchaseHistoryPage() {
                 <div className={styles.orderInfoSection}>
                   <h3 className={styles.sectionTitle}>ข้อมูลคำสั่งซื้อ</h3>
                   <div className={styles.infoRow}>
+                    <span className={styles.infoLabel}>เลขที่ออเดอร์:</span>
+                    <span className={styles.infoValue}>{selectedOrder.orderNumber}</span>
+                  </div>
+                  <div className={styles.infoRow}>
                     <span className={styles.infoLabel}>วันที่สั่งซื้อ:</span>
                     <span className={styles.infoValue}>{formatDate(selectedOrder.date)}</span>
                   </div>
@@ -428,6 +432,42 @@ export default function PurchaseHistoryPage() {
                       {statusLabels[selectedOrder.status as keyof typeof statusLabels]}
                     </span>
                   </div>
+                  <div className={styles.infoRow}>
+                    <span className={styles.infoLabel}>วิธีการจัดส่ง:</span>
+                    <span className={styles.infoValue}>{selectedOrder.shippingMethod === 'mail' ? 'ไปรษณีย์' : 'รับสินค้าเอง'}</span>
+                  </div>
+                  <div className={styles.infoRow}>
+                    <span className={styles.infoLabel}>ค่าจัดส่ง:</span>
+                    <span className={styles.infoValue}>฿{selectedOrder.shippingCost?.toLocaleString() || '0'}</span>
+                  </div>
+                </div>
+
+                <div className={styles.customerInfoSection}>
+                  <h3 className={styles.sectionTitle}>ข้อมูลผู้สั่งซื้อ</h3>
+                  <div className={styles.infoRow}>
+                    <span className={styles.infoLabel}>ชื่อ-นามสกุล:</span>
+                    <span className={styles.infoValue}>
+                      {selectedOrder.customerInfo?.firstName} {selectedOrder.customerInfo?.lastName}
+                    </span>
+                  </div>
+                  <div className={styles.infoRow}>
+                    <span className={styles.infoLabel}>อีเมล:</span>
+                    <span className={styles.infoValue}>{selectedOrder.customerInfo?.email}</span>
+                  </div>
+                  <div className={styles.infoRow}>
+                    <span className={styles.infoLabel}>เบอร์โทร:</span>
+                    <span className={styles.infoValue}>{selectedOrder.customerInfo?.phone}</span>
+                  </div>
+                  <div className={styles.infoRow}>
+                    <span className={styles.infoLabel}>ที่อยู่จัดส่ง:</span>
+                    <span className={styles.infoValue}>{selectedOrder.customerInfo?.address}</span>
+                  </div>
+                  {selectedOrder.customerInfo?.note && (
+                    <div className={styles.infoRow}>
+                      <span className={styles.infoLabel}>หมายเหตุ:</span>
+                      <span className={styles.infoValue}>{selectedOrder.customerInfo.note}</span>
+                    </div>
+                  )}
                 </div>
 
                 <div className={styles.itemsSection}>
@@ -457,6 +497,7 @@ export default function PurchaseHistoryPage() {
                         <div className={styles.detailItemName}>{item.name}</div>
                         <div className={styles.detailItemPrice}>฿{item.price.toLocaleString()}</div>
                         <div className={styles.detailItemQuantity}>จำนวน: {item.quantity}</div>
+                        <div className={styles.detailItemSize}>ขนาด: {item.size}</div>
                         <div className={styles.detailItemTotal}>
                           รวม: ฿{(item.price * item.quantity).toLocaleString()}
                         </div>
@@ -466,6 +507,10 @@ export default function PurchaseHistoryPage() {
                 </div>
 
                 <div className={styles.totalSection}>
+                  <div className={styles.subtotalRow}>
+                    <span className={styles.totalLabel}>ราคาสินค้า:</span>
+                    <span className={styles.totalValue}>฿{selectedOrder.totalAmount?.toLocaleString() || '0'}</span>
+                  </div>
                   <div className={styles.totalRow}>
                     <span className={styles.totalLabel}>ยอดรวมทั้งหมด:</span>
                     <span className={styles.totalValue}>฿{selectedOrder.total.toLocaleString()}</span>

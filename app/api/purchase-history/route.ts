@@ -88,11 +88,16 @@ export async function GET(request: NextRequest) {
       date: order.orderDate.toISOString().split('T')[0], // Format as YYYY-MM-DD
       status: order.status,
       total: order.totalAmount + order.shippingCost,
+      totalAmount: order.totalAmount,
+      shippingCost: order.shippingCost,
+      shippingMethod: order.shippingMethod,
+      customerInfo: order.customerInfo,
       items: order.items.map((item: any) => ({
         id: item._id || Math.random().toString(),
         name: item.productName,
         price: item.price,
         quantity: item.quantity,
+        size: item.size,
         image: item.imageUrl || "👕"
       }))
     }));
