@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import styles from "./page.module.css";
 
 interface StockData {
@@ -28,6 +29,7 @@ interface StockData {
 }
 
 export default function Home() {
+  const { data: session, status } = useSession();
   const sliderImages = [
     "/images/V1.png",
     "/images/V2.png",
@@ -230,9 +232,17 @@ export default function Home() {
         <div className={styles.right}>
           <h2 className={styles.productTitle}>SPVV CLOTHING</h2>
 
-          <Link href="/buyer-information" className={styles.primaryButton}>
-            สั่งซื้อเสื้อ
-          </Link>
+          {status === "loading" ? (
+            <div className={styles.primaryButton}>กำลังโหลด...</div>
+          ) : session ? (
+            <Link href="/buyer-information" className={styles.primaryButton}>
+              สั่งซื้อเสื้อ
+            </Link>
+          ) : (
+            <Link href="/auth/signin" className={styles.primaryButton}>
+              เข้าสู่ระบบ
+            </Link>
+          )}
 
           <div className={styles.description}>
             <p>

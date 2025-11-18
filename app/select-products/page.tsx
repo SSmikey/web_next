@@ -50,7 +50,8 @@ export default function SelectProductsPage() {
     email: '',
     phone: '',
     address: '',
-    note: ''
+    note: '',
+    shippingMethod: 'mail' // Default to mail shipping
   });
 
   // Load customer info from sessionStorage on component mount
@@ -75,7 +76,8 @@ export default function SelectProductsPage() {
   const currentShirt = SHIRT_DESIGNS.find(s => s.id === selectedShirt) || SHIRT_DESIGNS[0];
   
   // คำนวณค่าส่ง: 1 ตัว = 50 บาท, ตัวที่ 2+ = +10 บาท/ตัว
-  const shippingCost = quantity === 0 ? 0 : quantity === 1 ? 50 : 50 + (quantity - 1) * 10;
+  // ถ้าเลือกมารับเอง จะไม่มีค่าส่ง
+  const shippingCost = customerInfo.shippingMethod === 'pickup' ? 0 : (quantity === 0 ? 0 : quantity === 1 ? 50 : 50 + (quantity - 1) * 10);
   
   // คำนวณราคาเสื้อทั้งหมด
   const subtotal = quantity * currentShirt.price;
@@ -209,7 +211,7 @@ export default function SelectProductsPage() {
         }],
         totalAmount: subtotal,
         shippingCost,
-        shippingMethod: 'mail' // Default to mail, can be made configurable
+        shippingMethod: customerInfo.shippingMethod
       };
 
       const response = await fetch('/api/orders', {

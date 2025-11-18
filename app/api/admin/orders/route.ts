@@ -64,7 +64,7 @@ export async function GET(request: NextRequest) {
       paymentSlip: order.paymentSlip,
       customerInfo: order.customerInfo,
       items: order.items,
-      paymentInfo: getGlobalPaymentSettings(), // Use global payment settings
+      paymentInfo: order.paymentInfo || getGlobalPaymentSettings(), // Use order's payment info or fallback to global settings
       createdAt: order.createdAt,
       updatedAt: order.updatedAt
     }));
