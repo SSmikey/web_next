@@ -35,7 +35,7 @@ interface Order {
     bankName: string;
     accountName: string;
     accountNumber: string;
-    qrCodeUrl?: string;
+    qrCodeImage?: string;
   };
   paymentSlip?: {
     url: string;
@@ -92,13 +92,14 @@ export default function DashboardPage() {
     bankName: string;
     accountName: string;
     accountNumber: string;
-    qrCodeUrl: string;
+    qrCodeImage: string;
   }>({
     bankName: '',
     accountName: '',
     accountNumber: '',
-    qrCodeUrl: ''
+    qrCodeImage: ''
   });
+  const [qrCodeFile, setQrCodeFile] = useState<File | null>(null);
 
   useEffect(() => {
     if (status === "loading") return;
@@ -119,6 +120,12 @@ export default function DashboardPage() {
       fetchPaymentSettings();
     }
   }, [currentPage, statusFilter, searchQuery, session]);
+
+  useEffect(() => {
+    if (session && session.user?.role === "admin") {
+      fetchPaymentSettings();
+    }
+  }, [session]);
 
   const fetchStats = async () => {
     try {
@@ -186,18 +193,28 @@ export default function DashboardPage() {
   const handlePaymentInfoUpdate = async () => {
     try {
       setEditingPayment(true);
+      
+      // Create FormData for file upload
+      const formData = new FormData();
+      formData.append('bankName', paymentInfo.bankName);
+      formData.append('accountName', paymentInfo.accountName);
+      formData.append('accountNumber', paymentInfo.accountNumber);
+      
+      if (qrCodeFile) {
+        formData.append('qrCodeImage', qrCodeFile);
+      }
+
       const response = await fetch('/api/admin/payment-settings', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(paymentInfo),
+        body: formData,
       });
 
       if (response.ok) {
         setEditingPayment(false);
         setShowPaymentModal(false);
+        setQrCodeFile(null);
         fetchOrders();
+        fetchPaymentSettings(); // Refresh payment settings
       }
     } catch (error) {
       console.error('Error updating payment info:', error);
@@ -235,6 +252,38 @@ export default function DashboardPage() {
   const closePaymentModal = () => {
     setShowPaymentModal(false);
     setEditingPayment(false);
+  };
+
+  const handlePaymentSlipUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!selectedOrder) return;
+
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const formData = new FormData();
+      formData.append('paymentSlip', file);
+      formData.append('orderId', selectedOrder.id);
+
+      const response = await fetch(`/api/orders/${selectedOrder.id}/payment-slip`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        const updatedOrder = await response.json();
+        setSelectedOrder(updatedOrder.order);
+        fetchOrders(); // Refresh orders list
+        fetchStats(); // Refresh stats to update payment slip counts
+        alert('อัปโหลดสลิปสำเร็จแล้ว!');
+      } else {
+        const errorData = await response.json();
+        alert(errorData.error || 'เกิดข้อผิดพลาดในการอัปโหลดสลิป');
+      }
+    } catch (error) {
+      console.error('Error uploading payment slip:', error);
+      alert('เกิดข้อผิดพลาดในการอัปโหลดสลิป');
+    }
   };
 
   const getStatusBadgeClass = (status: string) => {
@@ -526,6 +575,75 @@ export default function DashboardPage() {
                       <span className={styles.paymentInfoLabel}>เลขที่บัญชี:</span>
                       <span className={styles.paymentInfoValue}>{selectedOrder.paymentInfo?.accountNumber || '-'}</span>
                     </div>
+                    {selectedOrder.paymentInfo?.qrCodeImage && (
+                      <div className={styles.paymentInfoRow}>
+                        <span className={styles.paymentInfoLabel}>QR Code:</span>
+                        <div className={styles.paymentInfoValue}>
+                          <img
+                            src={selectedOrder.paymentInfo.qrCodeImage}
+                            alt="QR Code"
+                            style={{
+                              width: '120px',
+                              height: '120px',
+                              border: '1px solid var(--border-color)',
+                              borderRadius: 'var(--radius-md)',
+                              padding: '8px',
+                              backgroundColor: 'white'
+                            }}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Payment Slip Status */}
+                <div>
+                  <h3>สถานะการชำระเงิน</h3>
+                  <div className={styles.paymentInfo}>
+                    <div className={styles.paymentInfoRow}>
+                      <span className={styles.paymentInfoLabel}>สลิปการชำระเงิน:</span>
+                      {selectedOrder.paymentSlip ? (
+                        <span className={styles.paymentInfoValue} style={{ color: 'var(--accent-primary)' }}>
+                          ✓ อัปโหลดสลิปแล้ว ({new Date(selectedOrder.paymentSlip.uploadedAt).toLocaleDateString('th-TH')})
+                        </span>
+                      ) : (
+                        <span className={styles.paymentInfoValue} style={{ color: 'var(--accent-primary)' }}>
+                          ✗ ยังไม่ได้อัปโหลดสลิป
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Payment Slip Upload */}
+                <div>
+                  <h3>หลักฐานการชำระเงิน</h3>
+                  <div className={styles.paymentInfo}>
+                    {selectedOrder.paymentSlip ? (
+                      <div className={styles.paymentInfoRow}>
+                        <span className={styles.paymentInfoLabel}>สลิปที่อัปโหลด:</span>
+                        <a
+                          href={selectedOrder.paymentSlip.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={styles.paymentInfoValue}
+                          style={{ color: 'var(--accent-primary)', textDecoration: 'underline' }}
+                        >
+                          ดูสลิป
+                        </a>
+                      </div>
+                    ) : (
+                      <div className={styles.paymentInfoRow}>
+                        <span className={styles.paymentInfoLabel}>อัปโหลดสลิป:</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className={styles.paymentInput}
+                          onChange={handlePaymentSlipUpload}
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -594,14 +712,55 @@ export default function DashboardPage() {
                       />
                     </div>
                     <div className={styles.paymentInfoRow}>
-                      <span className={styles.paymentInfoLabel}>QR Code URL:</span>
-                      <input
-                        type="text"
-                        placeholder="ลิงก์ QR Code"
-                        className={styles.paymentInput}
-                        value={paymentInfo.qrCodeUrl}
-                        onChange={(e) => setPaymentInfo({ ...paymentInfo, qrCodeUrl: e.target.value })}
-                      />
+                      <span className={styles.paymentInfoLabel}>QR Code:</span>
+                      <div className={styles.paymentInfoValue}>
+                        {paymentInfo.qrCodeImage ? (
+                          <div>
+                            <img
+                              src={paymentInfo.qrCodeImage}
+                              alt="Current QR Code"
+                              style={{
+                                width: '120px',
+                                height: '120px',
+                                border: '1px solid var(--border-color)',
+                                borderRadius: 'var(--radius-md)',
+                                padding: '8px',
+                                backgroundColor: 'white',
+                                marginBottom: '10px'
+                              }}
+                            />
+                            <div>
+                              <input
+                                type="file"
+                                accept="image/*"
+                                className={styles.paymentInput}
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) setQrCodeFile(file);
+                                }}
+                              />
+                              <small style={{ display: 'block', marginTop: '5px', color: 'var(--text-secondary)' }}>
+                                อัปโหลดภาพใหม่เพื่อแทนที่
+                              </small>
+                            </div>
+                          </div>
+                        ) : (
+                          <div>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className={styles.paymentInput}
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) setQrCodeFile(file);
+                              }}
+                            />
+                            <small style={{ display: 'block', marginTop: '5px', color: 'var(--text-secondary)' }}>
+                              อัปโหลดภาพ QR Code สำหรับการชำระเงิน
+                            </small>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                   <button

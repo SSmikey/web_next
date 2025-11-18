@@ -3,7 +3,7 @@ let globalPaymentSettings = {
   bankName: '',
   accountName: '',
   accountNumber: '',
-  qrCodeUrl: ''
+  qrCodeImage: '' // Store file path instead of URL
 };
 
 // Export function to get payment settings

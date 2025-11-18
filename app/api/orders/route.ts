@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
         bankName: "ธนาคารกสิกรไทย",
         accountName: "สมชาย ใจดี",
         accountNumber: "123-456-7890",
-        qrCodeUrl: "/images/QR code for ordering.png"
+        qrCodeImage: "/images/QR code for ordering.png"
       }
     });
     

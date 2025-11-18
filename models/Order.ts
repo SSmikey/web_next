@@ -30,7 +30,7 @@ export interface IOrder extends Document {
     bankName: string;
     accountName: string;
     accountNumber: string;
-    qrCodeUrl?: string;
+    qrCodeImage?: string;
   };
   paymentSlip?: {
     url: string;
@@ -147,7 +147,7 @@ const OrderSchema: Schema = new Schema({
       type: String,
       default: '123-456-7890'
     },
-    qrCodeUrl: {
+    qrCodeImage: {
       type: String,
       default: '/images/QR code for ordering.png'
     }

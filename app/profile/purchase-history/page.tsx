@@ -34,6 +34,17 @@ export default function PurchaseHistoryPage() {
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [cancelingOrderId, setCancelingOrderId] = useState<string | null>(null);
   const [uploadingSlip, setUploadingSlip] = useState(false);
+  const [paymentSettings, setPaymentSettings] = useState<{
+    bankName: string;
+    accountName: string;
+    accountNumber: string;
+    qrCodeImage: string;
+  }>({
+    bankName: '',
+    accountName: '',
+    accountNumber: '',
+    qrCodeImage: ''
+  });
   const ordersPerPage = 5;
 
   // Fetch orders from API
@@ -81,8 +92,21 @@ export default function PurchaseHistoryPage() {
   useEffect(() => {
     if (session) {
       fetchOrders();
+      fetchPaymentSettings();
     }
   }, [fetchOrders, session]);
+
+  const fetchPaymentSettings = async () => {
+    try {
+      const response = await fetch('/api/admin/payment-settings');
+      if (response.ok) {
+        const data = await response.json();
+        setPaymentSettings(data);
+      }
+    } catch (error) {
+      console.error('Error fetching payment settings:', error);
+    }
+  };
 
   const toggleOrderExpansion = (orderId: string) => {
     setExpandedOrders(prev =>
@@ -665,15 +689,15 @@ export default function PurchaseHistoryPage() {
                   <div className={styles.paymentInfoCard}>
                     <div className={styles.paymentInfoRow}>
                       <span className={styles.paymentInfoLabel}>ชื่อธนาคาร:</span>
-                      <span className={styles.paymentInfoValue}>ธนาคารกสิกรไทย</span>
+                      <span className={styles.paymentInfoValue}>{paymentSettings.bankName || 'ธนาคารกสิกรไทย'}</span>
                     </div>
                     <div className={styles.paymentInfoRow}>
                       <span className={styles.paymentInfoLabel}>ชื่อบัญชี:</span>
-                      <span className={styles.paymentInfoValue}>สมชาย ใจดี</span>
+                      <span className={styles.paymentInfoValue}>{paymentSettings.accountName || 'สมชาย ใจดี'}</span>
                     </div>
                     <div className={styles.paymentInfoRow}>
                       <span className={styles.paymentInfoLabel}>เลขที่บัญชี:</span>
-                      <span className={styles.paymentInfoValue}>123-456-7890</span>
+                      <span className={styles.paymentInfoValue}>{paymentSettings.accountNumber || '123-456-7890'}</span>
                     </div>
                     <div className={styles.paymentInfoRow}>
                       <span className={styles.paymentInfoLabel}>จำนวนเงิน:</span>
@@ -685,7 +709,7 @@ export default function PurchaseHistoryPage() {
                     <h4 className={styles.qrCodeTitle}>สแกน QR Code เพื่อชำระเงิน</h4>
                     <div className={styles.qrCodeContainer}>
                       <img
-                        src="/images/QR code for ordering.png"
+                        src={paymentSettings.qrCodeImage || "/images/QR code for ordering.png"}
                         alt="QR Code for Payment"
                         className={styles.qrCodeImage}
                         onError={(e) => {
