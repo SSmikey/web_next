@@ -440,13 +440,13 @@
 .sizeButton {
   padding: 14px 8px;
   text-align: center;
-  border: 2px solid #e6e9ef;
+  border: 2px solid var(--border-color);
   border-radius: 10px;
   cursor: pointer;
-  background: white;
+  background: var(--bg-card);
   font-weight: 600;
   font-size: 0.95rem;
-  color: #555;
+  color: var(--text-primary);
   transition: all 0.3s ease;
 }
 
@@ -469,10 +469,10 @@
   align-items: center;
   justify-content: center;
   gap: 20px;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  background: var(--bg-tertiary);
   padding: 20px;
   border-radius: 12px;
-  border: 2px solid #e0e0e0;
+  border: 2px solid var(--border-color);
 }
 
 .quantityButton {
@@ -509,9 +509,9 @@
   min-width: 80px;
   text-align: center;
   padding: 8px 16px;
-  background: white;
+  background: var(--bg-card);
   border-radius: 10px;
-  border: 2px solid #667eea;
+  border: 2px solid var(--accent-primary);
 }
 
 /* Summary Box */
@@ -621,17 +621,7 @@
   box-shadow: var(--shadow-primary);
 }
 
-/* Quantity Control */
-.quantityControl {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  padding: 20px;
-  border-radius: 12px;
-  border: 2px solid #e0e0e0;
-}
+/* Quantity Control - Duplicate definition removed */
 
 .quantityButton {
   width: 45px;
@@ -1121,23 +1111,23 @@ html.dark .shirtDropdown:hover {
 }
 
 html.dark .sizeButton {
-  background: var(--bg-tertiary);
+  background: var(--bg-card);
   border-color: var(--border-color);
   color: var(--text-primary);
 }
 
 html.dark .sizeButton:hover {
   border-color: var(--accent-primary);
-  background: var(--accent-primary-transparent);
+  background: var(--bg-secondary);
 }
 
 html.dark .quantityControl {
-  background: var(--bg-tertiary);
+  background: var(--bg-card);
   border-color: var(--border-color);
 }
 
 html.dark .quantityDisplay {
-  background: var(--bg-tertiary);
+  background: var(--bg-card);
   border-color: var(--accent-primary);
   color: var(--text-primary);
 }
