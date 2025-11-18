@@ -87,6 +87,7 @@ export default function DashboardPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [editingPayment, setEditingPayment] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [paymentInfo, setPaymentInfo] = useState<{
     bankName: string;
     accountName: string;
@@ -115,6 +116,7 @@ export default function DashboardPage() {
     if (session && session.user?.role === "admin") {
       fetchStats();
       fetchOrders();
+      fetchPaymentSettings();
     }
   }, [currentPage, statusFilter, searchQuery, session]);
 
@@ -182,24 +184,19 @@ export default function DashboardPage() {
   };
 
   const handlePaymentInfoUpdate = async () => {
-    if (!selectedOrder) return;
-
     try {
       setEditingPayment(true);
-      const response = await fetch('/api/admin/orders', {
-        method: 'PATCH',
+      const response = await fetch('/api/admin/payment-settings', {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          orderId: selectedOrder.id,
-          paymentInfo
-        }),
+        body: JSON.stringify(paymentInfo),
       });
 
       if (response.ok) {
-        setSelectedOrder({ ...selectedOrder, paymentInfo });
         setEditingPayment(false);
+        setShowPaymentModal(false);
         fetchOrders();
       }
     } catch (error) {
@@ -209,20 +206,34 @@ export default function DashboardPage() {
     }
   };
 
+  const fetchPaymentSettings = async () => {
+    try {
+      const response = await fetch('/api/admin/payment-settings');
+      if (response.ok) {
+        const data = await response.json();
+        setPaymentInfo(data);
+      }
+    } catch (error) {
+      console.error('Error fetching payment settings:', error);
+    }
+  };
+
   const openOrderModal = (order: Order) => {
     setSelectedOrder(order);
-    setPaymentInfo({
-      bankName: order.paymentInfo?.bankName || '',
-      accountName: order.paymentInfo?.accountName || '',
-      accountNumber: order.paymentInfo?.accountNumber || '',
-      qrCodeUrl: order.paymentInfo?.qrCodeUrl || ''
-    });
     setShowOrderModal(true);
   };
 
   const closeModal = () => {
     setShowOrderModal(false);
     setSelectedOrder(null);
+  };
+
+  const openPaymentModal = () => {
+    setShowPaymentModal(true);
+  };
+
+  const closePaymentModal = () => {
+    setShowPaymentModal(false);
     setEditingPayment(false);
   };
 
@@ -318,123 +329,106 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* Main Content */}
-        <div className={styles.mainContent}>
-          {/* Orders Section */}
-          <div className={styles.ordersSection}>
-            <div className={styles.sectionHeader}>
-              <h2 className={styles.sectionTitle}>📋 จัดการคำสั่งซื้อ</h2>
-              <div className={styles.filters}>
-                <input
-                  type="text"
-                  placeholder="ค้นหาคำสั่งซื้อ..."
-                  className={styles.searchInput}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-                <select
-                  className={styles.statusFilter}
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                >
-                  <option value="all">ทุกสถานะ</option>
-                  <option value="pending">รอดำเนินการ</option>
-                  <option value="waiting_payment">รอการชำระเงิน</option>
-                  <option value="processing">กำลังดำเนินการ</option>
-                  <option value="shipped">จัดส่งแล้ว</option>
-                  <option value="delivered">จัดส่งสำเร็จ</option>
-                  <option value="cancelled">ยกเลิก</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Orders Table */}
-            <table className={styles.ordersTable}>
-              <thead>
-                <tr>
-                  <th>เลขที่ออเดอร์</th>
-                  <th>ลูกค้า</th>
-                  <th>วันที่</th>
-                  <th>สถานะ</th>
-                  <th>ยอดรวม</th>
-                  <th>การจัดการ</th>
-                </tr>
-              </thead>
-              <tbody>
-                {orders.map((order) => (
-                  <tr key={order.id} className={styles.orderRow}>
-                    <td className={styles.orderNumber}>{order.orderNumber}</td>
-                    <td className={styles.customerName}>
-                      {order.customerInfo.firstName} {order.customerInfo.lastName}
-                    </td>
-                    <td>{order.date}</td>
-                    <td>
-                      <span className={`${styles.statusBadge} ${getStatusBadgeClass(order.status)}`}>
-                        {getStatusText(order.status)}
-                      </span>
-                    </td>
-                    <td className={styles.totalAmount}>฿{order.total.toLocaleString()}</td>
-                    <td>
-                      <div className={styles.actionButtons}>
-                        <button
-                          className={`${styles.actionButton} ${styles.viewButton}`}
-                          onClick={() => openOrderModal(order)}
-                        >
-                          ดู
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-
-            {/* Pagination */}
-            <div className={styles.pagination}>
-              <button
-                className={styles.paginationButton}
-                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                disabled={currentPage === 1}
+        {/* Orders Section */}
+        <div className={styles.ordersSection}>
+          <div className={styles.sectionHeader}>
+            <h2 className={styles.sectionTitle}>📋 จัดการคำสั่งซื้อ</h2>
+            <div className={styles.filters}>
+              <input
+                type="text"
+                placeholder="ค้นหาคำสั่งซื้อ..."
+                className={styles.searchInput}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <select
+                className={styles.statusFilter}
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
               >
-                ก่อนหน้า
-              </button>
-              {[...Array(totalPages)].map((_, i) => (
-                <button
-                  key={i + 1}
-                  className={`${styles.paginationButton} ${currentPage === i + 1 ? styles.active : ''}`}
-                  onClick={() => setCurrentPage(i + 1)}
-                >
-                  {i + 1}
-                </button>
-              ))}
+                <option value="all">ทุกสถานะ</option>
+                <option value="pending">รอดำเนินการ</option>
+                <option value="waiting_payment">รอการชำระเงิน</option>
+                <option value="processing">กำลังดำเนินการ</option>
+                <option value="shipped">จัดส่งแล้ว</option>
+                <option value="delivered">จัดส่งสำเร็จ</option>
+                <option value="cancelled">ยกเลิก</option>
+              </select>
               <button
-                className={styles.paginationButton}
-                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                disabled={currentPage === totalPages}
+                className={`${styles.actionButton} ${styles.viewButton}`}
+                onClick={openPaymentModal}
               >
-                ถัดไป
+                💳 จัดการข้อมูลการชำระเงิน
               </button>
             </div>
           </div>
 
-          {/* Sidebar */}
-          <div className={styles.sidebar}>
-            {/* Recent Orders */}
-            {stats && (
-              <div className={styles.recentOrders}>
-                <h3>📦 คำสั่งซื้อล่าสุด</h3>
-                {stats.recentOrders.map((order) => (
-                  <div key={order.id} className={styles.recentOrderItem}>
-                    <div className={styles.recentOrderNumber}>{order.orderNumber}</div>
-                    <div className={styles.recentOrderCustomer}>{order.customerName}</div>
-                    <span className={`${styles.recentOrderStatus} ${styles.recentOrderStatus + '.' + order.status}`}>
+          {/* Orders Table */}
+          <table className={styles.ordersTable}>
+            <thead>
+              <tr>
+                <th>เลขที่ออเดอร์</th>
+                <th>ลูกค้า</th>
+                <th>วันที่</th>
+                <th>สถานะ</th>
+                <th>ยอดรวม</th>
+                <th>การจัดการ</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orders.map((order) => (
+                <tr key={order.id} className={styles.orderRow}>
+                  <td className={styles.orderNumber}>{order.orderNumber}</td>
+                  <td className={styles.customerName}>
+                    {order.customerInfo.firstName} {order.customerInfo.lastName}
+                  </td>
+                  <td>{order.date}</td>
+                  <td>
+                    <span className={`${styles.statusBadge} ${getStatusBadgeClass(order.status)}`}>
                       {getStatusText(order.status)}
                     </span>
-                    <div className={styles.recentOrderTotal}>฿{order.total.toLocaleString()}</div>
-                  </div>
-                ))}
-              </div>
-            )}
+                  </td>
+                  <td className={styles.totalAmount}>฿{order.total.toLocaleString()}</td>
+                  <td>
+                    <div className={styles.actionButtons}>
+                      <button
+                        className={`${styles.actionButton} ${styles.viewButton}`}
+                        onClick={() => openOrderModal(order)}
+                      >
+                        ดู
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          {/* Pagination */}
+          <div className={styles.pagination}>
+            <button
+              className={styles.paginationButton}
+              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+              disabled={currentPage === 1}
+            >
+              ก่อนหน้า
+            </button>
+            {[...Array(totalPages)].map((_, i) => (
+              <button
+                key={i + 1}
+                className={`${styles.paginationButton} ${currentPage === i + 1 ? styles.active : ''}`}
+                onClick={() => setCurrentPage(i + 1)}
+              >
+                {i + 1}
+              </button>
+            ))}
+            <button
+              className={styles.paginationButton}
+              onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+              disabled={currentPage === totalPages}
+            >
+              ถัดไป
+            </button>
           </div>
         </div>
 
@@ -516,7 +510,7 @@ export default function DashboardPage() {
                   </div>
                 </div>
 
-                {/* Payment Info */}
+                {/* Payment Info Display Only */}
                 <div>
                   <h3>ข้อมูลการชำระเงิน</h3>
                   <div className={styles.paymentInfo}>
@@ -532,53 +526,6 @@ export default function DashboardPage() {
                       <span className={styles.paymentInfoLabel}>เลขที่บัญชี:</span>
                       <span className={styles.paymentInfoValue}>{selectedOrder.paymentInfo?.accountNumber || '-'}</span>
                     </div>
-                    
-                    {editingPayment ? (
-                      <div>
-                        <input
-                          type="text"
-                          placeholder="ธนาคาร"
-                          className={styles.paymentInput}
-                          value={paymentInfo.bankName}
-                          onChange={(e) => setPaymentInfo({ ...paymentInfo, bankName: e.target.value })}
-                        />
-                        <input
-                          type="text"
-                          placeholder="ชื่อบัญชี"
-                          className={styles.paymentInput}
-                          value={paymentInfo.accountName}
-                          onChange={(e) => setPaymentInfo({ ...paymentInfo, accountName: e.target.value })}
-                        />
-                        <input
-                          type="text"
-                          placeholder="เลขที่บัญชี"
-                          className={styles.paymentInput}
-                          value={paymentInfo.accountNumber}
-                          onChange={(e) => setPaymentInfo({ ...paymentInfo, accountNumber: e.target.value })}
-                        />
-                        <input
-                          type="text"
-                          placeholder="QR Code URL"
-                          className={styles.paymentInput}
-                          value={paymentInfo.qrCodeUrl}
-                          onChange={(e) => setPaymentInfo({ ...paymentInfo, qrCodeUrl: e.target.value })}
-                        />
-                        <button
-                          className={styles.saveButton}
-                          onClick={handlePaymentInfoUpdate}
-                          disabled={editingPayment}
-                        >
-                          บันทึกข้อมูลการชำระเงิน
-                        </button>
-                      </div>
-                    ) : (
-                      <button
-                        className={styles.saveButton}
-                        onClick={() => setEditingPayment(true)}
-                      >
-                        แก้ไขข้อมูลการชำระเงิน
-                      </button>
-                    )}
                   </div>
                 </div>
 
@@ -597,6 +544,73 @@ export default function DashboardPage() {
                     <span className={styles.detailLabel}>ยอดรวมทั้งหมด:</span>
                     <span className={styles.detailValue}>฿{selectedOrder.total.toLocaleString()}</span>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Payment Settings Modal */}
+        {showPaymentModal && (
+          <div className={styles.modal} onClick={closePaymentModal}>
+            <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+              <div className={styles.modalHeader}>
+                <h2 className={styles.modalTitle}>💳 จัดการข้อมูลการชำระเงิน</h2>
+                <button className={styles.closeButton} onClick={closePaymentModal}>×</button>
+              </div>
+
+              <div className={styles.orderDetails}>
+                <div>
+                  <h3>ตั้งค่าข้อมูลการชำระเงินสำหรับทุกคำสั่งซื้อ</h3>
+                  <div className={styles.paymentInfo}>
+                    <div className={styles.paymentInfoRow}>
+                      <span className={styles.paymentInfoLabel}>ธนาคาร:</span>
+                      <input
+                        type="text"
+                        placeholder="ชื่อธนาคาร"
+                        className={styles.paymentInput}
+                        value={paymentInfo.bankName}
+                        onChange={(e) => setPaymentInfo({ ...paymentInfo, bankName: e.target.value })}
+                      />
+                    </div>
+                    <div className={styles.paymentInfoRow}>
+                      <span className={styles.paymentInfoLabel}>ชื่อบัญชี:</span>
+                      <input
+                        type="text"
+                        placeholder="ชื่อบัญชี"
+                        className={styles.paymentInput}
+                        value={paymentInfo.accountName}
+                        onChange={(e) => setPaymentInfo({ ...paymentInfo, accountName: e.target.value })}
+                      />
+                    </div>
+                    <div className={styles.paymentInfoRow}>
+                      <span className={styles.paymentInfoLabel}>เลขที่บัญชี:</span>
+                      <input
+                        type="text"
+                        placeholder="เลขที่บัญชี"
+                        className={styles.paymentInput}
+                        value={paymentInfo.accountNumber}
+                        onChange={(e) => setPaymentInfo({ ...paymentInfo, accountNumber: e.target.value })}
+                      />
+                    </div>
+                    <div className={styles.paymentInfoRow}>
+                      <span className={styles.paymentInfoLabel}>QR Code URL:</span>
+                      <input
+                        type="text"
+                        placeholder="ลิงก์ QR Code"
+                        className={styles.paymentInput}
+                        value={paymentInfo.qrCodeUrl}
+                        onChange={(e) => setPaymentInfo({ ...paymentInfo, qrCodeUrl: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                  <button
+                    className={styles.saveButton}
+                    onClick={handlePaymentInfoUpdate}
+                    disabled={editingPayment}
+                  >
+                    {editingPayment ? 'กำลังบันทึก...' : 'บันทึกข้อมูลการชำระเงิน'}
+                  </button>
                 </div>
               </div>
             </div>

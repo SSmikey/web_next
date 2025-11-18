@@ -4,6 +4,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import connectToDatabase from "@/lib/mongodb";
 import Order from "@/models/Order";
 import User from "@/models/User";
+import { getGlobalPaymentSettings } from "../payment-settings";
 
 export async function GET(request: NextRequest) {
   try {
@@ -63,7 +64,7 @@ export async function GET(request: NextRequest) {
       paymentSlip: order.paymentSlip,
       customerInfo: order.customerInfo,
       items: order.items,
-      paymentInfo: order.paymentInfo,
+      paymentInfo: getGlobalPaymentSettings(), // Use global payment settings
       createdAt: order.createdAt,
       updatedAt: order.updatedAt
     }));
