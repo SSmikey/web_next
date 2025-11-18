@@ -228,6 +228,7 @@ export default function SelectProductsPage() {
         // Set order data for popup
         setOrderData({
           orderNumber: data.order.orderNumber,
+          customerName: `${firstName} ${lastName}`, // Add customer name
           shirtName: currentShirt.name,
           shirtDescription: currentShirt.description,
           size: selectedSize,
@@ -248,7 +249,8 @@ export default function SelectProductsPage() {
           email: '',
           phone: '',
           address: '',
-          note: ''
+          note: '',
+          shippingMethod: 'mail' // Keep default shipping method
         });
       } else {
         setError(data.error || 'Failed to create order');
@@ -658,7 +660,8 @@ export default function SelectProductsPage() {
                 className={`${styles.popupButton} ${styles.popupButtonPrimary}`}
                 onClick={() => {
                   setShowConfirmation(false);
-                  // Optional: Navigate to another page or perform another action
+                  // Navigate to purchase history page
+                  router.push('/profile/purchase-history');
                 }}
               >
                 ตกลง
