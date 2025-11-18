@@ -61,10 +61,17 @@ web_next/
 ## 📸 UI Preview
 
 (./docs/images/ui1.png)
+
 (./docs/images/ui2.png)
+
 (./docs/images/ui3.png)
+
 (./docs/images/ui4.png)
+
 (./docs/images/ui5.png)
+
 (./docs/images/ui6.png)
+
 (./docs/images/ui7.png)
+
 (./docs/images/ui8.png)
