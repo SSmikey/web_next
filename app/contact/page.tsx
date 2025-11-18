@@ -1,40 +1,130 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import styles from './page.module.css';
 
 const SIZES = ['SSS', 'SS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', '6XL', '7XL', '8XL'] as const;
-const PRICE_PER_SHIRT = 219;
 
 type Size = typeof SIZES[number];
 
-// 12 แบบเสื้อ พร้อมรูปภาพ (ไฟล์อยู่ที่ public/ โดยตรง ไม่มีโฟลเดอร์ images)
+// 12 แบบเสื้อ (แยกราคา V-series = 219, Premium = 259)
 const SHIRT_DESIGNS = [
-  { id: 1, name: 'เสื้อรุ่นคลาสสิค', image: '/spvv1.jpg', description: 'เสื้อยืดคอกลม สีม่วง', color: '#667eea' },
-  { id: 2, name: 'เสื้อรุ่นพรีเมียม', image: '/spvv2.jpg', description: 'เสื้อโปโล คุณภาพสูง', color: '#764ba2' },
-  { id: 3, name: 'เสื้อรุ่นสปอร์ต', image: '/spvv3.jpg', description: 'เสื้อกีฬา ระบายอากาศดี', color: '#f093fb' },
-  { id: 4, name: 'เสื้อรุ่นเบสิค', image: '/spvv4.jpg', description: 'เสื้อยืดแขนสั้น สีพื้น', color: '#4facfe' },
-  { id: 5, name: 'เสื้อรุ่นลายการ์ตูน', image: '/spvv5.jpg', description: 'เสื้อลายน่ารัก สำหรับเด็ก', color: '#43e97b' },
-  { id: 6, name: 'เสื้อรุ่นวินเทจ', image: '/spvvb1.jpg', description: 'เสื้อสไตล์ย้อนยุค', color: '#fa709a' },
-  { id: 7, name: 'เสื้อรุ่นโมเดิร์น', image: '/spvvb2.jpg', description: 'เสื้อดีไซน์ทันสมัย', color: '#30cfd0' },
-  { id: 8, name: 'เสื้อรุ่นเอเชีย', image: '/spvvb3.jpg', description: 'เสื้อลายไทยประยุกต์', color: '#a8edea' },
-  { id: 9, name: 'เสื้อรุ่นยูนิเซ็กซ์', image: '/spvvb4.jpg', description: 'เสื้อใส่ได้ทุกเพศ', color: '#fbc2eb' },
-  { id: 10, name: 'เสื้อรุ่นลำลอง', image: '/spvvb5.jpg', description: 'เสื้อสบายๆ ใส่เที่ยว', color: '#a1c4fd' },
-  { id: 11, name: 'เสื้อรุ่นออฟฟิศ', image: '/spvvm1.png', description: 'เสื้อเข้าออฟฟิศได้', color: '#d299c2' },
-  { id: 12, name: 'เสื้อรุ่นพิเศษ', image: '/spvvm2.png', description: 'เสื้อรุ่นลิมิเต็ด', color: '#ffecd2' },
+  { id: 1, name: 'V1', image: '/spvv1.jpg', description: '01 แบบสี', color: '#ffffffff', price: 219 },
+  { id: 2, name: 'V2', image: '/spvv2.jpg', description: '01 แบบสี', color: '#ffffffff', price: 219 },
+  { id: 3, name: 'V3', image: '/spvv3.jpg', description: '01 แบบสี', color: '#ffffffff', price: 219 },
+  { id: 4, name: 'V4', image: '/spvv4.jpg', description: '01 แบบสี', color: '#ffffffff', price: 219 },
+  { id: 5, name: 'V5', image: '/spvv5.jpg', description: '01 แบบสี', color: '#ffffffff', price: 219 },
+  { id: 6, name: 'V1', image: '/spvvb1.jpg', description: '02 แบบไว้ทุกข์', color: '#ffffffff', price: 219 },
+  { id: 7, name: 'V2', image: '/spvvb2.jpg', description: '02 แบบไว้ทุกข์', color: '#ffffffff', price: 219 },
+  { id: 8, name: 'V3', image: '/spvvb3.jpg', description: '02 แบบไว้ทุกข์', color: '#ffffffff', price: 219 },
+  { id: 9, name: 'V4', image: '/spvvb4.jpg', description: '02 แบบไว้ทุกข์', color: '#ffffffff', price: 219 },
+  { id: 10, name: 'V5', image: '/spvvb5.jpg', description: '02 แบบไว้ทุกข์', color: '#ffffffff', price: 219 },
+  { id: 11, name: 'premuim', image: '/spvvm1.png', description: 'รสไก่', color: '#ffffffff', price: 259 },
+  { id: 12, name: 'Premuim', image: '/spvvm2.png', description: 'รสหมู', color: '#ffffffff', price: 259 },
+];
+
+// รูปภาพสำหรับ slideshow
+const images = [
+  "/images/V1.png",
+  "/images/V2.png",
+  "/images/V3.png",
+  "/images/V4.png",
+  "/images/V5.png",
+  "/images/Premium.png"
 ];
 
 export default function ContactPage() {
-  const [selectedShirt, setSelectedShirt] = useState<number>(1);
+  const [selectedShirt, setSelectedShirt] = useState<number>(0);
   const [selectedSize, setSelectedSize] = useState<Size | null>(null);
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(0);
   const [error, setError] = useState(false);
 
-  const currentShirt = SHIRT_DESIGNS.find(s => s.id === selectedShirt)!;
-  const totalPrice = quantity * PRICE_PER_SHIRT;
+  // Slideshow states
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [previousImageIndex, setPreviousImageIndex] = useState(0);
+  const [direction, setDirection] = useState<'left' | 'right'>('right');
+  const [isAnimating, setIsAnimating] = useState(false);
 
+  const currentShirt = SHIRT_DESIGNS.find(s => s.id === selectedShirt) || SHIRT_DESIGNS[0];
+  
+  // คำนวณค่าส่ง: 1 ตัว = 50 บาท, ตัวที่ 2+ = +10 บาท/ตัว
+  const shippingCost = quantity === 0 ? 0 : quantity === 1 ? 50 : 50 + (quantity - 1) * 10;
+  
+  // คำนวณราคาเสื้อทั้งหมด
+  const subtotal = quantity * currentShirt.price;
+  
+  // ยอดรวมทั้งหมด
+  const totalPrice = subtotal + shippingCost;
+
+  // Slideshow functions
+  const goToPrevious = () => {
+    if (isAnimating) return;
+    
+    setDirection('left');
+    setPreviousImageIndex(currentImageIndex);
+    setIsAnimating(true);
+    
+    const prevIndex = currentImageIndex === 0 ? images.length - 1 : currentImageIndex - 1;
+    setCurrentImageIndex(prevIndex);
+    
+    setTimeout(() => {
+      setIsAnimating(false);
+    }, 800);
+  };
+
+  const goToNext = () => {
+    if (isAnimating) return;
+    
+    setDirection('right');
+    setPreviousImageIndex(currentImageIndex);
+    setIsAnimating(true);
+    
+    const nextIndex = (currentImageIndex + 1) % images.length;
+    setCurrentImageIndex(nextIndex);
+    
+    setTimeout(() => {
+      setIsAnimating(false);
+    }, 800);
+  };
+
+  const goToSlide = (index: number) => {
+    if (isAnimating || index === currentImageIndex) return;
+    
+    setDirection(index > currentImageIndex ? 'right' : 'left');
+    setPreviousImageIndex(currentImageIndex);
+    setIsAnimating(true);
+    
+    setCurrentImageIndex(index);
+    
+    setTimeout(() => {
+      setIsAnimating(false);
+    }, 800);
+  };
+
+  const getSlideClass = (imageIndex: number) => {
+    if (imageIndex === currentImageIndex) {
+      return `${styles.slideItem} ${styles.slideActive}`;
+    }
+    
+    if (isAnimating && imageIndex === previousImageIndex) {
+      if (direction === 'right') {
+        return `${styles.slideItem} ${styles.slideExitLeft}`;
+      } else {
+        return `${styles.slideItem} ${styles.slideExitRight}`;
+      }
+    }
+    
+    if (direction === 'right') {
+      return `${styles.slideItem} ${styles.slideHiddenRight}`;
+    } else {
+      return `${styles.slideItem} ${styles.slideHiddenLeft}`;
+    }
+  };
+
+  // Form Functions
   const increaseQuantity = () => setQuantity(prev => prev + 1);
-  const decreaseQuantity = () => setQuantity(prev => Math.max(1, prev - 1));
+  const decreaseQuantity = () => setQuantity(prev => Math.max(0, prev - 1));
 
   const handleSizeSelect = (size: Size) => {
     setSelectedSize(size);
@@ -48,14 +138,14 @@ export default function ContactPage() {
   };
 
   const handleReset = () => {
-    setSelectedShirt(1);
+    setSelectedShirt(0);
     setSelectedSize(null);
-    setQuantity(1);
+    setQuantity(0);
     setError(false);
   };
 
   const handleConfirm = () => {
-    if (!selectedSize) {
+    if (!selectedSize || selectedShirt === 0 || quantity === 0) {
       setError(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
@@ -67,491 +157,242 @@ export default function ContactPage() {
       `รายละเอียด: ${currentShirt.description}\n` +
       `ขนาด: ${selectedSize}\n` +
       `จำนวน: ${quantity} ตัว\n` +
-      `ยอดรวม: ${totalPrice.toLocaleString()} บาท\n\n` +
-      `ขอบคุณที่ร่วมบริจาคเพื่อการกุศล`
+      `ราคาเสื้อ: ${subtotal.toLocaleString()} บาท\n` +
+      `ค่าจัดส่ง: ${shippingCost.toLocaleString()} บาท\n` +
+      `ยอดรวม: ${totalPrice.toLocaleString()} บาท`
     );
   };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      padding: '20px'
-    }}>
-      <div style={{
-        maxWidth: '1000px',
-        margin: '0 auto',
-        background: 'white',
-        borderRadius: '20px',
-        boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
-        overflow: 'hidden'
-      }}>
-        {/* Header */}
-        <div style={{
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          color: 'white',
-          padding: '40px 30px',
-          textAlign: 'center'
-        }}>
-          <h1 style={{
-            fontSize: '32px',
-            fontWeight: 700,
-            marginBottom: '10px',
-            textShadow: '2px 2px 4px rgba(0, 0, 0, 0.2)'
-          }}>
-            🎽 เลือกแบบเสื้อ ขนาด และจำนวน
-          </h1>
-          <p style={{ fontSize: '16px', opacity: 0.95 }}>
-            SPVV-SHIRT | 12 แบบ 15 ไซส์
-          </p>
+    <div className={styles.container}>
+      <div className={styles.splitLayout}>
+        {/* ========================================
+            🖼️ Left Section - Image Slideshow
+            ======================================== */}
+        <div className={styles.imageSection}>
+          {/* Navigation Arrow Left */}
+          <button 
+            className={`${styles.arrow} ${styles.arrowLeft}`}
+            onClick={goToPrevious}
+            aria-label="Previous image"
+            disabled={isAnimating}
+          >
+            ‹
+          </button>
+
+          <div className={styles.imageWrapper}>
+            <div className={styles.slideshowContainer}>
+              {images.map((imageSrc, index) => (
+                <div key={index} className={getSlideClass(index)}>
+                  <Image
+                    src={imageSrc}
+                    alt={`Product ${index + 1}`}
+                    fill
+                    style={{ objectFit: "contain", objectPosition: "top" }}
+                    priority={index === 0}
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* Dots Indicator */}
+            <div className={styles.dotsContainer}>
+              {images.map((_, index) => (
+                <button
+                  key={index}
+                  className={`${styles.dot} ${index === currentImageIndex ? styles.dotActive : ''}`}
+                  onClick={() => goToSlide(index)}
+                  aria-label={`Go to slide ${index + 1}`}
+                  disabled={isAnimating}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Navigation Arrow Right */}
+          <button 
+            className={`${styles.arrow} ${styles.arrowRight}`}
+            onClick={goToNext}
+            aria-label="Next image"
+            disabled={isAnimating}
+          >
+            ›
+          </button>
         </div>
 
-        <div style={{ padding: '40px 30px' }}>
-          {/* Error Message */}
-          {error && (
-            <div style={{
-              background: '#ffe6e6',
-              color: '#d32f2f',
-              padding: '15px',
-              borderRadius: '10px',
-              marginBottom: '20px',
-              borderLeft: '4px solid #d32f2f',
-              animation: 'shake 0.5s'
-            }}>
-              ⚠️ กรุณาเลือกขนาดเสื้อก่อนยืนยันการสั่งซื้อ
+        {/* ========================================
+            📝 Right Section - Form
+            ======================================== */}
+        <div className={styles.formSection}>
+          <div className={styles.formContent}>
+            {/* Header */}
+            <div className={styles.header}>
+              <h1 className={styles.title}>🎽 เลือกแบบเสื้อ ขนาด และจำนวน</h1>
+              <p className={styles.subtitle}>SPVV - POLO SHIRT | 12 แบบ 13 ไซส์</p>
             </div>
-          )}
 
-          {/* Shirt Selection */}
-          <div style={{ marginBottom: '40px' }}>
-            <div style={{
-              fontSize: '22px',
-              fontWeight: 600,
-              color: '#333',
-              marginBottom: '20px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px'
-            }}>
-              <span>👕</span> เลือกแบบเสื้อ (12 แบบ)
-            </div>
-            <div className={styles.shirtGrid} style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))' }}>
-              {SHIRT_DESIGNS.map((shirt) => (
-                <div
-                  key={shirt.id}
-                  onClick={() => handleShirtSelect(shirt.id)}
-                  style={{
-                    padding: '15px',
-                    border: selectedShirt === shirt.id ? '3px solid #667eea' : '2px solid #e0e0e0',
-                    borderRadius: '12px',
-                    cursor: 'pointer',
-                    background: selectedShirt === shirt.id 
-                      ? 'linear-gradient(135deg, #667eea15 0%, #764ba215 100%)' 
-                      : 'white',
-                    transition: 'all 0.3s ease',
-                    transform: selectedShirt === shirt.id ? 'scale(1.03)' : 'scale(1)',
-                    boxShadow: selectedShirt === shirt.id 
-                      ? '0 8px 20px rgba(102, 126, 234, 0.3)' 
-                      : '0 2px 5px rgba(0,0,0,0.1)'
-                  }}
-                >
-                  <div style={{
-                    width: '100%',
-                    height: '140px',
-                    borderRadius: '8px',
-                    marginBottom: '10px',
-                    background: `linear-gradient(135deg, ${shirt.color}50 0%, ${shirt.color}80 100%)`,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    overflow: 'hidden',
-                    position: 'relative'
-                  }}>
+            {/* Error Message */}
+            {error && (
+              <div className={styles.errorMessage}>
+                ⚠️ กรุณาเลือกแบบเสื้อ ขนาด และจำนวนก่อนยืนยันการสั่งซื้อ
+              </div>
+            )}
+
+            {/* Shirt Selection Dropdown */}
+            <div className={styles.section}>
+              <div className={styles.sectionTitle}>
+                <span>👕</span> เลือกแบบเสื้อ (12 แบบ)
+              </div>
+              <select
+                value={selectedShirt}
+                onChange={(e) => handleShirtSelect(Number(e.target.value))}
+                className={styles.shirtDropdown}
+              >
+                <option value={0} disabled>-- เลือกแบบเสื้อ --</option>
+                {SHIRT_DESIGNS.map((shirt) => (
+                  <option key={shirt.id} value={shirt.id}>
+                    {shirt.name} - {shirt.description}
+                  </option>
+                ))}
+              </select>
+
+              {/* Selected Shirt Preview */}
+              {selectedShirt !== 0 && (
+                <div className={styles.selectedShirtPreview}>
+                  <div className={styles.previewTitle}>🎯 แบบเสื้อที่เลือก</div>
+                  <div 
+                    className={styles.previewImageContainer}
+                    style={{
+                      background: `linear-gradient(135deg, ${currentShirt.color}30 0%, ${currentShirt.color}60 100%)`
+                    }}
+                  >
                     <img 
-                      src={shirt.image}
-                      alt={shirt.name}
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover'
-                      }}
+                      src={currentShirt.image}
+                      alt={currentShirt.name}
+                      className={styles.previewImage}
                       onError={(e) => {
                         const target = e.currentTarget;
                         target.style.display = 'none';
                         const parent = target.parentElement;
                         if (parent) {
-                          parent.innerHTML = '<div style="font-size: 60px">👕</div>';
+                          parent.innerHTML = '<div style="font-size: 80px">👕</div>';
                         }
                       }}
                     />
                   </div>
-                  <div style={{
-                    fontSize: '14px',
-                    fontWeight: 600,
-                    color: '#333',
-                    marginBottom: '5px',
-                    textAlign: 'center'
-                  }}>
-                    {shirt.name}
+                  <div className={styles.previewName}>{currentShirt.name}</div>
+                  <div className={styles.previewDescription}>{currentShirt.description}</div>
+                  <div className={styles.previewBadge}>
+                    {currentShirt.name} - {currentShirt.description}
                   </div>
-                  <div style={{
-                    fontSize: '11px',
-                    color: '#666',
-                    textAlign: 'center',
-                    lineHeight: '1.3'
-                  }}>
-                    {shirt.description}
-                  </div>
-                  {selectedShirt === shirt.id && (
-                    <div style={{
-                      marginTop: '8px',
-                      textAlign: 'center',
-                      color: '#667eea',
-                      fontSize: '12px',
-                      fontWeight: 600
-                    }}>
-                      ✓ เลือกแล้ว
-                    </div>
-                  )}
                 </div>
-              ))}
+              )}
             </div>
-          </div>
 
-          {/* Current Shirt Preview */}
-          <div style={{ 
-            textAlign: 'center', 
-            marginBottom: '40px',
-            padding: '30px',
-            background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-            borderRadius: '20px',
-            border: '3px solid #667eea'
-          }}>
-            <div style={{
-              fontSize: '18px',
-              fontWeight: 600,
-              color: '#667eea',
-              marginBottom: '20px'
-            }}>
-              🎯 แบบเสื้อที่เลือก
-            </div>
-            <div style={{
-              width: '100%',
-              maxWidth: '280px',
-              height: '280px',
-              background: `linear-gradient(135deg, ${currentShirt.color}30 0%, ${currentShirt.color}60 100%)`,
-              borderRadius: '20px',
-              margin: '0 auto 20px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 10px 30px rgba(102, 126, 234, 0.3)',
-              overflow: 'hidden',
-              border: '3px solid white'
-            }}>
-              <img 
-                src={currentShirt.image}
-                alt={currentShirt.name}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover'
-                }}
-                onError={(e) => {
-                  const target = e.currentTarget;
-                  target.style.display = 'none';
-                  const parent = target.parentElement;
-                  if (parent) {
-                    parent.innerHTML = '<div style="font-size: 120px">👕</div>';
-                  }
-                }}
-              />
-            </div>
-            <h3 style={{
-              fontSize: '22px',
-              fontWeight: 600,
-              color: '#667eea',
-              marginBottom: '8px'
-            }}>
-              {currentShirt.name}
-            </h3>
-            <p style={{
-              fontSize: '15px',
-              color: '#666',
-              marginBottom: '15px'
-            }}>
-              {currentShirt.description}
-            </p>
-            <div style={{
-              display: 'inline-block',
-              padding: '8px 20px',
-              background: 'white',
-              borderRadius: '20px',
-              fontSize: '14px',
-              fontWeight: 600,
-              color: '#667eea',
-              border: '2px solid #667eea'
-            }}>
-              รหัส: #{currentShirt.id.toString().padStart(2, '0')}
-            </div>
-          </div>
-
-          {/* Size Selection */}
-          <div style={{ marginBottom: '35px' }}>
-            <div style={{
-              fontSize: '22px',
-              fontWeight: 600,
-              color: '#333',
-              marginBottom: '15px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px'
-            }}>
-              <span>📏</span> เลือกขนาดเสื้อ (15 ไซส์)
-            </div>
-            <div className={styles.sizeGrid} style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(75px, 1fr))' }}>
-              {SIZES.map((size) => (
-                <button
-                  key={size}
-                  onClick={() => handleSizeSelect(size)}
-                  style={{
-                    padding: '18px 10px',
-                    textAlign: 'center',
-                    border: selectedSize === size ? '3px solid #667eea' : '3px solid #e0e0e0',
-                    borderRadius: '12px',
-                    cursor: 'pointer',
-                    background: selectedSize === size 
-                      ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' 
-                      : 'white',
-                    fontWeight: 600,
-                    fontSize: '16px',
-                    color: selectedSize === size ? 'white' : '#555',
-                    transition: 'all 0.3s ease',
-                    transform: selectedSize === size ? 'scale(1.08)' : 'scale(1)',
-                    boxShadow: selectedSize === size 
-                      ? '0 8px 20px rgba(102, 126, 234, 0.4)' 
-                      : 'none'
-                  }}
-                >
-                  {size}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Quantity Control */}
-          <div style={{ marginBottom: '35px' }}>
-            <div style={{
-              fontSize: '22px',
-              fontWeight: 600,
-              color: '#333',
-              marginBottom: '15px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px'
-            }}>
-              <span>🔢</span> จำนวนเสื้อ
-            </div>
-            <div className={styles.quantityControl}>
-              <button
-                onClick={decreaseQuantity}
-                disabled={quantity <= 1}
-                style={{
-                  width: '55px',
-                  height: '55px',
-                  border: 'none',
-                  background: quantity <= 1 
-                    ? '#cccccc' 
-                    : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  color: 'white',
-                  borderRadius: '12px',
-                  fontSize: '28px',
-                  cursor: quantity <= 1 ? 'not-allowed' : 'pointer',
-                  fontWeight: 'bold',
-                  transition: 'all 0.3s ease'
-                }}
-              >
-                −
-              </button>
-              <div style={{
-                fontSize: '42px',
-                fontWeight: 700,
-                color: '#333',
-                minWidth: '100px',
-                textAlign: 'center',
-                padding: '10px 20px',
-                background: 'white',
-                borderRadius: '12px',
-                border: '2px solid #667eea'
-              }}>
-                {quantity}
+            {/* Size Selection */}
+            <div className={styles.section}>
+              <div className={styles.sectionTitle}>
+                <span>📏</span> เลือกขนาดเสื้อ (13 ไซส์)
               </div>
-              <button
-                onClick={increaseQuantity}
-                style={{
-                  width: '55px',
-                  height: '55px',
-                  border: 'none',
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  color: 'white',
-                  borderRadius: '12px',
-                  fontSize: '28px',
-                  cursor: 'pointer',
-                  fontWeight: 'bold',
-                  transition: 'all 0.3s ease'
-                }}
-              >
-                +
+              <div className={styles.sizeGrid}>
+                {SIZES.map((size) => (
+                  <button
+                    key={size}
+                    onClick={() => handleSizeSelect(size)}
+                    className={`${styles.sizeButton} ${
+                      selectedSize === size ? styles.sizeButtonSelected : ''
+                    }`}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Quantity Control */}
+            <div className={styles.section}>
+              <div className={styles.sectionTitle}>
+                <span>🔢</span> จำนวนเสื้อ
+              </div>
+              <div className={styles.quantityControl}>
+                <button
+                  onClick={decreaseQuantity}
+                  disabled={quantity <= 0}
+                  className={styles.quantityButton}
+                >
+                  −
+                </button>
+                <div className={styles.quantityDisplay}>{quantity}</div>
+                <button
+                  onClick={increaseQuantity}
+                  className={styles.quantityButton}
+                >
+                  +
+                </button>
+              </div>
+            </div>
+
+            {/* Summary Box */}
+            <div className={styles.section}>
+              <div className={styles.summaryBox}>
+                <div className={styles.summaryTitle}>📋 สรุปรายการสั่งซื้อ</div>
+                
+                <div className={styles.summaryRow}>
+                  <span className={styles.summaryLabel}>แบบเสื้อที่เลือก:</span>
+                  <span className={selectedShirt !== 0 ? styles.summaryValue : styles.summaryValueUnselected}>
+                    {selectedShirt !== 0 ? `${currentShirt.name} - ${currentShirt.description}` : 'ยังไม่ได้เลือก'}
+                  </span>
+                </div>
+                
+                <div className={styles.summaryRow}>
+                  <span className={styles.summaryLabel}>ขนาดที่เลือก:</span>
+                  <span className={selectedSize ? styles.summaryValue : styles.summaryValueUnselected}>
+                    {selectedSize || 'ยังไม่ได้เลือก'}
+                  </span>
+                </div>
+                
+                <div className={styles.summaryRow}>
+                  <span className={styles.summaryLabel}>จำนวน:</span>
+                  <span className={quantity > 0 ? styles.summaryValue : styles.summaryValueUnselected}>
+                    {quantity > 0 ? `${quantity} ตัว` : 'ยังไม่ได้เลือก'}
+                  </span>
+                </div>
+                
+                <div className={styles.summaryRow}>
+                  <span className={styles.summaryLabel}>ราคาต่อตัว:</span>
+                  <span className={selectedShirt !== 0 ? styles.summaryValue : styles.summaryValueUnselected}>
+                    {selectedShirt !== 0 ? `${currentShirt.price} บาท` : '-'}
+                  </span>
+                </div>
+                
+                <div className={styles.summaryRow}>
+                  <span className={styles.summaryLabel}>ราคาเสื้อทั้งหมด:</span>
+                  <span className={styles.summaryValue}>{subtotal.toLocaleString()} บาท</span>
+                </div>
+                
+                <div className={styles.summaryRow}>
+                  <span className={styles.summaryLabel}>ค่าจัดส่ง:</span>
+                  <span className={styles.summaryValue}>{shippingCost} บาท</span>
+                </div>
+                
+                <div className={styles.summaryTotal}>
+                  <span className={styles.summaryTotalLabel}>💰 ยอดรวมทั้งหมด:</span>
+                  <span className={styles.summaryTotalValue}>
+                    {totalPrice.toLocaleString()} บาท
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className={styles.actionButtons}>
+              <button onClick={handleReset} className={styles.resetButton}>
+                🔄 ล้างข้อมูล
+              </button>
+              <button onClick={handleConfirm} className={styles.confirmButton}>
+                ✅ ยืนยันการสั่งซื้อ
               </button>
             </div>
-          </div>
-
-          {/* Summary Box */}
-          <div className={styles.summaryBox}>
-            <div style={{
-              fontSize: '20px',
-              fontWeight: 700,
-              color: '#667eea',
-              marginBottom: '20px',
-              textAlign: 'center'
-            }}>
-              📋 สรุปรายการสั่งซื้อ
-            </div>
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              marginBottom: '15px',
-              fontSize: '16px',
-              padding: '12px',
-              background: 'white',
-              borderRadius: '8px'
-            }}>
-              <span style={{ color: '#666', fontWeight: 500 }}>แบบเสื้อที่เลือก:</span>
-              <span style={{ color: '#333', fontWeight: 700 }}>
-                {currentShirt.name}
-              </span>
-            </div>
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              marginBottom: '15px',
-              fontSize: '16px',
-              padding: '12px',
-              background: 'white',
-              borderRadius: '8px'
-            }}>
-              <span style={{ color: '#666', fontWeight: 500 }}>ขนาดที่เลือก:</span>
-              <span style={{ 
-                color: selectedSize ? '#333' : '#999', 
-                fontWeight: 700 
-              }}>
-                {selectedSize || 'ยังไม่ได้เลือก'}
-              </span>
-            </div>
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              marginBottom: '15px',
-              fontSize: '16px',
-              padding: '12px',
-              background: 'white',
-              borderRadius: '8px'
-            }}>
-              <span style={{ color: '#666', fontWeight: 500 }}>จำนวน:</span>
-              <span style={{ color: '#333', fontWeight: 700 }}>{quantity} ตัว</span>
-            </div>
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              marginBottom: '15px',
-              fontSize: '16px',
-              padding: '12px',
-              background: 'white',
-              borderRadius: '8px'
-            }}>
-              <span style={{ color: '#666', fontWeight: 500 }}>ราคาต่อตัว:</span>
-              <span style={{ color: '#333', fontWeight: 700 }}>219 บาท</span>
-            </div>
-            <div style={{
-              borderTop: '3px solid #667eea',
-              paddingTop: '20px',
-              marginTop: '20px',
-              display: 'flex',
-              justifyContent: 'space-between',
-              fontSize: '20px',
-              padding: '15px',
-              background: 'white',
-              borderRadius: '8px'
-            }}>
-              <span style={{ color: '#333', fontWeight: 700 }}>
-                💰 ยอดรวมทั้งหมด:
-              </span>
-              <span style={{ 
-                color: '#667eea', 
-                fontWeight: 700, 
-                fontSize: '28px',
-                textShadow: '1px 1px 2px rgba(102, 126, 234, 0.3)'
-              }}>
-                {totalPrice.toLocaleString()} บาท
-              </span>
-            </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className={styles.actionButtons}>
-            <button
-              onClick={handleReset}
-              style={{
-                flex: 1,
-                minWidth: '200px',
-                padding: '20px',
-                background: 'white',
-                color: '#667eea',
-                border: '3px solid #667eea',
-                borderRadius: '12px',
-                fontSize: '18px',
-                fontWeight: 600,
-                cursor: 'pointer',
-                transition: 'all 0.3s ease'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = '#f8f9fa';
-                e.currentTarget.style.transform = 'translateY(-2px)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'white';
-                e.currentTarget.style.transform = 'translateY(0)';
-              }}
-            >
-              🔄 ล้างข้อมูล
-            </button>
-            <button
-              onClick={handleConfirm}
-              style={{
-                flex: 1,
-                minWidth: '200px',
-                padding: '20px',
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                color: 'white',
-                border: 'none',
-                borderRadius: '12px',
-                fontSize: '18px',
-                fontWeight: 600,
-                cursor: 'pointer',
-                boxShadow: '0 5px 15px rgba(102, 126, 234, 0.3)',
-                transition: 'all 0.3s ease'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 8px 20px rgba(102, 126, 234, 0.4)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 5px 15px rgba(102, 126, 234, 0.3)';
-              }}
-            >
-              ✅ ยืนยันการสั่งซื้อ
-            </button>
           </div>
         </div>
       </div>
