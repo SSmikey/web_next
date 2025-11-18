@@ -228,7 +228,7 @@ export default function AboutOrderForm() {
                 ======================================== */}
             <div className={styles.header}>
               <h1 className={styles.title}>ข้อมูลผู้สั่งซื้อ</h1>
-              <p className={styles.subtitle}>กรุณากรอกข้อมูลผู้สั่งซื้อให้ครบถ้วน</p>
+              <p className={styles.subtitle}>กรุณากรอกข้อมูลผู้สั่งซื้อให้ถูกต้องและครบถ้วน</p>
             </div>
 
             {/* Form Section */}
@@ -328,7 +328,7 @@ export default function AboutOrderForm() {
               {/* Additional Notes */}
               <div className={styles.formGroup}>
                 <label className={styles.label} htmlFor="note">
-                  หมายเหตุ (ถ้ามี)
+                  หมายเหตุ
                 </label>
                 <textarea
                   id="note"
