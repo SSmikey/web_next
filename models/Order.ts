@@ -133,11 +133,11 @@ const OrderSchema: Schema = new Schema({
 });
 
 // Generate order number before saving
-OrderSchema.pre('save', function(next) {
+OrderSchema.pre('save', async function(next) {
   if (this.isNew && !this.orderNumber) {
     const date = new Date();
     const year = date.getFullYear();
-    const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+    const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
     this.orderNumber = `ORD-${year}-${random}`;
   }
   next();

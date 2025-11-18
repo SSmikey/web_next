@@ -52,9 +52,16 @@ export async function POST(request: NextRequest) {
 
     await connectToDatabase();
     
+    // Generate order number
+    const date = new Date();
+    const year = date.getFullYear();
+    const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+    const orderNumber = `ORD-${year}-${random}`;
+    
     // Create new order
     const newOrder = new Order({
-      userId: session?.user?.id || undefined,
+      orderNumber, // Explicitly set orderNumber
+      userId: session?.user?.id || null, // Allow null for non-authenticated users
       customerInfo,
       items,
       totalAmount,
