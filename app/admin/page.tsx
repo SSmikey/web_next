@@ -203,11 +203,11 @@ function AdminDashboard({ session }: { session: any }) {
 
   const openOrderModal = (order: Order) => {
     setSelectedOrder(order);
-    setPaymentInfo(order.paymentInfo || {
-      bankName: '',
-      accountName: '',
-      accountNumber: '',
-      qrCodeUrl: ''
+    setPaymentInfo({
+      bankName: order.paymentInfo?.bankName || '',
+      accountName: order.paymentInfo?.accountName || '',
+      accountNumber: order.paymentInfo?.accountNumber || '',
+      qrCodeUrl: order.paymentInfo?.qrCodeUrl || ''
     });
     setShowOrderModal(true);
   };
@@ -407,12 +407,12 @@ function AdminDashboard({ session }: { session: any }) {
           {/* Recent Orders */}
           {stats && (
             <div className={styles.recentOrders}>
-              <h3 className={styles.sectionTitle}>📦 คำสั่งซื้อล่าสุด</h3>
+              <h3>📦 คำสั่งซื้อล่าสุด</h3>
               {stats.recentOrders.map((order) => (
                 <div key={order.id} className={styles.recentOrderItem}>
                   <div className={styles.recentOrderNumber}>{order.orderNumber}</div>
                   <div className={styles.recentOrderCustomer}>{order.customerName}</div>
-                  <span className={`${styles.recentOrderStatus} ${getStatusBadgeClass(order.status)}`}>
+                  <span className={`${styles.recentOrderStatus} ${styles.recentOrderStatus + '.' + order.status}`}>
                     {getStatusText(order.status)}
                   </span>
                   <div className={styles.recentOrderTotal}>฿{order.total.toLocaleString()}</div>
