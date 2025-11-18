@@ -282,6 +282,11 @@
   color: #92400e;
 }
 
+.statusWaitingPayment {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
 .statusProcessing {
   background: #dbeafe;
   color: #1e40af;
@@ -1084,6 +1089,22 @@
   color: #667eea;
 }
 
+.viewSlipButton {
+  background: #667eea;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.viewSlipButton:hover {
+  background: #5a67d8;
+  transform: translateY(-1px);
+}
+
 /* Cancel Confirmation Styles */
 .confirmMessage {
   font-size: 1.1rem;
@@ -1114,6 +1135,16 @@
 
 .btnCancel:hover {
   background: #fecaca;
+}
+
+.btnPayment {
+  background: #dcfce7;
+  color: #166534;
+  border-color: #bbf7d0;
+}
+
+.btnPayment:hover {
+  background: #bbf7d0;
 }
 
 /* Responsive for popups */
@@ -1151,6 +1182,180 @@
   
   .detailItemImage {
     width: 100%;
+    height: 120px;
+  }
+}
+
+/* Payment Popup Styles */
+.paymentInfoSection {
+  margin-bottom: 25px;
+}
+
+.paymentInfoCard {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 25px;
+  border: 1px solid #e9ecef;
+}
+
+.paymentInfoRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.paymentInfoRow:last-child {
+  border-bottom: none;
+}
+
+.paymentInfoLabel {
+  color: #666;
+  font-weight: 500;
+}
+
+.paymentInfoValue {
+  color: #333;
+  font-weight: 600;
+}
+
+.qrCodeSection {
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.qrCodeTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.qrCodeContainer {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+
+.qrCodeImage {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  background: white;
+}
+
+.slipUploadSection {
+  margin-bottom: 25px;
+}
+
+.slipUploadTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.slipUploadContainer {
+  text-align: center;
+}
+
+.slipUploadInput {
+  display: none;
+}
+
+.slipUploadLabel {
+  display: inline-block;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  margin-bottom: 10px;
+}
+
+.slipUploadLabel:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.slipUploadLabel.uploading {
+  background: #94a3b8;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.slipUploadNote {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.uploadedSlipSection {
+  margin-bottom: 25px;
+}
+
+.uploadedSlipTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.uploadedSlipContainer {
+  text-align: center;
+}
+
+.uploadedSlipImage {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 10px;
+}
+
+.uploadedSlipImage:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.uploadedSlipDate {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* Responsive for payment popup */
+@media (max-width: 768px) {
+  .paymentInfoCard {
+    padding: 15px;
+  }
+  
+  .paymentInfoRow {
+    flex-direction: column;
+    gap: 5px;
+    padding: 10px 0;
+  }
+  
+  .qrCodeImage {
+    width: 150px;
+    height: 150px;
+  }
+  
+  .slipUploadLabel {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+  }
+  
+  .uploadedSlipImage {
+    width: 120px;
     height: 120px;
   }
 }

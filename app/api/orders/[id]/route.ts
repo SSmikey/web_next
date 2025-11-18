@@ -138,7 +138,9 @@ export async function GET(
       customerInfo: order.customerInfo,
       shippingCost: order.shippingCost,
       totalAmount: order.totalAmount,
-      shippingMethod: order.shippingMethod
+      shippingMethod: order.shippingMethod,
+      paymentSlip: order.paymentSlip,
+      paymentInfo: order.paymentInfo
     };
     
     return NextResponse.json({

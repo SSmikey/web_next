@@ -7,7 +7,8 @@ import ProfileLayout from "../components/ProfileLayout";
 import styles from "./page.module.css";
 
 const statusLabels = {
-  pending: "รอดำเนินการ",
+  pending: "รอชำระเงิน",
+  waiting_payment: "รอตรวจสอบการชำระเงิน",
   processing: "กำลังดำเนินการ",
   shipped: "จัดส่งแล้ว",
   delivered: "จัดส่งสำเร็จ",
@@ -29,8 +30,10 @@ export default function PurchaseHistoryPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [showOrderDetails, setShowOrderDetails] = useState(false);
+  const [showPaymentPopup, setShowPaymentPopup] = useState(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [cancelingOrderId, setCancelingOrderId] = useState<string | null>(null);
+  const [uploadingSlip, setUploadingSlip] = useState(false);
   const ordersPerPage = 5;
 
   // Fetch orders from API
@@ -114,6 +117,46 @@ export default function PurchaseHistoryPage() {
     setShowOrderDetails(true);
   };
 
+  const handleShowPaymentPopup = (order: any) => {
+    setSelectedOrder(order);
+    setShowPaymentPopup(true);
+  };
+
+  const handlePaymentSlipUpload = async (orderId: string, file: File) => {
+    if (!file) {
+      alert('กรุณาเลือกไฟล์สลิปการโอนเงิน');
+      return;
+    }
+
+    setUploadingSlip(true);
+    
+    try {
+      const formData = new FormData();
+      formData.append('paymentSlip', file);
+      
+      const response = await fetch(`/api/orders/${orderId}/payment-slip`, {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        alert('อัปโหลดสลิปการโอนเงินสำเร็จแล้ว');
+        setShowPaymentPopup(false);
+        // Refresh orders list
+        fetchOrders();
+      } else {
+        const data = await response.json();
+        alert(data.error || 'Failed to upload payment slip');
+      }
+    } catch (error) {
+      console.error('Error uploading payment slip:', error);
+      alert('Failed to upload payment slip. Please try again.');
+    } finally {
+      setUploadingSlip(false);
+    }
+  };
+
   const handleCancelOrder = async (orderId: string) => {
     setCancelingOrderId(orderId);
     setShowCancelConfirm(true);
@@ -145,6 +188,7 @@ export default function PurchaseHistoryPage() {
   const getStatusClass = (status: string) => {
     switch (status) {
       case "pending": return styles.statusPending;
+      case "waiting_payment": return styles.statusWaitingPayment;
       case "processing": return styles.statusProcessing;
       case "shipped": return styles.statusShipped;
       case "delivered": return styles.statusDelivered;
@@ -202,7 +246,13 @@ export default function PurchaseHistoryPage() {
               className={`${styles.filterTab} ${activeFilter === "pending" ? styles.active : ""}`}
               onClick={() => handleFilterChange("pending")}
             >
-              รอดำเนินการ
+              รอชำระเงิน
+            </button>
+            <button
+              className={`${styles.filterTab} ${activeFilter === "waiting_payment" ? styles.active : ""}`}
+              onClick={() => handleFilterChange("waiting_payment")}
+            >
+              รอตรวจสอบการชำระเงิน
             </button>
             <button
               className={`${styles.filterTab} ${activeFilter === "processing" ? styles.active : ""}`}
@@ -329,6 +379,14 @@ export default function PurchaseHistoryPage() {
                             รีวิวสินค้า
                           </button>
                         )}
+                        {(order.status === "pending" || order.status === "waiting_payment") && (
+                          <button
+                            className={`${styles.btnSecondary} ${styles.btnPayment}`}
+                            onClick={() => handleShowPaymentPopup(order)}
+                          >
+                            {order.status === "pending" ? "ชำระเงิน" : "อัปโหลดสลิปใหม่"}
+                          </button>
+                        )}
                         {order.status === "pending" && (
                           <button
                             className={`${styles.btnSecondary} ${styles.btnCancel}`}
@@ -442,8 +500,21 @@ export default function PurchaseHistoryPage() {
                   </div>
                   <div className={styles.infoRow}>
                     <span className={styles.infoLabel}>วิธีการชำระเงิน:</span>
-                    <span className={styles.infoValue}>โอนเงินสด (เก็บเงินปลายท้ายบ้าน)</span>
+                    <span className={styles.infoValue}>โอนเงินผ่านธนาคาร</span>
                   </div>
+                  {selectedOrder.paymentSlip && (
+                    <div className={styles.infoRow}>
+                      <span className={styles.infoLabel}>สลิปการโอนเงิน:</span>
+                      <span className={styles.infoValue}>
+                        <button
+                          className={styles.viewSlipButton}
+                          onClick={() => window.open(selectedOrder.paymentSlip.url, '_blank')}
+                        >
+                          ดูสลิป
+                        </button>
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 <div className={styles.customerInfoSection}>
@@ -566,6 +637,121 @@ export default function PurchaseHistoryPage() {
                   onClick={confirmCancelOrder}
                 >
                   ยืนยันการยกเลิก
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Payment Popup */}
+        {showPaymentPopup && selectedOrder && (
+          <div className={styles.popupOverlay}>
+            <div className={styles.popupContainer}>
+              <div className={styles.popupHeader}>
+                <button
+                  className={styles.popupCloseButton}
+                  onClick={() => setShowPaymentPopup(false)}
+                >
+                  ×
+                </button>
+                <h2 className={styles.popupTitle}>ชำระเงินสำหรับคำสั่งซื้อ</h2>
+                <p className={styles.popupSubtitle}>เลขที่ออเดอร์: {selectedOrder.orderNumber}</p>
+              </div>
+              
+              <div className={styles.popupBody}>
+                <div className={styles.paymentInfoSection}>
+                  <h3 className={styles.sectionTitle}>ข้อมูลการชำระเงิน</h3>
+                  
+                  <div className={styles.paymentInfoCard}>
+                    <div className={styles.paymentInfoRow}>
+                      <span className={styles.paymentInfoLabel}>ชื่อธนาคาร:</span>
+                      <span className={styles.paymentInfoValue}>ธนาคารกสิกรไทย</span>
+                    </div>
+                    <div className={styles.paymentInfoRow}>
+                      <span className={styles.paymentInfoLabel}>ชื่อบัญชี:</span>
+                      <span className={styles.paymentInfoValue}>สมชาย ใจดี</span>
+                    </div>
+                    <div className={styles.paymentInfoRow}>
+                      <span className={styles.paymentInfoLabel}>เลขที่บัญชี:</span>
+                      <span className={styles.paymentInfoValue}>123-456-7890</span>
+                    </div>
+                    <div className={styles.paymentInfoRow}>
+                      <span className={styles.paymentInfoLabel}>จำนวนเงิน:</span>
+                      <span className={styles.paymentInfoValue}>฿{selectedOrder.total.toLocaleString()}</span>
+                    </div>
+                  </div>
+
+                  <div className={styles.qrCodeSection}>
+                    <h4 className={styles.qrCodeTitle}>สแกน QR Code เพื่อชำระเงิน</h4>
+                    <div className={styles.qrCodeContainer}>
+                      <img
+                        src="/images/QR code for ordering.png"
+                        alt="QR Code for Payment"
+                        className={styles.qrCodeImage}
+                        onError={(e) => {
+                          const target = e.currentTarget;
+                          target.style.display = 'none';
+                          const parent = target.parentElement;
+                          if (parent) {
+                            parent.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 200px; background: #f8f9fa; border-radius: 8px; color: #666;">QR Code ไม่สามารถแสดงได้</div>';
+                          }
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className={styles.slipUploadSection}>
+                    <h4 className={styles.slipUploadTitle}>อัปโหลดสลิปการโอนเงิน</h4>
+                    <div className={styles.slipUploadContainer}>
+                      <input
+                        type="file"
+                        id="paymentSlip"
+                        accept="image/*"
+                        className={styles.slipUploadInput}
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            handlePaymentSlipUpload(selectedOrder.id, file);
+                          }
+                        }}
+                      />
+                      <label
+                        htmlFor="paymentSlip"
+                        className={`${styles.slipUploadLabel} ${uploadingSlip ? styles.uploading : ''}`}
+                      >
+                        {uploadingSlip ? 'กำลังอัปโหลด...' : 'เลือกไฟล์สลิป'}
+                      </label>
+                      <p className={styles.slipUploadNote}>
+                        รองรับไฟล์ JPEG, PNG, WebP ขนาดไม่เกิน 5MB
+                      </p>
+                    </div>
+                  </div>
+
+                  {selectedOrder.status === "waiting_payment" && selectedOrder.paymentSlip && (
+                    <div className={styles.uploadedSlipSection}>
+                      <h4 className={styles.uploadedSlipTitle}>สลิปที่อัปโหลดแล้ว</h4>
+                      <div className={styles.uploadedSlipContainer}>
+                        <img
+                          src={selectedOrder.paymentSlip.url}
+                          alt="Payment Slip"
+                          className={styles.uploadedSlipImage}
+                          onClick={() => window.open(selectedOrder.paymentSlip.url, '_blank')}
+                        />
+                        <p className={styles.uploadedSlipDate}>
+                          อัปโหลดเมื่อ: {new Date(selectedOrder.paymentSlip.uploadedAt).toLocaleString('th-TH')}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              <div className={styles.popupFooter}>
+                <button
+                  className={`${styles.popupButton} ${styles.popupButtonSecondary}`}
+                  onClick={() => setShowPaymentPopup(false)}
+                >
+                  ปิด
                 </button>
               </div>
             </div>

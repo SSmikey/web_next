@@ -25,7 +25,17 @@ export interface IOrder extends Document {
   totalAmount: number;
   shippingCost: number;
   shippingMethod: 'mail' | 'pickup';
-  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  status: 'pending' | 'waiting_payment' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  paymentInfo?: {
+    bankName: string;
+    accountName: string;
+    accountNumber: string;
+    qrCodeUrl?: string;
+  };
+  paymentSlip?: {
+    url: string;
+    uploadedAt: Date;
+  };
   orderDate: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -121,8 +131,30 @@ const OrderSchema: Schema = new Schema({
   },
   status: {
     type: String,
-    enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'],
+    enum: ['pending', 'waiting_payment', 'processing', 'shipped', 'delivered', 'cancelled'],
     default: 'pending',
+  },
+  paymentInfo: {
+    bankName: {
+      type: String,
+      default: 'ธนาคารกสิกรไทย'
+    },
+    accountName: {
+      type: String,
+      default: 'สมชาย ใจดี'
+    },
+    accountNumber: {
+      type: String,
+      default: '123-456-7890'
+    },
+    qrCodeUrl: {
+      type: String,
+      default: '/images/QR code for ordering.png'
+    }
+  },
+  paymentSlip: {
+    url: String,
+    uploadedAt: Date
   },
   orderDate: {
     type: Date,

@@ -603,6 +603,11 @@ export default function ContactPage() {
                 <div className={styles.popupOrderNumberValue}>{orderData.orderNumber}</div>
               </div>
               
+              <div className={styles.popupCustomerInfo}>
+                <div className={styles.popupCustomerNameLabel}>ชื่อผู้สั่งซื้อ</div>
+                <div className={styles.popupCustomerNameValue}>{orderData.customerName}</div>
+              </div>
+              
               <div className={styles.popupOrderDetails}>
                 <h3 className={styles.popupDetailTitle}>
                   <span>📋</span> รายละเอียดการสั่งซื้อ

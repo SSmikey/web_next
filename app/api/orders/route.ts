@@ -69,6 +69,12 @@ export async function POST(request: NextRequest) {
       shippingMethod,
       status: "pending",
       orderDate: new Date(),
+      paymentInfo: {
+        bankName: "ธนาคารกสิกรไทย",
+        accountName: "สมชาย ใจดี",
+        accountNumber: "123-456-7890",
+        qrCodeUrl: "/images/QR code for ordering.png"
+      }
     });
     
     await newOrder.save();
@@ -140,6 +146,7 @@ export async function GET(request: NextRequest) {
       date: order.orderDate.toISOString().split('T')[0], // Format as YYYY-MM-DD
       status: order.status,
       total: order.totalAmount + order.shippingCost,
+      paymentSlip: order.paymentSlip,
       items: order.items.map((item: any) => ({
         id: item._id || Math.random().toString(),
         name: item.productName,

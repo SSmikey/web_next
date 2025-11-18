@@ -92,6 +92,7 @@ export async function GET(request: NextRequest) {
       shippingCost: order.shippingCost,
       shippingMethod: order.shippingMethod,
       customerInfo: order.customerInfo,
+      paymentSlip: order.paymentSlip,
       items: order.items.map((item: any) => ({
         id: item._id || Math.random().toString(),
         name: item.productName,
