@@ -231,7 +231,7 @@ export default function Home() {
           <h2 className={styles.productTitle}>SPVV CLOTHING</h2>
           <p className={styles.price}>2,250 ฿ THB</p>
 
-          <Link href="/about" className={styles.primaryButton}>
+          <Link href="/buyer-information" className={styles.primaryButton}>
             สั่งซื้อเสื้อ
           </Link>
 

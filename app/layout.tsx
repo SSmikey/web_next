@@ -21,6 +21,10 @@ const noto_sans_thai = Noto_Sans_Thai({
 export const metadata: Metadata = {
   title: "SPVV CLOTHING",
   description: "Online Polo Shirt Shopping",
+  icons: {
+    icon: '/LOGO NO BG.png',
+    apple: '/LOGO NO BG.png',
+  },
 };
 
 export default function RootLayout({
