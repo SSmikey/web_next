@@ -4,6 +4,8 @@ import { authOptions } from '../../../api/auth/[...nextauth]/route';
 import { getGlobalPaymentSettings, updateGlobalPaymentSettings } from '../payment-settings';
 import { writeFile } from 'fs/promises';
 import { join } from 'path';
+import connectToDatabase from '@/lib/mongodb';
+import PaymentSettings from '@/models/PaymentSettings';
 
 export async function GET() {
   try {
@@ -13,7 +15,17 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    return NextResponse.json(getGlobalPaymentSettings());
+    await connectToDatabase();
+    
+    // Try to get payment settings from database first
+    let paymentSettings = await PaymentSettings.findOne();
+    
+    // If no settings in database, fall back to global settings
+    if (!paymentSettings) {
+      paymentSettings = getGlobalPaymentSettings();
+    }
+
+    return NextResponse.json(paymentSettings);
   } catch (error) {
     console.error('Error fetching payment settings:', error);
     return NextResponse.json({ error: 'Failed to fetch payment settings' }, { status: 500 });
@@ -82,7 +94,9 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Update global payment settings
+    await connectToDatabase();
+    
+    // Update payment settings in database
     const newSettings = {
       bankName,
       accountName,
@@ -90,15 +104,24 @@ export async function POST(request: NextRequest) {
       qrCodeImage
     };
 
+    // Use findOneAndUpdate with upsert to create or update
+    const updatedSettings = await PaymentSettings.findOneAndUpdate(
+      {}, // Empty filter to match any document
+      newSettings,
+      {
+        new: true, // Return the updated document
+        upsert: true // Create if doesn't exist
+      }
+    );
+
+    // Also update global settings for backward compatibility
     updateGlobalPaymentSettings(newSettings);
 
-    // In production, you would save this to database
-    // For now, we'll store it in memory
-    console.log('Payment settings updated:', newSettings);
+    console.log('Payment settings updated in database:', updatedSettings);
 
     return NextResponse.json({
       message: 'Payment settings updated successfully',
-      settings: newSettings
+      settings: updatedSettings
     });
   } catch (error) {
     console.error('Error updating payment settings:', error);
