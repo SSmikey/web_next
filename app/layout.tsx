@@ -22,8 +22,8 @@ export const metadata: Metadata = {
   title: "SPVV CLOTHING",
   description: "Online Polo Shirt Shopping",
   icons: {
-    icon: '/LOGO NO BG.png',
-    apple: '/LOGO NO BG.png',
+    icon: '/logo.svg',
+    apple: '/logo.svg',
   },
 };
 
@@ -34,6 +34,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="th" className={`${inter.variable} ${noto_sans_thai.variable}`} suppressHydrationWarning>
+      <head>
+        <link rel="icon" href="/logo.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/logo.svg" />
+      </head>
       <body>
         <ThemeProvider>
           <SessionProviderWrapper>
