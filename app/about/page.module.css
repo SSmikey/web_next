@@ -23,6 +23,10 @@
   box-shadow: var(--shadow-lg);
 }
 
+html.dark .splitLayout {
+  background: #000000 !important;
+}
+
 /* Image Section (Left) */
 .imageSection {
   background: var(--bg-card);
@@ -31,6 +35,10 @@
   overflow: hidden;
   border-radius: var(--radius-2xl) 0 0 var(--radius-2xl);
   min-height: 600px;
+}
+
+html.dark .imageSection {
+  background: #000000 !important;
 }
 
 .imageSection::before {
@@ -204,7 +212,7 @@
 }
 
 .card {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(5px);
   padding: 40px;
   border-radius: var(--radius-xl);
@@ -212,6 +220,11 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
   width: 100%;
   max-width: 600px;
+}
+
+html.dark .card {
+  background: #000000 !important;
+  border-color: rgba(102, 126, 234, 0.2);
 }
 
 @keyframes fadeInRight {
@@ -424,6 +437,10 @@
     border-radius: 20px 20px 0 0;
   }
 
+  html.dark .imageSection {
+    background: #000000 !important;
+  }
+
   .imageWrapper {
     height: 100%;
     padding: 15px;
@@ -438,6 +455,11 @@
   .card {
     padding: 30px;
     max-width: 100%;
+  }
+
+  html.dark .card {
+    background: #000000 !important;
+    border-color: rgba(102, 126, 234, 0.2);
   }
 
   .arrow {
@@ -473,6 +495,11 @@
   .card {
     padding: 25px;
     max-width: 100%;
+  }
+
+  html.dark .card {
+    background: #000000 !important;
+    border-color: rgba(102, 126, 234, 0.2);
   }
 
   .title {
@@ -517,6 +544,10 @@
     min-height: 350px;
     padding: 20px;
     border-radius: 16px 16px 0 0;
+  }
+
+  html.dark .imageSection {
+    background: #000000 !important;
   }
 
   .imageWrapper {
@@ -573,6 +604,10 @@
     min-height: 280px;
     padding: 15px;
     border-radius: 12px 12px 0 0;
+  }
+
+  html.dark .imageSection {
+    background: #000000 !important;
   }
 
   .formSection {
@@ -671,6 +706,10 @@
     border-radius: 10px 10px 0 0;
   }
 
+  html.dark .imageSection {
+    background: #000000 !important;
+  }
+
   .formSection {
     padding: 15px;
     border-radius: 0 0 10px 10px;
@@ -685,6 +724,11 @@
     border-radius: 20px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  html.dark .card {
+    background: #000000 !important;
+    border-color: rgba(102, 126, 234, 0.2);
   }
 
   .imageWrapper {
@@ -786,79 +830,64 @@
 }
 
 /* Dark Mode Support */
-@media (prefers-color-scheme: dark) {
-  .container {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-  }
+html.dark .container {
+  background: var(--bg-primary);
+}
 
-  .formSection {
-    background: transparent;
-  }
+html.dark .formSection {
+  background: #000000 !important;
+}
 
-  .card {
-    background: linear-gradient(180deg, #2a2a2a 0%, #1e1e1e 100%);
-    border-color: rgba(102, 126, 234, 0.2);
-  }
+html.dark .card {
+  background: #000000 !important;
+  border-color: rgba(102, 126, 234, 0.2) !important;
+}
 
-  .title {
-    color: #f0f0f0;
-  }
+html.dark .title {
+  color: var(--text-primary);
+}
 
-  .lead {
-    color: #b0b0b0;
-  }
+html.dark .lead {
+  color: var(--text-tertiary);
+}
 
-  .label {
-    color: #e0e0e0;
-  }
+html.dark .label {
+  color: var(--text-primary);
+}
 
-  .input,
-  .textarea,
-  .radioLabel {
-    background: rgba(42, 42, 42, 0.8);
-    border-color: #3a3a3a;
-    color: #e0e0e0;
-  }
+html.dark .input,
+html.dark .textarea,
+html.dark .radioLabel {
+  background: #1a1a1a;
+  border-color: #333333;
+  color: #ffffff;
+}
 
-  .input:focus,
-  .textarea:focus {
-    border-color: #667eea;
-    background: rgba(42, 42, 42, 0.95);
-  }
+html.dark .input:focus,
+html.dark .textarea:focus {
+  border-color: var(--accent-primary);
+  background: #1a1a1a;
+}
 
-  .radioLabel:hover {
-    background: rgba(102, 126, 234, 0.1);
-  }
+html.dark .radioLabel:hover {
+  background: rgba(102, 126, 234, 0.1);
+}
 
-  .secondaryButton {
-    color: #8b9dc3;
-    border-color: #8b9dc3;
-  }
+html.dark .secondaryButton {
+  color: var(--text-secondary);
+  border-color: var(--text-secondary);
+}
 
-  .secondaryButton:hover {
-    background: #667eea;
-    color: white;
-    border-color: #667eea;
-  }
+html.dark .secondaryButton:hover {
+  background: var(--accent-primary);
+  color: white;
+  border-color: var(--accent-primary);
+}
 
-  .arrow {
-    background: rgba(255, 255, 255, 0.9);
-    color: #333333;
-  }
+html.dark .dot {
+  background: rgba(255, 255, 255, 0.3);
+}
 
-  .arrow:hover {
-    background: rgba(255, 255, 255, 1);
-  }
-
-  .arrow:active {
-    background: rgba(255, 255, 255, 0.8);
-  }
-
-  .dot {
-    background: rgba(255, 255, 255, 0.3);
-  }
-
-  .dotActive {
-    background: rgba(255, 255, 255, 0.9);
-  }
+html.dark .dotActive {
+  background: rgba(255, 255, 255, 0.9);
 }
