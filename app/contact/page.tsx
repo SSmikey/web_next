@@ -42,6 +42,8 @@ export default function ContactPage() {
   const [quantity, setQuantity] = useState(0);
   const [error, setError] = useState<string | boolean>(false);
   const [loading, setLoading] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [orderData, setOrderData] = useState<any>(null);
   const [customerInfo, setCustomerInfo] = useState({
     firstName: '',
     lastName: '',
@@ -221,17 +223,20 @@ export default function ContactPage() {
       const data = await response.json();
 
       if (response.ok) {
-        alert(
-          `✅ ยืนยันการสั่งซื้อสำเร็จ!\n\n` +
-          `เลขที่ออเดอร์: ${data.order.orderNumber}\n` +
-          `แบบเสื้อ: ${currentShirt.name}\n` +
-          `รายละเอียด: ${currentShirt.description}\n` +
-          `ขนาด: ${selectedSize}\n` +
-          `จำนวน: ${quantity} ตัว\n` +
-          `ราคาเสื้อ: ${subtotal.toLocaleString()} บาท\n` +
-          `ค่าจัดส่ง: ${shippingCost.toLocaleString()} บาท\n` +
-          `ยอดรวม: ${totalPrice.toLocaleString()} บาท`
-        );
+        // Set order data for popup
+        setOrderData({
+          orderNumber: data.order.orderNumber,
+          shirtName: currentShirt.name,
+          shirtDescription: currentShirt.description,
+          size: selectedSize,
+          quantity: quantity,
+          subtotal: subtotal,
+          shippingCost: shippingCost,
+          totalPrice: totalPrice
+        });
+        
+        // Show confirmation popup
+        setShowConfirmation(true);
         
         // Reset form
         handleReset();
@@ -575,6 +580,88 @@ export default function ContactPage() {
           </div>
         </div>
       </div>
+
+      {/* Order Confirmation Popup */}
+      {showConfirmation && orderData && (
+        <div className={styles.popupOverlay}>
+          <div className={styles.popupContainer}>
+            <div className={styles.popupHeader}>
+              <button
+                className={styles.popupCloseButton}
+                onClick={() => setShowConfirmation(false)}
+              >
+                ×
+              </button>
+              <div className={styles.popupSuccessIcon}>
+                ✓
+              </div>
+              <h2 className={styles.popupTitle}>ยืนยันการสั่งซื้อสำเร็จ!</h2>
+              <p className={styles.popupSubtitle}>ขอบคุณสำหรับการสั่งซื้อสินค้า</p>
+            </div>
+            
+            <div className={styles.popupBody}>
+              <div className={styles.popupOrderNumber}>
+                <div className={styles.popupOrderNumberLabel}>เลขที่ออเดอร์</div>
+                <div className={styles.popupOrderNumberValue}>{orderData.orderNumber}</div>
+              </div>
+              
+              <div className={styles.popupOrderDetails}>
+                <h3 className={styles.popupDetailTitle}>
+                  <span>📋</span> รายละเอียดการสั่งซื้อ
+                </h3>
+                
+                <div className={styles.popupDetailItem}>
+                  <span className={styles.popupDetailLabel}>แบบเสื้อ:</span>
+                  <span className={styles.popupDetailValue}>{orderData.shirtName} - {orderData.shirtDescription}</span>
+                </div>
+                
+                <div className={styles.popupDetailItem}>
+                  <span className={styles.popupDetailLabel}>ขนาด:</span>
+                  <span className={styles.popupDetailValue}>{orderData.size}</span>
+                </div>
+                
+                <div className={styles.popupDetailItem}>
+                  <span className={styles.popupDetailLabel}>จำนวน:</span>
+                  <span className={styles.popupDetailValue}>{orderData.quantity} ตัว</span>
+                </div>
+                
+                <div className={styles.popupDetailItem}>
+                  <span className={styles.popupDetailLabel}>ราคาเสื้อ:</span>
+                  <span className={styles.popupDetailValue}>{orderData.subtotal.toLocaleString()} บาท</span>
+                </div>
+                
+                <div className={styles.popupDetailItem}>
+                  <span className={styles.popupDetailLabel}>ค่าจัดส่ง:</span>
+                  <span className={styles.popupDetailValue}>{orderData.shippingCost.toLocaleString()} บาท</span>
+                </div>
+              </div>
+              
+              <div className={styles.popupTotal}>
+                <span className={styles.popupTotalLabel}>ยอดรวมทั้งหมด:</span>
+                <span className={styles.popupTotalValue}>{orderData.totalPrice.toLocaleString()} บาท</span>
+              </div>
+            </div>
+            
+            <div className={styles.popupFooter}>
+              <button
+                className={`${styles.popupButton} ${styles.popupButtonSecondary}`}
+                onClick={() => setShowConfirmation(false)}
+              >
+                ปิด
+              </button>
+              <button
+                className={`${styles.popupButton} ${styles.popupButtonPrimary}`}
+                onClick={() => {
+                  setShowConfirmation(false);
+                  // Optional: Navigate to another page or perform another action
+                }}
+              >
+                ตกลง
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
