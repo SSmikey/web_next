@@ -80,8 +80,8 @@ export default function AboutOrderForm() {
     // Store customer info in sessionStorage to pass to contact page
     sessionStorage.setItem('customerInfo', JSON.stringify(customerInfo));
 
-    // If valid, navigate to contact page (เลือกแบบและขนาดเสื้อ)
-    router.push("/contact");
+    // If valid, navigate to select-products page (เลือกแบบและขนาดเสื้อ)
+    router.push("/select-products");
   };
 
   // ========================================
@@ -228,7 +228,7 @@ export default function AboutOrderForm() {
                 ======================================== */}
             <div className={styles.header}>
               <h1 className={styles.title}>ข้อมูลผู้สั่งซื้อ</h1>
-              <p className={styles.subtitle}>กรุณากรอกข้อมูลผู้สั่งซื้อให้ครบถ้วน</p>
+              <p className={styles.subtitle}>กรุณากรอกข้อมูลผู้สั่งซื้อให้ถูกต้องและครบถ้วน</p>
             </div>
 
             {/* Form Section */}
@@ -328,7 +328,7 @@ export default function AboutOrderForm() {
               {/* Additional Notes */}
               <div className={styles.formGroup}>
                 <label className={styles.label} htmlFor="note">
-                  หมายเหตุ (ถ้ามี)
+                  หมายเหตุ
                 </label>
                 <textarea
                   id="note"

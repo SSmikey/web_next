@@ -35,7 +35,7 @@ const images = [
   "/images/Premium.png"
 ];
 
-export default function ContactPage() {
+export default function SelectProductsPage() {
   const router = useRouter();
   const [selectedShirt, setSelectedShirt] = useState<number>(0);
   const [selectedSize, setSelectedSize] = useState<Size | null>(null);
@@ -50,7 +50,8 @@ export default function ContactPage() {
     email: '',
     phone: '',
     address: '',
-    note: ''
+    note: '',
+    shippingMethod: 'mail' // Default to mail shipping
   });
 
   // Load customer info from sessionStorage on component mount
@@ -75,7 +76,8 @@ export default function ContactPage() {
   const currentShirt = SHIRT_DESIGNS.find(s => s.id === selectedShirt) || SHIRT_DESIGNS[0];
   
   // คำนวณค่าส่ง: 1 ตัว = 50 บาท, ตัวที่ 2+ = +10 บาท/ตัว
-  const shippingCost = quantity === 0 ? 0 : quantity === 1 ? 50 : 50 + (quantity - 1) * 10;
+  // ถ้าเลือกมารับเอง จะไม่มีค่าส่ง
+  const shippingCost = customerInfo.shippingMethod === 'pickup' ? 0 : (quantity === 0 ? 0 : quantity === 1 ? 50 : 50 + (quantity - 1) * 10);
   
   // คำนวณราคาเสื้อทั้งหมด
   const subtotal = quantity * currentShirt.price;
@@ -209,7 +211,7 @@ export default function ContactPage() {
         }],
         totalAmount: subtotal,
         shippingCost,
-        shippingMethod: 'mail' // Default to mail, can be made configurable
+        shippingMethod: customerInfo.shippingMethod
       };
 
       const response = await fetch('/api/orders', {
@@ -226,6 +228,7 @@ export default function ContactPage() {
         // Set order data for popup
         setOrderData({
           orderNumber: data.order.orderNumber,
+          customerName: `${firstName} ${lastName}`, // Add customer name
           shirtName: currentShirt.name,
           shirtDescription: currentShirt.description,
           size: selectedSize,
@@ -246,7 +249,8 @@ export default function ContactPage() {
           email: '',
           phone: '',
           address: '',
-          note: ''
+          note: '',
+          shippingMethod: 'mail' // Keep default shipping method
         });
       } else {
         setError(data.error || 'Failed to create order');
@@ -656,7 +660,8 @@ export default function ContactPage() {
                 className={`${styles.popupButton} ${styles.popupButtonPrimary}`}
                 onClick={() => {
                   setShowConfirmation(false);
-                  // Optional: Navigate to another page or perform another action
+                  // Navigate to purchase history page
+                  router.push('/profile/purchase-history');
                 }}
               >
                 ตกลง

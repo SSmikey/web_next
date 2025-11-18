@@ -640,7 +640,7 @@ html.dark .card {
   }
 
   .lead {
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     margin-bottom: 24px;
     text-align: center;
   }
@@ -653,16 +653,12 @@ html.dark .card {
   .input,
   .textarea {
     padding: 10px 12px;
-    font-size: 0.9rem;
-  }
-
-  .textarea {
-    min-height: 80px;
+    font-size: 0.95rem;
   }
 
   .radioLabel {
     padding: 10px 14px;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     gap: 10px;
   }
 
@@ -682,28 +678,69 @@ html.dark .card {
   .primaryButton,
   .secondaryButton {
     padding: 12px 20px;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
+  }
+
+  .actions {
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 24px;
+  }
+
+  .imageSection {
+    min-height: 350px;
+    padding: 20px;
+    border-radius: 16px 16px 0 0;
+  }
+
+  html.dark .imageSection {
+    background: var(--bg-card) !important;
+  }
+
+  .imageWrapper {
+    height: 100%;
+    padding: 10px;
+  }
+
+  .formSection {
+    padding: 25px 20px;
+    border-radius: 0 0 16px 16px;
+    background: transparent;
   }
 
   .arrow {
-    width: 32px;
-    height: 32px;
-    font-size: 1.5rem;
+    width: 35px;
+    height: 35px;
+    font-size: 1.8rem;
+  }
+
+  .arrowLeft {
+    left: 5px;
+  }
+
+  .arrowRight {
+    right: 5px;
   }
 
   .dot {
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
   }
 
   .dotActive {
-    width: 20px;
+    width: 24px;
   }
 
   .dotsContainer {
-    bottom: 12px;
-    padding: 6px 12px;
-    gap: 8px;
+    bottom: 15px;
+    padding: 8px 15px;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
   }
 }
 

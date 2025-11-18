@@ -93,17 +93,17 @@
 }
 
 .statIcon.orders {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
 }
 
 .statIcon.revenue {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
 }
 
 .statIcon.pending {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
 }
 
@@ -940,6 +940,150 @@ html.dark .itemRow {
 
 html.dark .paymentInfo {
   background: var(--bg-tertiary);
+}
+
+/* Payment Settings Section */
+.paymentSection {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.sectionSubtitle {
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+}
+
+.paymentActions {
+  display: flex;
+  gap: 1rem;
+}
+
+.editPaymentButton {
+  background: var(--gradient-primary);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.editPaymentButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.paymentEditActions {
+  display: flex;
+  gap: 1rem;
+}
+
+.savePaymentButton {
+  background: #10b981;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.savePaymentButton:hover {
+  background: #059669;
+}
+
+.savePaymentButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.cancelPaymentButton {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancelPaymentButton:hover {
+  background: var(--border-light);
+}
+
+.paymentSettingsContainer {
+  margin-top: 2rem;
+}
+
+.paymentSettingsCard {
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  padding: 2rem;
+  max-width: 600px;
+}
+
+.paymentSettingsCard h3 {
+  color: var(--text-primary);
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.paymentForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.paymentDisplayValue {
+  padding: 0.75rem;
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.qrCodePreview {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border-light);
+}
+
+.qrCodePreview h4 {
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.qrCodeImage {
+  max-width: 200px;
+  height: auto;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+}
+
+@media (max-width: 768px) {
+  .paymentActions,
+  .paymentEditActions {
+    flex-direction: column;
+  }
+  
+  .editPaymentButton,
+  .savePaymentButton,
+  .cancelPaymentButton {
+    width: 100%;
+  }
+  
+  .paymentSettingsCard {
+    padding: 1.5rem;
+  }
 }
 
 /* Tab Navigation */

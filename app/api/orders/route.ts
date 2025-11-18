@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import connectToDatabase from "@/lib/mongodb";
 import Order from "@/models/Order";
+import PaymentSettings from "@/models/PaymentSettings";
 
 export async function POST(request: NextRequest) {
   try {
@@ -52,6 +53,19 @@ export async function POST(request: NextRequest) {
 
     await connectToDatabase();
     
+    // Get payment settings from database
+    let paymentSettings = await PaymentSettings.findOne();
+    
+    // If no payment settings in database, use default values
+    if (!paymentSettings) {
+      paymentSettings = {
+        bankName: "ธนาคารกสิกรไทย",
+        accountName: "สมชาย ใจดี",
+        accountNumber: "123-456-7890",
+        qrCodeImage: "/images/QR code for ordering.png"
+      };
+    }
+    
     // Generate order number
     const date = new Date();
     const year = date.getFullYear();
@@ -70,10 +84,10 @@ export async function POST(request: NextRequest) {
       status: "pending",
       orderDate: new Date(),
       paymentInfo: {
-        bankName: "ธนาคารกสิกรไทย",
-        accountName: "สมชาย ใจดี",
-        accountNumber: "123-456-7890",
-        qrCodeImage: "/images/QR code for ordering.png"
+        bankName: paymentSettings.bankName,
+        accountName: paymentSettings.accountName,
+        accountNumber: paymentSettings.accountNumber,
+        qrCodeImage: paymentSettings.qrCodeImage
       }
     });
     

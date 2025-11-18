@@ -47,7 +47,7 @@ UserSchema.pre('save', async function(next) {
 
   try {
     const salt = await bcryptjs.genSalt(10);
-    this.password = await bcryptjs.hash(this.password, salt);
+    this.password = await bcryptjs.hash(this.password as string, salt);
     next();
   } catch (error: any) {
     next(error);
@@ -56,7 +56,7 @@ UserSchema.pre('save', async function(next) {
 
 // Method to compare password with hashed password
 UserSchema.methods.comparePassword = async function(candidatePassword: string): Promise<boolean> {
-  return bcryptjs.compare(candidatePassword, this.password);
+  return bcryptjs.compare(candidatePassword, this.password as string);
 };
 
 export default mongoose.models.User || mongoose.model<IUser>('User', UserSchema);

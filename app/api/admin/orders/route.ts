@@ -4,6 +4,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import connectToDatabase from "@/lib/mongodb";
 import Order from "@/models/Order";
 import User from "@/models/User";
+import PaymentSettings from "@/models/PaymentSettings";
 import { getGlobalPaymentSettings } from "../payment-settings";
 
 export async function GET(request: NextRequest) {
@@ -24,6 +25,14 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get("search") || "";
 
     await connectToDatabase();
+    
+    // Get payment settings from database for fallback
+    let paymentSettings = await PaymentSettings.findOne();
+    
+    // If no payment settings in database, fall back to global settings
+    if (!paymentSettings) {
+      paymentSettings = getGlobalPaymentSettings();
+    }
     
     // Build query
     const query: any = {};
@@ -64,7 +73,7 @@ export async function GET(request: NextRequest) {
       paymentSlip: order.paymentSlip,
       customerInfo: order.customerInfo,
       items: order.items,
-      paymentInfo: getGlobalPaymentSettings(), // Use global payment settings
+      paymentInfo: order.paymentInfo || paymentSettings, // Use order's payment info or fallback to database settings
       createdAt: order.createdAt,
       updatedAt: order.updatedAt
     }));

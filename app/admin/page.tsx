@@ -59,7 +59,7 @@ interface Order {
     bankName: string;
     accountName: string;
     accountNumber: string;
-    qrCodeUrl?: string;
+    qrCodeImage?: string;
   };
   paymentSlip?: {
     url: string;
@@ -126,18 +126,29 @@ function AdminDashboard({ session }: { session: any }) {
     bankName: '',
     accountName: '',
     accountNumber: '',
-    qrCodeUrl: ''
+    qrCodeImage: ''
   });
-  const [activeTab, setActiveTab] = useState<'orders' | 'stock'>('orders');
+  const [activeTab, setActiveTab] = useState<'orders' | 'stock' | 'payment'>('orders');
   const [stockData, setStockData] = useState<StockData[]>([]);
   const [editingStock, setEditingStock] = useState(false);
   const [stockUpdates, setStockUpdates] = useState<StockData[]>([]);
   const [savingStock, setSavingStock] = useState(false);
+  
+  // Payment settings state
+  const [globalPaymentSettings, setGlobalPaymentSettings] = useState({
+    bankName: '',
+    accountName: '',
+    accountNumber: '',
+    qrCodeImage: ''
+  });
+  const [editingPaymentSettings, setEditingPaymentSettings] = useState(false);
+  const [savingPaymentSettings, setSavingPaymentSettings] = useState(false);
 
   useEffect(() => {
     fetchStats();
     fetchOrders();
     fetchStockData();
+    fetchPaymentSettings();
   }, [currentPage, statusFilter, searchQuery]);
 
   const fetchStats = async () => {
@@ -188,6 +199,18 @@ function AdminDashboard({ session }: { session: any }) {
     }
   };
 
+  const fetchPaymentSettings = async () => {
+    try {
+      const response = await fetch('/api/admin/payment-settings');
+      if (response.ok) {
+        const data = await response.json();
+        setGlobalPaymentSettings(data);
+      }
+    } catch (error) {
+      console.error('Error fetching payment settings:', error);
+    }
+  };
+
   const handleStockUpdate = (typeIndex: number, size: string, value: string) => {
     const numValue = parseInt(value) || 0;
     const newStockUpdates = [...stockUpdates];
@@ -229,6 +252,33 @@ function AdminDashboard({ session }: { session: any }) {
   const cancelStockEdit = () => {
     setStockUpdates(stockData);
     setEditingStock(false);
+  };
+
+  const handlePaymentSettingsUpdate = async () => {
+    try {
+      setSavingPaymentSettings(true);
+      const response = await fetch('/api/admin/payment-settings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(globalPaymentSettings),
+      });
+
+      if (response.ok) {
+        setEditingPaymentSettings(false);
+        fetchPaymentSettings();
+      }
+    } catch (error) {
+      console.error('Error updating payment settings:', error);
+    } finally {
+      setSavingPaymentSettings(false);
+    }
+  };
+
+  const cancelPaymentSettingsEdit = () => {
+    fetchPaymentSettings();
+    setEditingPaymentSettings(false);
   };
 
   const handleStatusChange = async (orderId: string, newStatus: string) => {
@@ -293,7 +343,7 @@ function AdminDashboard({ session }: { session: any }) {
       bankName: order.paymentInfo?.bankName || '',
       accountName: order.paymentInfo?.accountName || '',
       accountNumber: order.paymentInfo?.accountNumber || '',
-      qrCodeUrl: order.paymentInfo?.qrCodeUrl || ''
+      qrCodeImage: order.paymentInfo?.qrCodeImage || ''
     });
     setShowOrderModal(true);
   };
@@ -402,6 +452,12 @@ function AdminDashboard({ session }: { session: any }) {
           onClick={() => setActiveTab('stock')}
         >
           📦 จัดการสต็อกสินค้า
+        </button>
+        <button
+          className={`${styles.tabButton} ${activeTab === 'payment' ? styles.activeTab : ''}`}
+          onClick={() => setActiveTab('payment')}
+        >
+          💳 จัดการข้อมูลการชำระเงิน
         </button>
       </div>
 
@@ -622,6 +678,117 @@ function AdminDashboard({ session }: { session: any }) {
           </div>
         )}
 
+        {/* Payment Settings Section */}
+        {activeTab === 'payment' && (
+          <div className={styles.paymentSection}>
+            <div className={styles.sectionHeader}>
+              <h2 className={styles.sectionTitle}>💳 จัดการข้อมูลการชำระเงิน</h2>
+              <p className={styles.sectionSubtitle}>ตั้งค่าข้อมูลการชำระเงินสำหรับทุกคำสั่งซื้อ</p>
+              <div className={styles.paymentActions}>
+                {!editingPaymentSettings ? (
+                  <button
+                    className={styles.editPaymentButton}
+                    onClick={() => setEditingPaymentSettings(true)}
+                  >
+                    แก้ไขข้อมูลการชำระเงิน
+                  </button>
+                ) : (
+                  <div className={styles.paymentEditActions}>
+                    <button
+                      className={styles.savePaymentButton}
+                      onClick={handlePaymentSettingsUpdate}
+                      disabled={savingPaymentSettings}
+                    >
+                      {savingPaymentSettings ? 'กำลังบันทึก...' : 'บันทึก'}
+                    </button>
+                    <button
+                      className={styles.cancelPaymentButton}
+                      onClick={cancelPaymentSettingsEdit}
+                    >
+                      ยกเลิก
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className={styles.paymentSettingsContainer}>
+              <div className={styles.paymentSettingsCard}>
+                <h3>ข้อมูลบัญชีธนาคาร</h3>
+                
+                <div className={styles.paymentForm}>
+                  <div className={styles.formGroup}>
+                    <label>ธนาคาร</label>
+                    {editingPaymentSettings ? (
+                      <input
+                        type="text"
+                        className={styles.paymentInput}
+                        value={globalPaymentSettings.bankName}
+                        onChange={(e) => setGlobalPaymentSettings({ ...globalPaymentSettings, bankName: e.target.value })}
+                      />
+                    ) : (
+                      <div className={styles.paymentDisplayValue}>{globalPaymentSettings.bankName || '-'}</div>
+                    )}
+                  </div>
+
+                  <div className={styles.formGroup}>
+                    <label>ชื่อบัญชี</label>
+                    {editingPaymentSettings ? (
+                      <input
+                        type="text"
+                        className={styles.paymentInput}
+                        value={globalPaymentSettings.accountName}
+                        onChange={(e) => setGlobalPaymentSettings({ ...globalPaymentSettings, accountName: e.target.value })}
+                      />
+                    ) : (
+                      <div className={styles.paymentDisplayValue}>{globalPaymentSettings.accountName || '-'}</div>
+                    )}
+                  </div>
+
+                  <div className={styles.formGroup}>
+                    <label>เลขที่บัญชี</label>
+                    {editingPaymentSettings ? (
+                      <input
+                        type="text"
+                        className={styles.paymentInput}
+                        value={globalPaymentSettings.accountNumber}
+                        onChange={(e) => setGlobalPaymentSettings({ ...globalPaymentSettings, accountNumber: e.target.value })}
+                      />
+                    ) : (
+                      <div className={styles.paymentDisplayValue}>{globalPaymentSettings.accountNumber || '-'}</div>
+                    )}
+                  </div>
+
+                  <div className={styles.formGroup}>
+                    <label>QR Code Image</label>
+                    {editingPaymentSettings ? (
+                      <input
+                        type="text"
+                        className={styles.paymentInput}
+                        value={globalPaymentSettings.qrCodeImage}
+                        onChange={(e) => setGlobalPaymentSettings({ ...globalPaymentSettings, qrCodeImage: e.target.value })}
+                      />
+                    ) : (
+                      <div className={styles.paymentDisplayValue}>{globalPaymentSettings.qrCodeImage || '-'}</div>
+                    )}
+                  </div>
+                </div>
+
+                {globalPaymentSettings.qrCodeImage && (
+                  <div className={styles.qrCodePreview}>
+                    <h4>ตัวอย่าง QR Code</h4>
+                    <img
+                      src={globalPaymentSettings.qrCodeImage}
+                      alt="QR Code"
+                      className={styles.qrCodeImage}
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Sidebar - only show on orders tab */}
         {activeTab === 'orders' && (
           <div className={styles.sidebar}>
@@ -765,10 +932,10 @@ function AdminDashboard({ session }: { session: any }) {
                       />
                       <input
                         type="text"
-                        placeholder="QR Code URL"
+                        placeholder="QR Code Image"
                         className={styles.paymentInput}
-                        value={paymentInfo.qrCodeUrl}
-                        onChange={(e) => setPaymentInfo({ ...paymentInfo, qrCodeUrl: e.target.value })}
+                        value={paymentInfo.qrCodeImage}
+                        onChange={(e) => setPaymentInfo({ ...paymentInfo, qrCodeImage: e.target.value })}
                       />
                       <button
                         className={styles.saveButton}
