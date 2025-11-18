@@ -6,6 +6,30 @@ import { redirect } from "next/navigation";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import styles from './page.module.css';
 
+interface StockData {
+  _id: string;
+  type: string;
+  sizes: {
+    SSS: number;
+    SS: number;
+    S: number;
+    M: number;
+    L: number;
+    XL: number;
+    '2XL': number;
+    '3XL': number;
+    '4XL': number;
+    '5XL': number;
+    '6XL': number;
+    '7XL': number;
+    '8XL': number;
+    '9XL': number;
+    '10XL': number;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
 interface Order {
   id: string;
   orderNumber: string;
@@ -104,10 +128,16 @@ function AdminDashboard({ session }: { session: any }) {
     accountNumber: '',
     qrCodeUrl: ''
   });
+  const [activeTab, setActiveTab] = useState<'orders' | 'stock'>('orders');
+  const [stockData, setStockData] = useState<StockData[]>([]);
+  const [editingStock, setEditingStock] = useState(false);
+  const [stockUpdates, setStockUpdates] = useState<StockData[]>([]);
+  const [savingStock, setSavingStock] = useState(false);
 
   useEffect(() => {
     fetchStats();
     fetchOrders();
+    fetchStockData();
   }, [currentPage, statusFilter, searchQuery]);
 
   const fetchStats = async () => {
@@ -143,6 +173,62 @@ function AdminDashboard({ session }: { session: any }) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchStockData = async () => {
+    try {
+      const response = await fetch('/api/admin/stock');
+      if (response.ok) {
+        const data = await response.json();
+        setStockData(data.data);
+        setStockUpdates(data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching stock data:', error);
+    }
+  };
+
+  const handleStockUpdate = (typeIndex: number, size: string, value: string) => {
+    const numValue = parseInt(value) || 0;
+    const newStockUpdates = [...stockUpdates];
+    newStockUpdates[typeIndex] = {
+      ...newStockUpdates[typeIndex],
+      sizes: {
+        ...newStockUpdates[typeIndex].sizes,
+        [size]: numValue
+      }
+    };
+    setStockUpdates(newStockUpdates);
+  };
+
+  const saveStockUpdates = async () => {
+    try {
+      setSavingStock(true);
+      const response = await fetch('/api/admin/stock', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          stockUpdates
+        }),
+      });
+
+      if (response.ok) {
+        setStockData(stockUpdates);
+        setEditingStock(false);
+        fetchStockData();
+      }
+    } catch (error) {
+      console.error('Error updating stock:', error);
+    } finally {
+      setSavingStock(false);
+    }
+  };
+
+  const cancelStockEdit = () => {
+    setStockUpdates(stockData);
+    setEditingStock(false);
   };
 
   const handleStatusChange = async (orderId: string, newStatus: string) => {
@@ -303,10 +389,27 @@ function AdminDashboard({ session }: { session: any }) {
         </div>
       )}
 
+      {/* Tab Navigation */}
+      <div className={styles.tabNavigation}>
+        <button
+          className={`${styles.tabButton} ${activeTab === 'orders' ? styles.activeTab : ''}`}
+          onClick={() => setActiveTab('orders')}
+        >
+          📋 จัดการคำสั่งซื้อ
+        </button>
+        <button
+          className={`${styles.tabButton} ${activeTab === 'stock' ? styles.activeTab : ''}`}
+          onClick={() => setActiveTab('stock')}
+        >
+          📦 จัดการสต็อกสินค้า
+        </button>
+      </div>
+
       {/* Main Content */}
       <div className={styles.mainContent}>
         {/* Orders Section */}
-        <div className={styles.ordersSection}>
+        {activeTab === 'orders' && (
+          <div className={styles.ordersSection}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>📋 จัดการคำสั่งซื้อ</h2>
             <div className={styles.filters}>
@@ -400,10 +503,128 @@ function AdminDashboard({ session }: { session: any }) {
               ถัดไป
             </button>
           </div>
-        </div>
+          </div>
+        )}
 
-        {/* Sidebar */}
-        <div className={styles.sidebar}>
+        {/* Stock Management Section */}
+        {activeTab === 'stock' && (
+          <div className={styles.stockSection}>
+            <div className={styles.sectionHeader}>
+              <h2 className={styles.sectionTitle}>📦 จัดการสต็อกสินค้า</h2>
+              <div className={styles.stockActions}>
+                {!editingStock ? (
+                  <button
+                    className={styles.editStockButton}
+                    onClick={() => setEditingStock(true)}
+                  >
+                    แก้ไขสต็อก
+                  </button>
+                ) : (
+                  <div className={styles.stockEditActions}>
+                    <button
+                      className={styles.saveStockButton}
+                      onClick={saveStockUpdates}
+                      disabled={savingStock}
+                    >
+                      {savingStock ? 'กำลังบันทึก...' : 'บันทึก'}
+                    </button>
+                    <button
+                      className={styles.cancelStockButton}
+                      onClick={cancelStockEdit}
+                    >
+                      ยกเลิก
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className={styles.stockTables}>
+              {stockUpdates.map((stock, stockIndex) => (
+                <div key={stock._id} className={styles.stockTableContainer}>
+                  <h3 className={styles.stockTypeTitle}>{stock.type}</h3>
+                  
+                  <div className={styles.tableWrapper}>
+                    <table className={styles.stockTable}>
+                      <thead>
+                        <tr>
+                          <th>SIZE</th>
+                          <th>SSS</th>
+                          <th>SS</th>
+                          <th>S</th>
+                          <th>M</th>
+                          <th>L</th>
+                          <th>XL</th>
+                          <th>2XL</th>
+                          <th>3XL</th>
+                          <th>4XL</th>
+                          <th>5XL</th>
+                          <th>6XL</th>
+                          <th>7XL</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>จำนวน</td>
+                          {['SSS', 'SS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', '6XL', '7XL'].map(size => (
+                            <td key={size}>
+                              {editingStock ? (
+                                <input
+                                  type="number"
+                                  min="0"
+                                  className={styles.stockInput}
+                                  value={stock.sizes[size as keyof typeof stock.sizes]}
+                                  onChange={(e) => handleStockUpdate(stockIndex, size, e.target.value)}
+                                />
+                              ) : (
+                                <span className={styles.stockValue}>{stock.sizes[size as keyof typeof stock.sizes]}</span>
+                              )}
+                            </td>
+                          ))}
+                        </tr>
+                      </tbody>
+                    </table>
+
+                    <table className={styles.stockTable}>
+                      <thead>
+                        <tr>
+                          <th>SIZE</th>
+                          <th>8XL</th>
+                          <th>9XL</th>
+                          <th>10XL</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>จำนวน</td>
+                          {['8XL', '9XL', '10XL'].map(size => (
+                            <td key={size}>
+                              {editingStock ? (
+                                <input
+                                  type="number"
+                                  min="0"
+                                  className={styles.stockInput}
+                                  value={stock.sizes[size as keyof typeof stock.sizes]}
+                                  onChange={(e) => handleStockUpdate(stockIndex, size, e.target.value)}
+                                />
+                              ) : (
+                                <span className={styles.stockValue}>{stock.sizes[size as keyof typeof stock.sizes]}</span>
+                              )}
+                            </td>
+                          ))}
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Sidebar - only show on orders tab */}
+        {activeTab === 'orders' && (
+          <div className={styles.sidebar}>
           {/* Recent Orders */}
           {stats && (
             <div className={styles.recentOrders}>
@@ -421,6 +642,7 @@ function AdminDashboard({ session }: { session: any }) {
             </div>
           )}
         </div>
+        )}
       </div>
 
       {/* Order Details Modal */}
