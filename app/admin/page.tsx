@@ -59,7 +59,7 @@ interface Order {
     bankName: string;
     accountName: string;
     accountNumber: string;
-    qrCodeUrl?: string;
+    qrCodeImage?: string;
   };
   paymentSlip?: {
     url: string;
@@ -126,7 +126,7 @@ function AdminDashboard({ session }: { session: any }) {
     bankName: '',
     accountName: '',
     accountNumber: '',
-    qrCodeUrl: ''
+    qrCodeImage: ''
   });
   const [activeTab, setActiveTab] = useState<'orders' | 'stock'>('orders');
   const [stockData, setStockData] = useState<StockData[]>([]);
@@ -293,7 +293,7 @@ function AdminDashboard({ session }: { session: any }) {
       bankName: order.paymentInfo?.bankName || '',
       accountName: order.paymentInfo?.accountName || '',
       accountNumber: order.paymentInfo?.accountNumber || '',
-      qrCodeUrl: order.paymentInfo?.qrCodeUrl || ''
+      qrCodeImage: order.paymentInfo?.qrCodeImage || ''
     });
     setShowOrderModal(true);
   };
@@ -765,10 +765,10 @@ function AdminDashboard({ session }: { session: any }) {
                       />
                       <input
                         type="text"
-                        placeholder="QR Code URL"
+                        placeholder="QR Code Image"
                         className={styles.paymentInput}
-                        value={paymentInfo.qrCodeUrl}
-                        onChange={(e) => setPaymentInfo({ ...paymentInfo, qrCodeUrl: e.target.value })}
+                        value={paymentInfo.qrCodeImage}
+                        onChange={(e) => setPaymentInfo({ ...paymentInfo, qrCodeImage: e.target.value })}
                       />
                       <button
                         className={styles.saveButton}
