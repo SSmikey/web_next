@@ -20,30 +20,6 @@ export default function Navbar() {
           ✨ SPVV CLOTHING
         </Link>
         <ul className={styles.navMenu}>
-          <li className={styles.navItem}>
-            <Link
-              href="/"
-              className={`${styles.navLink} ${isActive("/") ? styles.active : ""}`}
-            >
-              Home
-            </Link>
-          </li>
-          <li className={styles.navItem}>
-            <Link
-              href="/about"
-              className={`${styles.navLink} ${isActive("/about") ? styles.active : ""}`}
-            >
-              About
-            </Link>
-          </li>
-          <li className={styles.navItem}>
-            <Link
-              href="/contact"
-              className={`${styles.navLink} ${isActive("/contact") ? styles.active : ""}`}
-            >
-              Contact
-            </Link>
-          </li>
         </ul>
         <div className={styles.authMenu}>
           <ThemeToggle />
