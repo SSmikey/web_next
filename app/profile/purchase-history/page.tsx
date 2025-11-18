@@ -98,7 +98,7 @@ export default function PurchaseHistoryPage() {
 
   const fetchPaymentSettings = async () => {
     try {
-      const response = await fetch('/api/admin/payment-settings');
+      const response = await fetch('/api/payment-settings');
       if (response.ok) {
         const data = await response.json();
         setPaymentSettings(data);
