@@ -60,18 +60,18 @@ web_next/
 
 ## 📸 UI Preview
 
-(./docs/images/ui1.png)
+![หน้าหลัก](./docs/images/ui1.png)
 
-(./docs/images/ui2.png)
+![หน้าเลือกสินค้า](./docs/images/ui2.png)
 
-(./docs/images/ui3.png)
+![ตารางไซส์](./docs/images/ui3.png)
 
-(./docs/images/ui4.png)
+![ข้อมูลผู้ซื้อ](./docs/images/ui4.png)
 
-(./docs/images/ui5.png)
+![หน้าโปรไฟล์](./docs/images/ui5.png)
 
-(./docs/images/ui6.png)
+![หน้า Admin - จัดการสินค้า](./docs/images/ui6.png)
 
-(./docs/images/ui7.png)
+![หน้า Admin - จัดการออร์เดอร์](./docs/images/ui7.png)
 
-(./docs/images/ui8.png)
+![Dark Mode](./docs/images/ui8.png)
